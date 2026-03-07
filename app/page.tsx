@@ -1,5 +1,47 @@
 import Link from "next/link";
 
+const FEATURES = [
+  {
+    color: "#0051A2",
+    label: "LESSONS",
+    title: "STRUCTURED CURRICULUM",
+    desc: "43 lessons across 7 stages take you from never touching a cube to completing a full CFOP solve.",
+    symbol: "▤",
+  },
+  {
+    color: "#FFD500",
+    label: "GAMIFICATION",
+    title: "XP, RANKS & STREAKS",
+    desc: "Earn XP for every action, climb 24 rank tiers, and build streaks that multiply your rewards.",
+    symbol: "▲",
+  },
+  {
+    color: "#009B48",
+    label: "TRAINER",
+    title: "ALGORITHM TRAINER",
+    desc: "Drill OLL and PLL with spaced repetition — the system tracks what you know and targets what you don't.",
+    symbol: "◈",
+  },
+  {
+    color: "#C41E3A",
+    label: "TIMER",
+    title: "BUILT-IN TIMER",
+    desc: "Scramble, solve, and log your times with a full-featured timer that tracks every session.",
+    symbol: "◷",
+  },
+];
+
+const RANKS = [
+  { name: "UNRANKED",    color: "#55556a", bg: "#13131e", glow: "rgba(85,85,106,0)"     },
+  { name: "BRONZE",      color: "#cd7f32", bg: "#1e1408", glow: "rgba(205,127,50,0.35)" },
+  { name: "SILVER",      color: "#b0b0c8", bg: "#16161e", glow: "rgba(176,176,200,0.3)" },
+  { name: "GOLD",        color: "#FFD500", bg: "#1a1600", glow: "rgba(255,213,0,0.4)"   },
+  { name: "PLATINUM",    color: "#00d4e0", bg: "#001820", glow: "rgba(0,212,224,0.4)"   },
+  { name: "DIAMOND",     color: "#60d4f8", bg: "#001428", glow: "rgba(96,212,248,0.45)" },
+  { name: "MASTER",      color: "#c47aff", bg: "#18002a", glow: "rgba(196,122,255,0.5)" },
+  { name: "GRANDMASTER", color: "#ff4444", bg: "#220000", glow: "rgba(255,68,68,0.55)"  },
+];
+
 // Scrambled cube face — all 6 colors present, deliberately mixed
 const STICKERS = [
   "#FF5800", "#ffffff", "#0051A2",
@@ -27,10 +69,11 @@ const STATS = [
 
 export default function Home() {
   return (
-    <section
-      className="relative overflow-hidden flex items-center"
-      style={{ minHeight: "calc(100vh - 64px)" }}
-    >
+    <>
+      <section
+        className="relative overflow-hidden flex items-center"
+        style={{ minHeight: "calc(100vh - 64px)" }}
+      >
       {/* Dot-grid background */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -162,5 +205,150 @@ export default function Home() {
 
       </div>
     </section>
+
+    {/* ── Features Section ── */}
+    <section className="relative mx-auto max-w-6xl w-full px-6 py-24">
+
+      {/* Section header */}
+      <div className="flex flex-col gap-3 mb-14">
+        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+          WHAT YOU GET
+        </span>
+        <h2
+          className="font-heading text-white leading-snug"
+          style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+        >
+          EVERYTHING YOU NEED
+        </h2>
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {FEATURES.map(({ color, label, title, symbol, desc }) => (
+          <div
+            key={title}
+            className="flex flex-col gap-5 p-6 bg-[#0f0f1a] transition-colors duration-200 hover:bg-[#13131f] group"
+            style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          >
+            {/* Top accent bar */}
+            <div className="h-[3px] w-8" style={{ backgroundColor: color }} />
+
+            {/* Icon + label */}
+            <div className="flex items-center gap-2">
+              <span
+                className="font-heading text-base leading-none"
+                style={{ color }}
+              >
+                {symbol}
+              </span>
+              <span
+                className="font-heading text-[8px] leading-none tracking-widest"
+                style={{ color }}
+              >
+                {label}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3
+              className="font-heading text-white leading-relaxed"
+              style={{ fontSize: "10px" }}
+            >
+              {title}
+            </h3>
+
+            {/* Description */}
+            <p className="font-sans text-sm text-zinc-500 leading-relaxed">
+              {desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* ── Rank Progression Section ── */}
+    <section className="py-24 border-t border-white/[0.04]">
+      <div className="mx-auto max-w-6xl px-6">
+
+        {/* Header */}
+        <div className="flex flex-col gap-3 mb-16">
+          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+            PROGRESSION
+          </span>
+          <h2
+            className="font-heading text-white leading-snug"
+            style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+          >
+            CLIMB THE RANKS
+          </h2>
+          <p className="font-sans text-sm text-zinc-500 max-w-md leading-relaxed mt-1">
+            Every rank has 3 tiers — 24 milestones total. XP earned through
+            lessons, practice, and daily streaks, not raw speed.
+          </p>
+        </div>
+
+        {/* Rank row — horizontally scrollable on small screens */}
+        <div className="overflow-x-auto pb-4">
+          <div className="relative flex items-start justify-between min-w-[680px]">
+
+            {/* Connecting line — runs behind the badges */}
+            <div
+              className="absolute left-8 right-8 pointer-events-none"
+              style={{ top: "32px", height: "1px", backgroundColor: "rgba(255,255,255,0.06)" }}
+            />
+
+            {RANKS.map((rank) => (
+              <div key={rank.name} className="flex flex-col items-center gap-3 relative z-10">
+
+                {/* Badge wrapper — keeps layout stable while diamond rotates */}
+                <div className="w-16 h-16 flex items-center justify-center">
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      transform: "rotate(45deg)",
+                      backgroundColor: rank.bg,
+                      border: `2px solid ${rank.color}`,
+                      boxShadow: `0 0 18px ${rank.glow}, inset 0 0 8px rgba(255,255,255,0.04)`,
+                    }}
+                  />
+                </div>
+
+                {/* Rank name */}
+                <span
+                  className="font-heading text-center leading-relaxed"
+                  style={{ fontSize: "8px", color: rank.color, maxWidth: 64 }}
+                >
+                  {rank.name}
+                </span>
+
+                {/* Sub-tier dots — 3 per rank */}
+                <div className="flex gap-[5px]">
+                  {[0, 1, 2].map((t) => (
+                    <div
+                      key={t}
+                      style={{
+                        width: 5,
+                        height: 5,
+                        backgroundColor: rank.color,
+                        opacity: 0.45,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer note */}
+        <p className="font-sans text-xs text-zinc-700 mt-10">
+          ◆ Each dot represents one sub-tier. Complete all 3 to advance to the next rank.
+        </p>
+
+      </div>
+    </section>
+
+    </>
   );
 }
