@@ -1,65 +1,166 @@
-import Image from "next/image";
+import Link from "next/link";
+
+// Scrambled cube face — all 6 colors present, deliberately mixed
+const STICKERS = [
+  "#FF5800", "#ffffff", "#0051A2",
+  "#FFD500", "#C41E3A", "#FFD500",
+  "#C41E3A", "#009B48", "#FF5800",
+];
+
+// Floating pixel squares — positioned around the hero
+const FLOATERS = [
+  { color: "#C41E3A", size: 7,  left: "6%",  delay: "0s",   duration: "9s"  },
+  { color: "#FFD500", size: 11, left: "18%", delay: "2.5s", duration: "12s" },
+  { color: "#009B48", size: 5,  left: "33%", delay: "4s",   duration: "10s" },
+  { color: "#0051A2", size: 9,  left: "52%", delay: "1.2s", duration: "14s" },
+  { color: "#FF5800", size: 7,  left: "67%", delay: "3.5s", duration: "11s" },
+  { color: "#FFD500", size: 13, left: "80%", delay: "5.5s", duration: "13s" },
+  { color: "#C41E3A", size: 5,  left: "92%", delay: "7s",   duration: "9s"  },
+  { color: "#009B48", size: 8,  left: "44%", delay: "6s",   duration: "15s" },
+];
+
+const STATS = [
+  { value: "43", label: "Lessons" },
+  { value: "7",  label: "Stages"  },
+  { value: "24", label: "Ranks"   },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <section
+      className="relative overflow-hidden flex items-center"
+      style={{ minHeight: "calc(100vh - 64px)" }}
+    >
+      {/* Dot-grid background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
+
+      {/* CRT scanline overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(0deg, rgba(0,0,0,0.045) 0px, rgba(0,0,0,0.045) 1px, transparent 1px, transparent 4px)",
+        }}
+      />
+
+      {/* Floating pixel squares */}
+      {FLOATERS.map((f, i) => (
+        <div
+          key={i}
+          className="absolute bottom-0 pointer-events-none"
+          style={{
+            left: f.left,
+            width: f.size,
+            height: f.size,
+            backgroundColor: f.color,
+            animation: `floatUp ${f.duration} ${f.delay} linear infinite`,
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+      ))}
+
+      {/* Main content */}
+      <div className="relative z-20 mx-auto max-w-6xl w-full px-6 py-20 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+
+        {/* Left column — text */}
+        <div className="flex-1 flex flex-col gap-6">
+
+          {/* Eyebrow badge */}
+          <span
+            className="self-start font-heading text-[9px] leading-none text-[#FFD500] px-3 py-2 tracking-widest"
+            style={{ border: "1px solid rgba(255,213,0,0.35)" }}
+          >
+            FREE TO START
+          </span>
+
+          {/* Headline */}
+          <div className="flex flex-col gap-2">
+            <h1
+              className="font-heading leading-snug text-zinc-300"
+              style={{ fontSize: "clamp(13px, 2.2vw, 20px)" }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              LEARN TO SPEEDCUBE
+            </h1>
+            <span
+              className="font-heading leading-none"
+              style={{
+                fontSize: "clamp(26px, 5.5vw, 60px)",
+                color: "#FFD500",
+                textShadow:
+                  "0 0 40px rgba(255,213,0,0.45), 0 0 80px rgba(255,213,0,0.15)",
+              }}
             >
-              Learning
-            </a>{" "}
-            center.
+              THE FUN WAY.
+            </span>
+          </div>
+
+          {/* Subtitle */}
+          <p className="font-sans text-lg text-zinc-400 max-w-md leading-relaxed">
+            Structured lessons, real XP, daily streaks, and ranks that
+            actually mean something. Built for total beginners. Addicting
+            enough to keep you going.
           </p>
+
+          {/* CTA */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mt-2">
+            <Link
+              href="/learn"
+              className="font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px]"
+              style={{
+                boxShadow: "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.25)",
+              }}
+            >
+              GET STARTED
+            </Link>
+            <span className="font-sans text-sm text-zinc-600">
+              No account needed to explore
+            </span>
+          </div>
+
+          {/* Stats row */}
+          <div className="flex items-center gap-8 pt-2 border-t border-white/5">
+            {STATS.map(({ value, label }) => (
+              <div key={label} className="flex flex-col gap-1.5">
+                <span className="font-heading text-sm text-white">{value}</span>
+                <span className="font-sans text-xs text-zinc-600 uppercase tracking-widest">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Right column — pixel cube */}
+        <div className="flex-shrink-0 flex flex-col items-center gap-3">
+          <div
+            className="grid grid-cols-3 gap-[3px] p-[6px] bg-[#1a1a26]"
+            style={{ animation: "cubeGlow 3.5s ease-in-out infinite" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {STICKERS.map((color, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 76,
+                  height: 76,
+                  backgroundColor: color,
+                  boxShadow:
+                    "inset -3px -3px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.12)",
+                }}
+              />
+            ))}
+          </div>
+          <span className="font-heading text-[8px] text-zinc-700 tracking-widest">
+            SCRAMBLED
+          </span>
         </div>
-      </main>
-    </div>
+
+      </div>
+    </section>
   );
 }
