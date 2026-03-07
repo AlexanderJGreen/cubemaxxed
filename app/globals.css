@@ -37,3 +37,8 @@ h1, h2, h3, h4, h5, h6 {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0; }
 }
+
+@keyframes nodeGlow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--node-color), 0 0 10px var(--node-color); }
+  50%       { box-shadow: 0 0 0 5px transparent,    0 0 22px var(--node-color); }
+}

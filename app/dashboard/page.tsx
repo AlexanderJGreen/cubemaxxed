@@ -48,9 +48,10 @@ const CHALLENGES = {
 };
 
 const QUICK_STATS = [
-  { label: "TOTAL SOLVES",        value: USER.totalSolves.toString() },
-  { label: "AVG TIME",            value: USER.avgTime                 },
-  { label: "ALGORITHMS MASTERED", value: USER.algorithmsMastered.toString() },
+  { label: "TOTAL SOLVES",        value: USER.totalSolves.toString(), sub: "all time"   },
+  { label: "BEST SINGLE",         value: "1:58",                      sub: "personal best" },
+  { label: "CURRENT AVERAGE",     value: USER.avgTime,                sub: "ao5"        },
+  { label: "ALGORITHMS MASTERED", value: USER.algorithmsMastered.toString(), sub: "of 78 total" },
 ];
 
 export default function Dashboard() {
@@ -192,8 +193,8 @@ export default function Dashboard() {
       </div>
 
       {/* ── Quick stats ── */}
-      <div className="grid grid-cols-3 gap-4">
-        {QUICK_STATS.map(({ label, value }) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {QUICK_STATS.map(({ label, value, sub }) => (
           <div
             key={label}
             className="flex flex-col gap-3 p-5 bg-[#0f0f1a]"
@@ -204,6 +205,9 @@ export default function Dashboard() {
             </span>
             <span className="font-heading text-xl text-white leading-none">
               {value}
+            </span>
+            <span className="font-sans text-xs text-zinc-700">
+              {sub}
             </span>
           </div>
         ))}
