@@ -18,27 +18,63 @@ body {
   font-family: var(--font-sans), Arial, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading), monospace;
 }
 
 @keyframes floatUp {
-  0%   { transform: translateY(0px);    opacity: 0.55; }
-  80%  { opacity: 0.3; }
-  100% { transform: translateY(-100vh); opacity: 0; }
+  0% {
+    transform: translateY(0px);
+    opacity: 0.55;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
 }
 
 @keyframes cubeGlow {
-  0%, 100% { box-shadow: 0 0 0 2px #1e1e2e, 0 0 32px rgba(255, 213, 0, 0.08); }
-  50%       { box-shadow: 0 0 0 2px #1e1e2e, 0 0 56px rgba(255, 213, 0, 0.22); }
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px #1e1e2e,
+      0 0 32px rgba(255, 213, 0, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px #1e1e2e,
+      0 0 56px rgba(255, 213, 0, 0.22);
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes nodeGlow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--node-color), 0 0 10px var(--node-color); }
-  50%       { box-shadow: 0 0 0 5px transparent,    0 0 22px var(--node-color); }
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 var(--node-color),
+      0 0 10px var(--node-color);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px transparent,
+      0 0 22px var(--node-color);
+  }
 }
