@@ -4,389 +4,249 @@ import { useState } from "react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Category = "OLL" | "PLL";
+type Tab = "oll" | "pll";
+type S = "Y" | "G";
 
-type Algorithm = {
+interface DiagramProps {
+  // Top face — 9 cells, row-major: [TL, TE, TR, LE, CC, RE, BL, BE, BR]
+  top: [S, S, S, S, S, S, S, S, S];
+  // Side strips — 3 cells each
+  back:  [S, S, S]; // left→right: TL-side, TE-side, TR-side
+  front: [S, S, S]; // left→right: BL-side, BE-side, BR-side
+  left:  [S, S, S]; // top→bottom: TL-side, LE-side, BL-side
+  right: [S, S, S]; // top→bottom: TR-side, RE-side, BR-side
+}
+
+interface OLLCase {
   name: string;
-  step: string;
-  notation: string;
-  recognition: string;
-  // 9-char top-face grid, row by row (TL→TR, ML→MR, BL→BR)
-  // Y = yellow (oriented/solved), G = grey (unoriented/unsolved)
-  topFace: string[];
-};
+  diagram: DiagramProps;
+  alg: string;
+}
 
-// ── Case Diagram ───────────────────────────────────────────────────────────────
+// ── CaseDiagram ───────────────────────────────────────────────────────────────
 //
-// Renders the classic OLL "plan view" — the 3×3 top face with a 1-cell-wide
-// strip of side stickers visible on all four sides, just like the reference
-// image. Edge side stickers are derived from top-face orientation (grey on top
-// → yellow on side, yellow on top → grey on side). Corner side stickers are
-// kept grey because the twist direction isn't stored in topFace.
+// Flat 5×5 CSS grid — corners of the grid are empty:
+//
+//        [B0][B1][B2]
+//   [L0] [TL][TE][TR] [R0]
+//   [L1] [LE][CC][RE] [R1]
+//   [L2] [BL][BE][BR] [R2]
+//        [F0][F1][F2]
 
-function CaseDiagram({ topFace, size }: { topFace: string[]; size: number }) {
-  // size = total width/height including side strips
-  const gap      = Math.max(1, Math.floor(size / 60));
-  const cell     = Math.floor((size - gap * 4) / 5);
-  const r        = Math.max(2, Math.round(cell / 6));
-  const step     = cell + gap;
-  const faceSize = 3 * cell + 2 * gap;
+const Y_COL = "#FFD700";
+const G_COL = "#3a3a3a";
 
-  // Top face: full brightness. Side strips: dimmed to suggest depth.
-  const topCol  = (c: string) => (c === "Y" ? "#FFD500" : "#2a2a2a");
-  const sideCol = (c: string) => (c === "Y" ? "#a07800" : "#181818");
+function sty(c: S): React.CSSProperties {
+  return { backgroundColor: c === "Y" ? Y_COL : G_COL, borderRadius: 2 };
+}
 
-  const es = (pos: number) => (topFace[pos] === "Y" ? "G" : "Y");
-  const back  = ["G", es(1), "G"];
-  const front = ["G", es(7), "G"];
-  const left  = ["G", es(3), "G"];
-  const right = ["G", es(5), "G"];
-
-  const total = cell * 5 + gap * 4;
-  const p     = cell * 5; // perspective distance — tight = dramatic angle
-
-  // Strip wrapper styles: CSS 3D perspective hinge at the shared edge with the face
-  const backStyle: React.CSSProperties = {
-    position: "absolute",
-    left: step, top: step - cell,
-    width: faceSize, height: cell,
-    display: "grid",
-    gridTemplateColumns: `repeat(3, ${cell}px)`,
-    gap,
-    transformOrigin: "bottom center",
-    transform: `perspective(${p}px) rotateX(52deg)`,
-  };
-  const frontStyle: React.CSSProperties = {
-    position: "absolute",
-    left: step, top: step + faceSize,
-    width: faceSize, height: cell,
-    display: "grid",
-    gridTemplateColumns: `repeat(3, ${cell}px)`,
-    gap,
-    transformOrigin: "top center",
-    transform: `perspective(${p}px) rotateX(-52deg)`,
-  };
-  const leftStyle: React.CSSProperties = {
-    position: "absolute",
-    left: step - cell, top: step,
-    width: cell, height: faceSize,
-    display: "grid",
-    gridTemplateRows: `repeat(3, ${cell}px)`,
-    gap,
-    transformOrigin: "right center",
-    transform: `perspective(${p}px) rotateY(-52deg)`,
-  };
-  const rightStyle: React.CSSProperties = {
-    position: "absolute",
-    left: step + faceSize, top: step,
-    width: cell, height: faceSize,
-    display: "grid",
-    gridTemplateRows: `repeat(3, ${cell}px)`,
-    gap,
-    transformOrigin: "left center",
-    transform: `perspective(${p}px) rotateY(52deg)`,
-  };
+export function CaseDiagram({ top, back, front, left, right }: DiagramProps) {
+  const cell = 28;
+  const side = 10;
+  const gap  = 2;
 
   return (
-    <div style={{ position: "relative", width: total, height: total, flexShrink: 0 }}>
-      {/* Side strips — angled away from top face */}
-      <div style={backStyle}>
-        {back.map((c, i) => (
-          <div key={i} style={{ backgroundColor: sideCol(c), borderRadius: r }} />
-        ))}
-      </div>
-      <div style={frontStyle}>
-        {front.map((c, i) => (
-          <div key={i} style={{ backgroundColor: sideCol(c), borderRadius: r }} />
-        ))}
-      </div>
-      <div style={leftStyle}>
-        {left.map((c, i) => (
-          <div key={i} style={{ backgroundColor: sideCol(c), borderRadius: r }} />
-        ))}
-      </div>
-      <div style={rightStyle}>
-        {right.map((c, i) => (
-          <div key={i} style={{ backgroundColor: sideCol(c), borderRadius: r }} />
-        ))}
-      </div>
-
-      {/* Top face (3×3) — rendered last so it sits on top visually */}
-      <div
-        style={{
-          position: "absolute",
-          left: step, top: step,
-          display: "grid",
-          gridTemplateColumns: `repeat(3, ${cell}px)`,
-          gridTemplateRows: `repeat(3, ${cell}px)`,
-          gap,
-        }}
-      >
-        {topFace.map((c, i) => (
-          <div key={i} style={{ backgroundColor: topCol(c), borderRadius: r }} />
-        ))}
-      </div>
+    <div
+      style={{
+        display: "inline-grid",
+        gridTemplateColumns: `${side}px ${cell}px ${cell}px ${cell}px ${side}px`,
+        gridTemplateRows:    `${side}px ${cell}px ${cell}px ${cell}px ${side}px`,
+        gap,
+      }}
+    >
+      {/* Row 0 — back strip */}
+      <div /><div style={sty(back[0])} /><div style={sty(back[1])} /><div style={sty(back[2])} /><div />
+      {/* Row 1 — TL TE TR */}
+      <div style={sty(left[0])} /><div style={sty(top[0])} /><div style={sty(top[1])} /><div style={sty(top[2])} /><div style={sty(right[0])} />
+      {/* Row 2 — LE CC RE */}
+      <div style={sty(left[1])} /><div style={sty(top[3])} /><div style={sty(top[4])} /><div style={sty(top[5])} /><div style={sty(right[1])} />
+      {/* Row 3 — BL BE BR */}
+      <div style={sty(left[2])} /><div style={sty(top[6])} /><div style={sty(top[7])} /><div style={sty(top[8])} /><div style={sty(right[2])} />
+      {/* Row 4 — front strip */}
+      <div /><div style={sty(front[0])} /><div style={sty(front[1])} /><div style={sty(front[2])} /><div />
     </div>
   );
 }
 
-// ── Algorithm data ─────────────────────────────────────────────────────────────
+// ── OLL Case Data ─────────────────────────────────────────────────────────────
 //
-// Top-face grid layout (viewed from above, front face at bottom):
+// Top face positions:  [TL][TE][TR]   indices 0 1 2
+//                      [LE][CC][RE]   indices 3 4 5
+//                      [BL][BE][BR]   indices 6 7 8
 //
-//   [0][1][2]   TL  TC  TR
-//   [3][4][5]   ML  MC  MR
-//   [6][7][8]   BL  BC  BR
-//
-// Corners: 0=BL(FL), 2=BR(FR), 6=TL(BL), 8=TR(BR)  ← standard cube orientation
-// Edges:   1=TC(B), 3=ML(L), 5=MR(R), 7=BC(F)
-// Center:  4 (always Y for OLL/PLL)
+// EOLL side stickers: middle cell (edge) flips with top orientation.
+//   Corner cells for EOLL are G (corner orientation unknown at this step).
+// OCLL side stickers: middle cells are G (cross already done).
+//   Corner cells derived from the standard OLL state for each case.
+//   H, L, Pi side stickers are explicitly specified in the design doc.
 
-const ALGORITHMS: Record<Category, Algorithm[]> = {
-  OLL: [
-    // ── Step 1: Edge Orientation (EOLL) — 3 cases ──
-    {
-      name: "Dot",
-      step: "Edge Orientation",
-      notation: "F (R U R' U') F' f (R U R' U') f'",
-      recognition:
-        "No yellow edges on top face — only the center sticker is yellow. All four edges point sideways.",
-      topFace: ["G","G","G","G","Y","G","G","G","G"],
+// ── Edge Orientation (3 cases) ───────────────────────────────────────────────
+
+const EDGE_ORI: OLLCase[] = [
+  {
+    name: "Dot Shape",
+    diagram: {
+      top:   ["G","G","G","G","Y","G","G","G","G"],
+      back:  ["G","Y","G"],
+      front: ["G","Y","G"],
+      left:  ["G","Y","G"],
+      right: ["G","Y","G"],
     },
-    {
-      name: "L-Shape",
-      step: "Edge Orientation",
-      notation: "F (R U R' U') F'",
-      recognition:
-        "Two adjacent yellow edges on top forming an L. Hold the cube so the L sits in the back-left corner (oriented edges point toward back and left), then execute.",
-      topFace: ["G","Y","G","Y","Y","G","G","G","G"],
+    alg: "F R U R' U' F' f R U R' U' f'",
+  },
+  {
+    name: "I-Shape",
+    diagram: {
+      top:   ["G","G","G","Y","Y","Y","G","G","G"],
+      back:  ["G","Y","G"],
+      front: ["G","Y","G"],
+      left:  ["G","G","G"],
+      right: ["G","G","G"],
     },
-    {
-      name: "Line",
-      step: "Edge Orientation",
-      notation: "f (R U R' U') f'",
-      recognition:
-        "Two opposite yellow edges on top forming a straight line. Hold the line horizontally (left to right, not front to back), then execute.",
-      topFace: ["G","G","G","Y","Y","Y","G","G","G"],
+    alg: "F R U R' U' F'",
+  },
+  {
+    name: "L-Shape",
+    diagram: {
+      top:   ["G","G","G","Y","Y","G","G","Y","G"],
+      back:  ["G","Y","G"],
+      front: ["G","G","G"],
+      left:  ["G","G","G"],
+      right: ["G","Y","G"],
     },
-    // ── Step 2: Corner Orientation (OCLL) — 7 cases ──
-    // Cross is done, so edges 1,3,5,7 are always Y.
-    {
-      name: "Sune",
-      step: "Corner Orientation",
-      notation: "R U R' U R U2 R'",
-      recognition:
-        "One yellow corner on top. Hold the solved corner at front-left — you'll see a fish shape on the U face. Two yellow stickers visible on the front face, one on the right.",
-      topFace: ["Y","Y","G","Y","Y","Y","G","Y","G"],
+    alg: "f R U R' U' f'",
+  },
+];
+
+// ── Corner Orientation (7 cases) ─────────────────────────────────────────────
+// All edges are Y (cross done). Middle cell of every side strip is G.
+
+const CORNER_ORI: OLLCase[] = [
+  {
+    name: "Antisune",
+    diagram: {
+      top:   ["Y","Y","G","Y","Y","Y","G","Y","G"],
+      // TL solved. Unoriented: TR faces back, BL faces front, BR faces right.
+      back:  ["G","G","Y"],
+      front: ["Y","G","G"],
+      left:  ["G","G","G"],
+      right: ["G","G","Y"],
     },
-    {
-      name: "Anti-Sune",
-      step: "Corner Orientation",
-      notation: "R U2 R' U' R U' R'",
-      recognition:
-        "One yellow corner on top — mirror of Sune. Hold the solved corner at front-right. Two yellow stickers visible on the right face, one on the front.",
-      topFace: ["G","Y","G","Y","Y","Y","G","Y","Y"],
+    alg: "R U2 R' U' R U' R'",
+  },
+  {
+    name: "Sune",
+    diagram: {
+      top:   ["G","Y","G","Y","Y","Y","G","Y","Y"],
+      // BR solved. Unoriented: TL faces back, TR faces right, BL faces left.
+      back:  ["Y","G","G"],
+      front: ["G","G","G"],
+      left:  ["G","G","Y"],
+      right: ["Y","G","G"],
     },
-    {
-      name: "H",
-      step: "Corner Orientation",
-      notation: "R U R' U R U' R' U R U2 R'",
-      recognition:
-        "No yellow corners on top. Front and back faces each show two yellow corner stickers. Left and right faces show none.",
-      topFace: ["G","Y","G","Y","Y","Y","G","Y","G"],
+    alg: "R U R' U R U2 R'",
+  },
+  {
+    name: "H",
+    diagram: {
+      top:   ["G","Y","G","Y","Y","Y","G","Y","G"],
+      // Spec: left Y G Y, right Y G Y, back/front all G.
+      back:  ["G","G","G"],
+      front: ["G","G","G"],
+      left:  ["Y","G","Y"],
+      right: ["Y","G","Y"],
     },
-    {
-      name: "Pi",
-      step: "Corner Orientation",
-      notation: "R U2 R2' U' R2 U' R2' U2 R",
-      recognition:
-        "No yellow corners on top. One side shows two yellow corner stickers, the opposite shows two more — forming a π shape. Differs from H by which sides show yellow.",
-      topFace: ["G","Y","G","Y","Y","Y","G","Y","G"],
+    alg: "R U R' U R U' R' U R U2 R'",
+  },
+  {
+    name: "L",
+    diagram: {
+      top:   ["G","Y","G","Y","Y","Y","G","Y","G"],
+      // Spec: front Y G Y, left Y G Y, back/right all G.
+      back:  ["G","G","G"],
+      front: ["Y","G","Y"],
+      left:  ["Y","G","Y"],
+      right: ["G","G","G"],
     },
-    {
-      name: "Headlights",
-      step: "Corner Orientation",
-      notation: "R2 D R' U2 R D' R' U2 R'",
-      recognition:
-        "Two yellow corners on top (diagonally opposite). One side face shows two yellow stickers side by side — the headlights. Hold the headlights facing you.",
-      topFace: ["Y","Y","G","Y","Y","Y","G","Y","Y"],
+    alg: "F R' F' r U R U' r'",
+  },
+  {
+    name: "Pi",
+    diagram: {
+      top:   ["G","Y","G","Y","Y","Y","G","Y","G"],
+      // Spec: back Y G Y, front Y G Y, left/right all G.
+      back:  ["Y","G","Y"],
+      front: ["Y","G","Y"],
+      left:  ["G","G","G"],
+      right: ["G","G","G"],
     },
-    {
-      name: "Chameleon",
-      step: "Corner Orientation",
-      notation: "r U R' U' r' F R F'",
-      recognition:
-        "Two adjacent yellow corners on top (left side). The two unsolved corners have yellow stickers pointing in different directions — one left, one front.",
-      topFace: ["Y","Y","G","Y","Y","Y","Y","Y","G"],
+    alg: "R U2 R2 U' R2 U' R2 U2 R",
+  },
+  {
+    name: "T",
+    diagram: {
+      top:   ["G","Y","Y","Y","Y","Y","Y","Y","G"],
+      // TR, BL solved. Unoriented: TL faces left, BR faces front.
+      back:  ["G","G","G"],
+      front: ["G","G","Y"],
+      left:  ["Y","G","G"],
+      right: ["G","G","G"],
     },
-    {
-      name: "Blinker",
-      step: "Corner Orientation",
-      notation: "F' r U R' U' r' F R",
-      recognition:
-        "Two adjacent yellow corners on top (right side). Differs from Chameleon — the two unsolved corners both have their yellow stickers facing the same side.",
-      topFace: ["G","Y","Y","Y","Y","Y","G","Y","Y"],
+    alg: "r U R' U' r' F R F'",
+  },
+  {
+    name: "U",
+    diagram: {
+      top:   ["G","Y","G","Y","Y","Y","Y","Y","Y"],
+      // BL, BR solved. Unoriented TL + TR show headlights on back face.
+      back:  ["Y","G","Y"],
+      front: ["G","G","G"],
+      left:  ["G","G","G"],
+      right: ["G","G","G"],
     },
-  ],
-  PLL: [
-    // All top stickers are yellow (OLL is complete).
-    // Recognition comes from the side sticker patterns described in the text.
-    // ── Step 1: Corner Permutation (CPLL) — 2 cases ──
-    {
-      name: "T-Perm",
-      step: "Corner Permutation",
-      notation: "R U R' U' R' F R2 U' R' U' R U R' F'",
-      recognition:
-        "Find the side with headlights (two matching corner stickers) and hold it on the LEFT. Swaps two adjacent corners and two opposite edges.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-    {
-      name: "Y-Perm",
-      step: "Corner Permutation",
-      notation: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
-      recognition:
-        "No headlights on any side — no two adjacent corner stickers match anywhere. Swaps two diagonal corners. Hold in any direction.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-    // ── Step 2: Edge Permutation (EPLL) — 4 cases ──
-    {
-      name: "Ua-Perm",
-      step: "Edge Permutation",
-      notation: "R U' R U R U R U' R' U' R2",
-      recognition:
-        "One fully solved bar (all top-layer stickers match) on one side. Hold that bar at the BACK. Edges cycle clockwise.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-    {
-      name: "Ub-Perm",
-      step: "Edge Permutation",
-      notation: "R2 U R U R' U' R' U' R' U R'",
-      recognition:
-        "One fully solved bar at the BACK — same recognition as Ua, but edges cycle counter-clockwise instead.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-    {
-      name: "H-Perm",
-      step: "Edge Permutation",
-      notation: "M2 U M2 U2 M2 U M2",
-      recognition:
-        "No solved bar anywhere. All four sides show a checkerboard-like pattern on the top layer — opposite side colors match. Execute from any angle.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-    {
-      name: "Z-Perm",
-      step: "Edge Permutation",
-      notation: "M2 U M2 U M' U2 M2 U2 M' U2",
-      recognition:
-        "No solved bar, but two adjacent sides each have one matching edge sticker. Hold so the two correctly-colored front-face edge stickers are on the left and right.",
-      topFace: ["Y","Y","Y","Y","Y","Y","Y","Y","Y"],
-    },
-  ],
-};
+    alg: "R2 D R' U2 R D' R' U2 R'",
+  },
+];
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-function AlgorithmCard({
-  alg,
-  onClick,
-}: {
-  alg: Algorithm;
-  onClick: () => void;
-}) {
+function CaseCard({ c }: { c: OLLCase }) {
   return (
-    <button
-      onClick={onClick}
-      className="rounded-xl border border-zinc-800 bg-[#0a0a11] p-5 flex flex-col gap-4 hover:border-zinc-500 hover:bg-[#0f0f1a] transition-all text-left cursor-pointer group"
-    >
-      {/* Visual */}
-      <div className="flex justify-center">
-        <div
-          className="rounded-lg bg-[#13131f] border border-zinc-800 group-hover:border-zinc-700 transition-colors flex items-center justify-center"
-          style={{ width: 112, height: 112 }}
-        >
-          <CaseDiagram topFace={alg.topFace} size={96} />
-        </div>
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+      <p className="font-heading text-white text-[11px] leading-snug text-center">
+        {c.name}
+      </p>
+      <div className="rounded-lg bg-[#13131f] border border-zinc-800 p-3 flex items-center justify-center">
+        <CaseDiagram {...c.diagram} />
       </div>
-
-      {/* Name + step + notation */}
-      <div className="flex flex-col gap-1.5 text-center">
-        <p className="text-white text-sm font-medium">{alg.name}</p>
-        <p className="font-heading text-[7px] text-zinc-600 tracking-widest">
-          {alg.step.toUpperCase()}
-        </p>
-        <p className="font-mono text-zinc-500 text-xs leading-relaxed break-all">
-          {alg.notation}
-        </p>
-      </div>
-    </button>
+      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
+        {c.alg}
+      </p>
+    </div>
   );
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Section ───────────────────────────────────────────────────────────────────
 
-function AlgorithmModal({
-  alg,
-  category,
-  onClose,
-}: {
-  alg: Algorithm;
-  category: Category;
-  onClose: () => void;
-}) {
+function Section({ title, cases }: { title: string; cases: OLLCase[] }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-lg rounded-2xl border border-zinc-700 bg-[#0d0d14] overflow-hidden shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#FFD500]/10 text-[#FFD500] border border-[#FFD500]/20">
-              {category}
-            </span>
-            <span className="text-xs text-zinc-500">{alg.step}</span>
-            <h2 className="text-white font-medium">{alg.name}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer text-lg leading-none"
-          >
-            ✕
-          </button>
-        </div>
+    <div className="flex flex-col gap-5">
+      {/* Section header */}
+      <div className="flex items-center gap-4">
+        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+          {title.toUpperCase()}
+        </span>
+        <div className="flex-1 h-px bg-white/[0.05]" />
+        <span className="font-heading text-[9px] text-zinc-700">
+          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        </span>
+      </div>
 
-        <div className="p-6 space-y-6">
-          {/* Diagram */}
-          <div className="rounded-xl border border-zinc-800 bg-[#13131f] flex items-center justify-center py-8">
-            <CaseDiagram topFace={alg.topFace} size={180} />
-          </div>
-
-          {/* Notation */}
-          <div>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
-              Algorithm
-            </p>
-            <div className="rounded-lg bg-[#13131f] border border-zinc-800 px-4 py-3">
-              <p className="font-mono text-[#FFD500] text-base tracking-wide leading-relaxed">
-                {alg.notation}
-              </p>
-            </div>
-          </div>
-
-          {/* Recognition */}
-          <div>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
-              Recognition
-            </p>
-            <p className="text-zinc-300 text-sm leading-relaxed">
-              {alg.recognition}
-            </p>
-          </div>
-        </div>
+      {/* Card grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {cases.map((c) => (
+          <CaseCard key={c.name} c={c} />
+        ))}
       </div>
     </div>
   );
@@ -394,20 +254,8 @@ function AlgorithmModal({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-function groupByStep(algs: Algorithm[]): { step: string; algs: Algorithm[] }[] {
-  const map = new Map<string, Algorithm[]>();
-  for (const alg of algs) {
-    if (!map.has(alg.step)) map.set(alg.step, []);
-    map.get(alg.step)!.push(alg);
-  }
-  return Array.from(map.entries()).map(([step, algs]) => ({ step, algs }));
-}
-
 export default function Algorithms() {
-  const [category, setCategory] = useState<Category>("OLL");
-  const [selected, setSelected] = useState<Algorithm | null>(null);
-  const algs = ALGORITHMS[category];
-  const groups = groupByStep(algs);
+  const [tab, setTab] = useState<Tab>("oll");
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
@@ -423,69 +271,49 @@ export default function Algorithms() {
           ALGORITHMS
         </h1>
         <p className="text-zinc-400 text-sm mt-2">
-          2-Look OLL and PLL reference catalog. Click any card for details.
+          2-Look OLL and PLL reference. All 16 cases.
         </p>
       </div>
 
-      {/* Category tabs */}
+      {/* Tab bar */}
       <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1 w-fit mb-10">
-        {(["OLL", "PLL"] as Category[]).map((cat) => (
+        {(["oll", "pll"] as Tab[]).map((t) => (
           <button
-            key={cat}
-            onClick={() => {
-              setCategory(cat);
-              setSelected(null);
-            }}
+            key={t}
+            onClick={() => setTab(t)}
             className={`px-5 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              category === cat
+              tab === t
                 ? "bg-[#FFD500] text-black"
                 : "text-zinc-400 hover:text-zinc-100"
             }`}
           >
-            {cat}
+            {t === "oll" ? "2-Look OLL" : "2-Look PLL"}
           </button>
         ))}
       </div>
 
-      {/* Grouped sections */}
-      <div className="flex flex-col gap-12">
-        {groups.map(({ step, algs: stepAlgs }) => (
-          <div key={step}>
-            {/* Section header */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex flex-col gap-1">
-                <span className="font-heading text-[8px] text-zinc-600 tracking-widest">
-                  {category} · {step.toUpperCase()}
-                </span>
-                <span className="font-sans text-xs text-zinc-700">
-                  {stepAlgs.length}{" "}
-                  {stepAlgs.length === 1 ? "case" : "cases"}
-                </span>
-              </div>
-              <div className="flex-1 h-px bg-white/[0.04]" />
-            </div>
+      {/* OLL tab */}
+      {tab === "oll" && (
+        <div className="flex flex-col gap-12">
+          <Section
+            title="Edge Orientation — Make the Yellow Cross"
+            cases={EDGE_ORI}
+          />
+          <Section
+            title="Corner Orientation — Complete the Yellow Face"
+            cases={CORNER_ORI}
+          />
+        </div>
+      )}
 
-            {/* Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {stepAlgs.map((alg) => (
-                <AlgorithmCard
-                  key={alg.name}
-                  alg={alg}
-                  onClick={() => setSelected(alg)}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Detail modal */}
-      {selected && (
-        <AlgorithmModal
-          alg={selected}
-          category={category}
-          onClose={() => setSelected(null)}
-        />
+      {/* PLL tab — placeholder until Prompt 3 */}
+      {tab === "pll" && (
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+            COMING SOON
+          </span>
+          <p className="text-zinc-500 text-sm">PLL cases will be added next.</p>
+        </div>
       )}
     </div>
   );
