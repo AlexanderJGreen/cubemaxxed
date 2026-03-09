@@ -74,14 +74,18 @@ function Timer() {
   const [solves, setSolves] = useState<Solve[]>([]);
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
+  const tickRef = useRef<FrameRequestCallback>(() => {});
   // Track which scramble was active when the timer started
   const activeScrambleRef = useRef(SAMPLE_SCRAMBLE);
 
-  const tick = useCallback(() => {
-    if (startTimeRef.current !== null) {
-      setElapsed(Date.now() - startTimeRef.current);
-      rafRef.current = requestAnimationFrame(tick);
-    }
+  // Define tick inside an effect — never written during render
+  useEffect(() => {
+    tickRef.current = () => {
+      if (startTimeRef.current !== null) {
+        setElapsed(Date.now() - startTimeRef.current);
+        rafRef.current = requestAnimationFrame(tickRef.current);
+      }
+    };
   }, []);
 
   const start = useCallback(() => {
@@ -90,18 +94,23 @@ function Timer() {
     startTimeRef.current = Date.now();
     activeScrambleRef.current = SAMPLE_SCRAMBLE;
     setRunning(true);
-    rafRef.current = requestAnimationFrame(tick);
-  }, [tick]);
+    rafRef.current = requestAnimationFrame(tickRef.current);
+  }, []);
 
   const stop = useCallback(() => {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    const finalTime = startTimeRef.current !== null ? Date.now() - startTimeRef.current : 0;
+    const finalTime =
+      startTimeRef.current !== null ? Date.now() - startTimeRef.current : 0;
     setElapsed(finalTime);
     setRunning(false);
     if (finalTime > 0) {
       setSolves((prev) => [
         ...prev,
-        { id: prev.length + 1, time: finalTime, scramble: activeScrambleRef.current },
+        {
+          id: prev.length + 1,
+          time: finalTime,
+          scramble: activeScrambleRef.current,
+        },
       ]);
     }
   }, []);
@@ -142,8 +151,12 @@ function Timer() {
       <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
         {/* Scramble */}
         <div className="border-b border-zinc-800 px-8 py-5 text-center">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Scramble</p>
-          <p className="font-mono text-zinc-200 text-lg tracking-wide">{SAMPLE_SCRAMBLE}</p>
+          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
+            Scramble
+          </p>
+          <p className="font-mono text-zinc-200 text-lg tracking-wide">
+            {SAMPLE_SCRAMBLE}
+          </p>
         </div>
 
         {/* Timer display — click to start/stop */}
@@ -153,14 +166,20 @@ function Timer() {
         >
           <span
             className={`font-mono text-8xl font-bold tabular-nums transition-colors ${
-              running ? "text-[#FFD500]" : elapsed > 0 ? "text-white" : "text-zinc-600"
+              running
+                ? "text-[#FFD500]"
+                : elapsed > 0
+                  ? "text-white"
+                  : "text-zinc-600"
             }`}
           >
             {formatTime(elapsed)}
           </span>
 
           <span className="text-zinc-600 text-sm group-hover:text-zinc-400 transition-colors">
-            {running ? "click or press space to stop" : "click or press space to start"}
+            {running
+              ? "click or press space to stop"
+              : "click or press space to start"}
           </span>
         </button>
       </div>
@@ -177,7 +196,9 @@ function Timer() {
           {/* Solve history */}
           <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
             <div className="border-b border-zinc-800 px-6 py-3 flex items-center justify-between">
-              <p className="text-xs text-zinc-500 uppercase tracking-widest">Session History</p>
+              <p className="text-xs text-zinc-500 uppercase tracking-widest">
+                Session History
+              </p>
               <button
                 onClick={() => setSolves([])}
                 className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
@@ -187,7 +208,10 @@ function Timer() {
             </div>
             <div className="divide-y divide-zinc-800/60">
               {[...solves].reverse().map((solve) => (
-                <div key={solve.id} className="px-6 py-3 flex items-center gap-4">
+                <div
+                  key={solve.id}
+                  className="px-6 py-3 flex items-center gap-4"
+                >
                   <span className="text-xs text-zinc-600 w-6 text-right shrink-0">
                     {solve.id}
                   </span>
@@ -210,8 +234,12 @@ function Timer() {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 text-center">
-      <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
-      <p className={`font-mono text-lg font-bold ${value === "—" ? "text-zinc-700" : "text-white"}`}>
+      <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">
+        {label}
+      </p>
+      <p
+        className={`font-mono text-lg font-bold ${value === "—" ? "text-zinc-700" : "text-white"}`}
+      >
         {value}
       </p>
     </div>
@@ -221,8 +249,8 @@ function StatCard({ label, value }: { label: string; value: string }) {
 // ─── Algorithm Trainer ───────────────────────────────────────────────────────
 
 type Algorithm = {
-  name: string;       // e.g. "T-Perm"
-  notation: string;   // move sequence
+  name: string; // e.g. "T-Perm"
+  notation: string; // move sequence
   // ASCII art rows representing the top-face sticker pattern (3×3 grid, U-face)
   // Each char: W=white Y=yellow R=red B=blue G=green O=orange
   faceColors: string[]; // 9 chars, row by row
@@ -235,44 +263,44 @@ const ALGORITHMS: Record<Category, Algorithm[]> = {
     {
       name: "Sune",
       notation: "R U R' U R U2 R'",
-      faceColors: ["Y","Y","Y", "W","Y","Y", "W","W","Y"],
+      faceColors: ["Y", "Y", "Y", "W", "Y", "Y", "W", "W", "Y"],
     },
     {
       name: "Anti-Sune",
       notation: "R' U' R U' R' U2 R",
-      faceColors: ["Y","W","W", "Y","Y","W", "Y","Y","Y"],
+      faceColors: ["Y", "W", "W", "Y", "Y", "W", "Y", "Y", "Y"],
     },
     {
       name: "H-OLL",
       notation: "F R U R' U' F' f R U R' U' f'",
-      faceColors: ["W","Y","W", "Y","Y","Y", "W","Y","W"],
+      faceColors: ["W", "Y", "W", "Y", "Y", "Y", "W", "Y", "W"],
     },
     {
       name: "Pi-OLL",
       notation: "R U2 R2 U' R2 U' R2 U2 R",
-      faceColors: ["Y","W","Y", "W","Y","W", "Y","W","Y"],
+      faceColors: ["Y", "W", "Y", "W", "Y", "W", "Y", "W", "Y"],
     },
   ],
   PLL: [
     {
       name: "T-Perm",
       notation: "R U R' U' R' F R2 U' R' U' R U R' F'",
-      faceColors: ["Y","Y","Y", "Y","Y","Y", "Y","Y","Y"],
+      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
     },
     {
       name: "U-Perm (a)",
       notation: "R U' R U R U R U' R' U' R2",
-      faceColors: ["Y","Y","Y", "Y","Y","Y", "Y","Y","Y"],
+      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
     },
     {
       name: "U-Perm (b)",
       notation: "R2 U R U R' U' R' U' R' U R'",
-      faceColors: ["Y","Y","Y", "Y","Y","Y", "Y","Y","Y"],
+      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
     },
     {
       name: "Z-Perm",
       notation: "M2 U M2 U M' U2 M2 U2 M' U2",
-      faceColors: ["Y","Y","Y", "Y","Y","Y", "Y","Y","Y"],
+      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
     },
   ],
 };
@@ -323,7 +351,9 @@ function AlgorithmTrainer() {
     <div className="space-y-4">
       {/* Category selector */}
       <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 flex items-center gap-4">
-        <span className="text-xs text-zinc-500 uppercase tracking-widest shrink-0">Category</span>
+        <span className="text-xs text-zinc-500 uppercase tracking-widest shrink-0">
+          Category
+        </span>
         <div className="flex gap-1">
           {(["OLL", "PLL"] as Category[]).map((cat) => (
             <button
@@ -348,7 +378,9 @@ function AlgorithmTrainer() {
       <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
         {/* Algorithm name */}
         <div className="border-b border-zinc-800 px-8 py-4 text-center">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">{category}</p>
+          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">
+            {category}
+          </p>
           <h2 className="font-heading text-xs text-white">{current.name}</h2>
         </div>
 
