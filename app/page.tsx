@@ -42,6 +42,182 @@ const RANKS = [
   { name: "GRANDMASTER", color: "#ff4444", bg: "#220000", glow: "rgba(255,68,68,0.55)"  },
 ];
 
+// ── Pixel art badge patterns (9×9 grid) ──────────────────────────────────────
+//
+// Clean pixel silhouettes — each shape is immediately readable.
+// Progression: hollow square → triangle → rhombus → star → 8-point star →
+//              gem → crown → ornate crown.
+//
+// P = primary rank color · L = highlight/shine · _ = transparent
+
+type Pixel = "P" | "L" | "_";
+
+const RANK_PATTERNS: Record<string, {
+  highlight: string;
+  cellSize: number;
+  pattern: Pixel[][];
+}> = {
+  // Hollow outline square — empty vessel, nothing earned yet
+  UNRANKED: {
+    highlight: "#7a7a8f",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","P","_","_","_","P","_","_"],
+      ["_","_","P","_","_","_","P","_","_"],
+      ["_","_","P","_","_","_","P","_","_"],
+      ["_","_","P","_","_","_","P","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+  // Upward triangle — first step forward
+  BRONZE: {
+    highlight: "#e8a96a",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","P","P","P","P","P","P","P","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+  // Rhombus — clean geometric form
+  SILVER: {
+    highlight: "#e8e8ff",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","P","P","P","L","P","P","P","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+  // 4-pointed star
+  GOLD: {
+    highlight: "#fffaaa",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","P","P","P","L","P","P","P","_"],
+      ["P","P","P","P","L","P","P","P","P"],
+      ["_","P","P","P","L","P","P","P","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+    ],
+  },
+  // 8-pointed star
+  PLATINUM: {
+    highlight: "#b8f8ff",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","P","_","_","P","_","_","P","_"],
+      ["_","_","P","_","P","_","P","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["P","P","P","P","L","P","P","P","P"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","P","_","P","_","P","_","_"],
+      ["_","P","_","_","P","_","_","P","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+    ],
+  },
+  // Gem/crystal — wide top, pointed bottom
+  DIAMOND: {
+    highlight: "#d0f4ff",
+    cellSize: 4,
+    pattern: [
+      ["_","_","_","_","_","_","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","P","P","P","P","P","P","P","_"],
+      ["P","P","P","L","L","P","P","P","P"],
+      ["_","P","P","P","P","P","P","P","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","_","_","P","_","_","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+  // Crown — three peaks, broad base
+  MASTER: {
+    highlight: "#efbfff",
+    cellSize: 5,
+    pattern: [
+      ["_","_","_","_","_","_","_","_","_"],
+      ["P","_","_","P","_","P","_","_","P"],
+      ["P","_","P","P","P","P","P","_","P"],
+      ["P","P","P","P","P","P","P","P","P"],
+      ["P","P","P","P","L","P","P","P","P"],
+      ["P","P","_","_","_","_","_","P","P"],
+      ["P","P","_","_","_","_","_","P","P"],
+      ["P","P","P","P","P","P","P","P","P"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+  // Crown with center gems — peak rank
+  GRANDMASTER: {
+    highlight: "#ffd700",
+    cellSize: 5,
+    pattern: [
+      ["P","_","P","_","_","_","P","_","P"],
+      ["P","_","P","_","P","_","P","_","P"],
+      ["P","P","P","P","P","P","P","P","P"],
+      ["P","P","P","L","L","L","P","P","P"],
+      ["P","P","P","L","L","L","P","P","P"],
+      ["P","P","_","_","_","_","_","P","P"],
+      ["P","P","_","_","_","_","_","P","P"],
+      ["P","P","P","P","P","P","P","P","P"],
+      ["_","_","_","_","_","_","_","_","_"],
+    ],
+  },
+};
+
+function PixelBadge({ name, color }: { name: string; color: string }) {
+  const data = RANK_PATTERNS[name];
+  if (!data) return null;
+  const { cellSize, pattern, highlight } = data;
+  const cols = pattern[0].length;
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
+        gap: "1px",
+        imageRendering: "pixelated",
+      }}
+    >
+      {pattern.flat().map((px, i) => (
+        <div
+          key={i}
+          style={{
+            width: cellSize,
+            height: cellSize,
+            backgroundColor:
+              px === "P" ? color :
+              px === "L" ? highlight :
+              "transparent",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // Scrambled cube face — all 6 colors present, deliberately mixed
 const STICKERS = [
   "#FF5800", "#ffffff", "#0051A2",
@@ -288,7 +464,7 @@ export default function Home() {
         </div>
 
         {/* Rank row — horizontally scrollable on small screens */}
-        <div className="overflow-x-auto pb-4">
+        <div className="overflow-x-auto py-12 pr-8">
           <div className="relative flex items-start justify-between min-w-[680px]">
 
             {/* Connecting line — runs behind the badges */}
@@ -297,27 +473,31 @@ export default function Home() {
               style={{ top: "32px", height: "1px", backgroundColor: "rgba(255,255,255,0.06)" }}
             />
 
-            {RANKS.map((rank) => (
+            {RANKS.map((rank, i) => {
+              const g = rank.glow;
+              const glowFilter =
+                i === 0 ? "none" :
+                i === 1 ? `drop-shadow(0 0 3px ${g})` :
+                i === 2 ? `drop-shadow(0 0 4px ${g}) drop-shadow(0 0 8px ${g})` :
+                i === 3 ? `drop-shadow(0 0 5px ${g}) drop-shadow(0 0 12px ${g})` :
+                i === 4 ? `drop-shadow(0 0 6px ${g}) drop-shadow(0 0 14px ${g})` :
+                i === 5 ? `drop-shadow(0 0 7px ${g}) drop-shadow(0 0 16px ${g})` :
+                i === 6 ? `drop-shadow(0 0 8px ${g}) drop-shadow(0 0 18px ${g}) drop-shadow(0 0 28px ${g})` :
+                          `drop-shadow(0 0 6px ${g}) drop-shadow(0 0 12px ${g}) drop-shadow(0 0 18px ${g})`;
+              return (
               <div key={rank.name} className="flex flex-col items-center gap-3 relative z-10">
 
-                {/* Badge wrapper — keeps layout stable while diamond rotates */}
+                {/* Pixel art badge */}
                 <div className="w-16 h-16 flex items-center justify-center">
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      transform: "rotate(45deg)",
-                      backgroundColor: rank.bg,
-                      border: `2px solid ${rank.color}`,
-                      boxShadow: `0 0 18px ${rank.glow}, inset 0 0 8px rgba(255,255,255,0.04)`,
-                    }}
-                  />
+                  <div style={{ filter: glowFilter }}>
+                    <PixelBadge name={rank.name} color={rank.color} />
+                  </div>
                 </div>
 
                 {/* Rank name */}
                 <span
                   className="font-heading text-center leading-relaxed"
-                  style={{ fontSize: "8px", color: rank.color, maxWidth: 64 }}
+                  style={{ fontSize: "8px", color: rank.color, width: 64, transform: rank.name === "GRANDMASTER" ? "translateX(-10px)" : undefined }}
                 >
                   {rank.name}
                 </span>
@@ -337,7 +517,8 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

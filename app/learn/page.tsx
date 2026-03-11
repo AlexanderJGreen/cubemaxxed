@@ -295,7 +295,7 @@ export default function Learn() {
 
       {/* Footer total */}
       <div
-        className="mt-6 ml-14 flex items-center gap-6 py-4 px-5"
+        className="mt-6 ml-[76px] flex items-center gap-6 py-4 px-5"
         style={{ border: "1px solid rgba(255,255,255,0.04)" }}
       >
         <div className="flex flex-col gap-1">
