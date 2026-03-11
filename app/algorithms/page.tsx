@@ -128,11 +128,11 @@ const EDGE_ORI: OLLCase[] = [
   {
     name: "L-Shape",
     diagram: {
-      top: ["G", "G", "G", "Y", "Y", "G", "G", "Y", "G"],
+      top: ["G", "G", "G", "G", "Y", "Y", "G", "Y", "G"],
       back: ["G", "Y", "G"],
       front: ["G", "G", "G"],
-      left: ["G", "G", "G"],
-      right: ["G", "Y", "G"],
+      left: ["G", "Y", "G"],
+      right: ["G", "G", "G"],
     },
     alg: "f R U R' U' f'",
   },
@@ -145,11 +145,11 @@ const CORNER_ORI: OLLCase[] = [
   {
     name: "Antisune",
     diagram: {
-      top: ["Y", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
+      top: ["G", "Y", "Y", "Y", "Y", "Y", "G", "Y", "G"],
       // TL solved. Unoriented: TR faces back, BL faces front, BR faces right.
-      back: ["G", "G", "Y"],
+      back: ["G", "G", "G"],
       front: ["Y", "G", "G"],
-      left: ["G", "G", "G"],
+      left: ["Y", "G", "G"],
       right: ["G", "G", "Y"],
     },
     alg: "R U2 R' U' R U' R'",
@@ -157,11 +157,11 @@ const CORNER_ORI: OLLCase[] = [
   {
     name: "Sune",
     diagram: {
-      top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "Y"],
+      top: ["G", "Y", "G", "Y", "Y", "Y", "Y", "Y", "G"],
       // BR solved. Unoriented: TL faces back, TR faces right, BL faces left.
       back: ["Y", "G", "G"],
-      front: ["G", "G", "G"],
-      left: ["G", "G", "Y"],
+      front: ["G", "G", "Y"],
+      left: ["G", "G", "G"],
       right: ["Y", "G", "G"],
     },
     alg: "R U R' U R U2 R'",
@@ -181,12 +181,12 @@ const CORNER_ORI: OLLCase[] = [
   {
     name: "L",
     diagram: {
-      top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
+      top: ["Y", "Y", "G", "Y", "Y", "Y", "G", "Y", "Y"],
       // Spec: front Y G Y, left Y G Y, back/right all G.
       back: ["G", "G", "G"],
-      front: ["Y", "G", "Y"],
-      left: ["Y", "G", "Y"],
-      right: ["G", "G", "G"],
+      front: ["Y", "G", "G"],
+      left: ["G", "G", "G"],
+      right: ["Y", "G", "G"],
     },
     alg: "F R' F' r U R U' r'",
   },
@@ -195,9 +195,9 @@ const CORNER_ORI: OLLCase[] = [
     diagram: {
       top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
       // Spec: back Y G Y, front Y G Y, left/right all G.
-      back: ["Y", "G", "Y"],
-      front: ["Y", "G", "Y"],
-      left: ["G", "G", "G"],
+      back: ["G", "G", "Y"],
+      front: ["G", "G", "Y"],
+      left: ["Y", "G", "Y"],
       right: ["G", "G", "G"],
     },
     alg: "R U2 R2 U' R2 U' R2 U2 R",
@@ -205,11 +205,11 @@ const CORNER_ORI: OLLCase[] = [
   {
     name: "T",
     diagram: {
-      top: ["G", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "G"],
+      top: ["G", "Y", "Y", "Y", "Y", "Y", "G", "Y", "Y"],
       // TR, BL solved. Unoriented: TL faces left, BR faces front.
-      back: ["G", "G", "G"],
-      front: ["G", "G", "Y"],
-      left: ["Y", "G", "G"],
+      back: ["Y", "G", "G"],
+      front: ["Y", "G", "G"],
+      left: ["G", "G", "G"],
       right: ["G", "G", "G"],
     },
     alg: "r U R' U' r' F R F'",
@@ -217,10 +217,10 @@ const CORNER_ORI: OLLCase[] = [
   {
     name: "U",
     diagram: {
-      top: ["G", "Y", "G", "Y", "Y", "Y", "Y", "Y", "Y"],
+      top: ["Y", "Y", "Y", "Y", "Y", "Y", "G", "Y", "G"],
       // BL, BR solved. Unoriented TL + TR show headlights on back face.
-      back: ["Y", "G", "Y"],
-      front: ["G", "G", "G"],
+      back: ["G", "G", "G"],
+      front: ["Y", "G", "Y"],
       left: ["G", "G", "G"],
       right: ["G", "G", "G"],
     },
