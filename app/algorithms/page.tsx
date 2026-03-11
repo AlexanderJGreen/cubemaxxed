@@ -557,8 +557,16 @@ const TABS: { id: Tab; label: string }[] = [
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
+
+function randomCubeColor(exclude?: string) {
+  const options = CUBE_COLORS.filter((c) => c !== exclude);
+  return options[Math.floor(Math.random() * options.length)];
+}
+
 export default function Algorithms() {
   const [tab, setTab] = useState<Tab>("oll");
+  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
 
   const ollGroups = groupBy(OLL_CASES, "group");
   const pllGroups = groupBy(PLL_CASES, "group");
@@ -589,14 +597,22 @@ export default function Algorithms() {
         {TABS.map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`px-5 py-2 rounded-md text-sm transition-colors cursor-pointer ${
-              tab === t.id
-                ? "font-bold text-[#C41E3A]"
-                : "font-medium text-zinc-400 hover:text-zinc-100"
-            }`}
+            onClick={() => {
+              const next = randomCubeColor(activeColor);
+              setActiveColor(next);
+              setTab(t.id);
+            }}
+            className="relative px-5 py-2 rounded-md text-sm cursor-pointer"
           >
-            {t.label}
+            <span className="font-bold invisible">{t.label}</span>
+            <span
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out ${
+                tab === t.id ? "font-bold" : "font-medium text-zinc-400 hover:text-zinc-100"
+              }`}
+              style={tab === t.id ? { color: activeColor } : undefined}
+            >
+              {t.label}
+            </span>
           </button>
         ))}
       </div>

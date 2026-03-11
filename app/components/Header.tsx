@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const navLinks = [
   { href: "/dashboard", label: "Home" },
@@ -15,16 +16,29 @@ const navLinks = [
 const CUBE_GRADIENT =
   "linear-gradient(to right, #C41E3A, #FF5800, #FFD500, #009B48, #0051A2, #ffffff)";
 
+const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
+
+function randomCubeColor(exclude?: string) {
+  const options = CUBE_COLORS.filter((c) => c !== exclude);
+  return options[Math.floor(Math.random() * options.length)];
+}
+
 export default function Header() {
   const pathname = usePathname();
+  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
+
+  useEffect(() => {
+    setActiveColor((prev) => randomCubeColor(prev));
+  }, [pathname]);
 
   return (
     <header className="relative bg-[#0a0a11]">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         {/* Site name */}
         <Link
           href="/"
-          className="font-heading text-sm leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80"
+          className="font-heading text-base leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80"
+          style={{ textShadow: "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A, 3px 3px 0 #C41E3A" }}
         >
           CubeMaxxed
         </Link>
@@ -37,11 +51,10 @@ export default function Header() {
               <Link
                 key={href}
                 href={href}
-                className={`font-sans text-sm transition-colors ${
-                  isActive
-                    ? "text-white"
-                    : "text-zinc-400 hover:text-zinc-100"
+                className={`font-sans text-[15px] font-medium transition-colors duration-300 ${
+                  isActive ? "font-bold" : "text-zinc-400 hover:text-zinc-100"
                 }`}
+                style={isActive ? { color: activeColor } : undefined}
               >
                 {label}
               </Link>
