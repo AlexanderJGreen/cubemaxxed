@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:www.speedsolving.com)",
+      "WebFetch(domain:jperm.net)",
+      "WebFetch(domain:ruwix.com)",
+      "WebFetch(domain:speedcubedb.com)",
+      "WebFetch(domain:algdb.net)",
+      "WebFetch(domain:www.cubeskills.com)",
+      "WebFetch(domain:www.cubelelo.com)",
+      "WebFetch(domain:alg.cubing.net)",
+      "Bash(grep \"id: [0-9]\" /mnt/c/Users/User/Desktop/projects/cubemaxxed/app/algorithms/data.ts | grep -v \"//\" | sort -t: -k2 -n)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
