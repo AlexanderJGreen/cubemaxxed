@@ -67,15 +67,25 @@
 //
 // ============================================================
 
-export type OLLCell = 'Y' | 'G';
-export type PLLColor = 'R' | 'G' | 'O' | 'B';
+export type OLLCell = "Y" | "G";
+export type PLLColor = "R" | "G" | "O" | "B";
 
 export interface OLLCase {
   id: number;
   name: string;
   group: string;
   alg: string;
-  top: [OLLCell, OLLCell, OLLCell, OLLCell, OLLCell, OLLCell, OLLCell, OLLCell, OLLCell];
+  top: [
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+    OLLCell,
+  ];
   back: [OLLCell, OLLCell, OLLCell];
   front: [OLLCell, OLLCell, OLLCell];
   left: [OLLCell, OLLCell, OLLCell];
@@ -107,7 +117,6 @@ export interface PLLCase {
 // ============================================================
 
 export const OLL_CASES: OLLCase[] = [
-
   // ──────────────────────────────────────────────────────────────────────────
   // Group: All Edges Oriented (OCLL)
   // All 4 edges are oriented → TE=Y, LE=Y, RE=Y, BE=Y. Side edge stickers all G.
@@ -115,88 +124,102 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 21, name: 'H / Double Sune', group: 'All Edges Oriented (OCLL)',
-    alg: "R U2 R' U' R U R' U' R U' R'",
+    id: 21,
+    name: "H / Double Sune",
+    group: "All Edges Oriented (OCLL)",
+    alg: "R U R' U R U' R' U R U2 R'",
     // All 4 corners unoriented.
     // UBL→Y on back[0], UBR→Y on right[2], UFR→Y on front[2], UFL→Y on left[2]
     // (diagonal pairs twist same way: H pattern)
-    top:   ['G','Y','G', 'Y','Y','Y', 'G','Y','G'],
-    back:  ['Y','G','G'],  // UBL-back=Y
-    front: ['G','G','Y'],  // UFR-front=Y
-    left:  ['G','G','Y'],  // UFL-left=Y
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "G", "G"], // UBL-back=Y
+    front: ["G", "G", "G"], // UFR-front=Y
+    left: ["Y", "G", "Y"], // UFL-left=Y
+    right: ["Y", "G", "Y"], // UBR-right=Y
   },
 
   {
-    id: 22, name: 'Pi / Bruno', group: 'All Edges Oriented (OCLL)',
+    id: 22,
+    name: "Pi / Bruno",
+    group: "All Edges Oriented (OCLL)",
     alg: "R U2 R2 U' R2 U' R2 U2 R",
     // All 4 corners unoriented.
     // UBL→Y on left[0], UBR→Y on back[2], UFR→Y on right[0], UFL→Y on front[0]
     // (opposite diagonal pattern from H)
-    top:   ['G','Y','G', 'Y','Y','Y', 'G','Y','G'],
-    back:  ['G','G','Y'],  // UBR-back=Y
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['Y','G','G'],  // UFR-right=Y
+    top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "G", "Y"], // UBR-back=Y
+    front: ["G", "G", "Y"], // UFL-front=Y
+    left: ["Y", "G", "Y"], // UBL-left=Y
+    right: ["G", "G", "G"], // UFR-right=Y
   },
 
   {
-    id: 23, name: 'Headlights / U', group: 'All Edges Oriented (OCLL)',
-    alg: "R2 D' R U2 R' D R U2 R",
+    id: 23,
+    name: "Headlights / U",
+    group: "All Edges Oriented (OCLL)",
+    alg: "R2 D R' U2 R D' R' U2 R'",
     // UFR and UFL oriented (yellow on top). UBL and UBR unoriented.
     // "Headlights" = two yellow corners on back row = UBL and UBR show yellow toward back.
     // UBL→Y on back[0], UBR→Y on back[2].
-    top:   ['G','Y','G', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['Y','G','Y'],  // UBL-back=Y, UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "Y", "Y", "Y", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "G", "G"], // UBL-back=Y, UBR-back=Y
+    front: ["Y", "G", "Y"],
+    left: ["G", "G", "G"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 24, name: 'Chameleon / T', group: 'All Edges Oriented (OCLL)',
+    id: 24,
+    name: "Chameleon / T",
+    group: "All Edges Oriented (OCLL)",
     alg: "r U R' U' r' F R F'",
     // UFL and UBR oriented. UFR and UBL unoriented.
     // UFR→Y on front[2], UBL→Y on left[0].
-    top:   ['G','Y','Y', 'Y','Y','Y', 'Y','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','Y'],  // UFR-front=Y
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['G','G','G'],
+    top: ["G", "Y", "Y", "Y", "Y", "Y", "G", "Y", "Y"],
+    back: ["Y", "G", "G"],
+    front: ["Y", "G", "G"], // UFR-front=Y
+    left: ["G", "G", "G"], // UBL-left=Y
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 25, name: 'Bowtie / L', group: 'All Edges Oriented (OCLL)',
-    alg: "F R' F' r U R U' r'",
+    id: 25,
+    name: "Bowtie / L",
+    group: "All Edges Oriented (OCLL)",
+    alg: "R U2 R D R' U2 R D' R2",
     // UFR and UBL oriented. UFL and UBR unoriented.
     // UFL→Y on front[0], UBR→Y on right[2].
-    top:   ['Y','Y','G', 'Y','Y','Y', 'G','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["Y", "Y", "G", "Y", "Y", "Y", "G", "Y", "Y"],
+    back: ["G", "G", "G"],
+    front: ["Y", "G", "G"], // UFL-front=Y
+    left: ["G", "G", "G"],
+    right: ["Y", "G", "G"], // UBR-right=Y
   },
 
   {
-    id: 26, name: 'Antisune', group: 'All Edges Oriented (OCLL)',
-    alg: "R U2 R' U' R U' R'",
+    id: 26,
+    name: "Antisune",
+    group: "All Edges Oriented (OCLL)",
+    alg: "y R U2 R' U' R U' R'",
     // UFR, UFl, UBR all oriented. UBL unoriented → Y on left[0].
-    top:   ['G','Y','Y', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['G','G','G'],
+    top: ["Y", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "G", "Y"],
+    front: ["Y", "G", "G"],
+    left: ["G", "G", "G"], // UBL-left=Y
+    right: ["G", "G", "Y"],
   },
 
   {
-    id: 27, name: 'Sune', group: 'All Edges Oriented (OCLL)',
+    id: 27,
+    name: "Sune",
+    group: "All Edges Oriented (OCLL)",
     alg: "R U R' U R U2 R'",
     // UFL, UFR, UBL all oriented. UBR unoriented → Y on right[2].
-    top:   ['Y','Y','Y', 'Y','Y','Y', 'Y','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["G", "Y", "G", "Y", "Y", "Y", "Y", "Y", "G"],
+    back: ["Y", "G", "G"],
+    front: ["G", "G", "Y"],
+    left: ["G", "G", "G"],
+    right: ["Y", "G", "G"], // UBR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -206,63 +229,73 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 1, name: 'Runway', group: 'Dot',
+    id: 1,
+    name: "Runway",
+    group: "Dot",
     alg: "R U2 R2 F R F' U2 R' F R F'",
     // "Runway" = two headlights front, two headlights back.
     // UFL→Y front[0], UFR→Y front[2], UBL→Y back[0], UBR→Y back[2].
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['Y','Y','Y'],  // UBL-back=Y, UB(edge)=Y, UBR-back=Y
-    front: ['Y','Y','Y'],  // UFL-front=Y, UF(edge)=Y, UFR-front=Y
-    left:  ['G','Y','G'],  // UL(edge)=Y
-    right: ['G','Y','G'],  // UR(edge)=Y
+    top: ["G", "G", "G", "G", "Y", "G", "G", "G", "G"],
+    back: ["G", "Y", "G"], // UBL-back=Y, UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "G"], // UFL-front=Y, UF(edge)=Y, UFR-front=Y
+    left: ["Y", "Y", "Y"], // UL(edge)=Y
+    right: ["Y", "Y", "Y"], // UR(edge)=Y
   },
 
   {
-    id: 2, name: 'Zamboni', group: 'Dot',
-    alg: "R U' R2 D' r U r' D R2 U R",
+    id: 2,
+    name: "Zamboni",
+    group: "Dot",
+    alg: "y' R U' R2 D' r U r' D R2 U R'",
     // UFL→Y on left[2], UFR→Y on right[0], UBL→Y on back[0], UBR→Y on back[2].
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['Y','Y','Y'],  // UBL-back=Y, UB(edge)=Y, UBR-back=Y
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "G", "G", "G", "Y", "G", "G", "G", "G"],
+    back: ["G", "Y", "Y"], // UBL-back=Y, UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "Y"], // UF(edge)=Y
+    left: ["Y", "Y", "Y"], // UL(edge)=Y, UFL-left=Y
+    right: ["G", "Y", "G"], // UFR-right=Y, UR(edge)=Y
   },
 
   {
-    id: 3, name: 'Anti-Pinwheel', group: 'Dot',
-    alg: "f (R U R' U') f' U' F (R U R' U') F'",
+    id: 3,
+    name: "Anti-Pinwheel",
+    group: "Dot",
+    alg: "y' f (R U R' U') f' U' F (R U R' U') F'",
     // Pinwheel: each corner yellow shows on a different face in CW rotation.
     // UFL→Y front[0], UFR→Y right[0], UBR→Y back[2], UBL→Y left[0].
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['G','Y','Y'],  // UB(edge)=Y, UBR-back=Y
-    front: ['Y','Y','G'],  // UFL-front=Y, UF(edge)=Y
-    left:  ['Y','Y','G'],  // UBL-left=Y, UL(edge)=Y
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "G", "G", "G", "Y", "G", "Y", "G", "G"],
+    back: ["Y", "Y", "G"], // UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "Y"], // UFL-front=Y, UF(edge)=Y
+    left: ["G", "Y", "G"], // UBL-left=Y, UL(edge)=Y
+    right: ["Y", "Y", "G"], // UFR-right=Y, UR(edge)=Y
   },
 
   {
-    id: 4, name: 'Pinwheel / Mouse', group: 'Dot',
-    alg: "f R U R' U' f' U F R U R' U' F'",
+    id: 4,
+    name: "Pinwheel / Mouse",
+    group: "Dot",
+    alg: "y' f (R U R' U') f' (U) F (R U R' U') F'",
     // Anti-pinwheel: each corner yellow shows on a different face in CCW rotation.
     // UFL→Y left[2], UFR→Y front[2], UBR→Y right[2], UBL→Y back[0].
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['Y','Y','G'],  // UBL-back=Y, UB(edge)=Y
-    front: ['G','Y','Y'],  // UF(edge)=Y, UFR-front=Y
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['G','Y','Y'],  // UR(edge)=Y, UBR-right=Y
+    top: ["G", "G", "G", "G", "Y", "G", "G", "G", "Y"],
+    back: ["G", "Y", "Y"], // UBL-back=Y, UB(edge)=Y
+    front: ["Y", "Y", "G"], // UF(edge)=Y, UFR-front=Y
+    left: ["Y", "Y", "G"], // UL(edge)=Y, UFL-left=Y
+    right: ["G", "Y", "G"], // UR(edge)=Y, UBR-right=Y
   },
 
   {
-    id: 17, name: 'Slash', group: 'Dot',
-    alg: "R U R' U R' F R F' U2 R' F R F'",
+    id: 17,
+    name: "Slash",
+    group: "Dot",
+    alg: "(R U R' U) (R' F R F') U2 (R' F R F')",
     // Slash: two corners toward front-left/back-right (one diagonal) and two corners opposite.
     // UFL→Y front[0], UBR→Y back[2] (one diagonal points outward front/back).
     // UFR→Y right[0], UBL→Y left[0] (other diagonal points outward left/right).
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['G','Y','Y'],  // UB(edge)=Y, UBR-back=Y
-    front: ['Y','Y','G'],  // UFL-front=Y, UF(edge)=Y
-    left:  ['Y','Y','G'],  // UBL-left=Y, UL(edge)=Y
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["Y", "G", "G", "G", "Y", "G", "G", "G", "Y"],
+    back: ["G", "Y", "Y"], // UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "G"], // UFL-front=Y, UF(edge)=Y
+    left: ["G", "Y", "Y"], // UBL-left=Y, UL(edge)=Y
+    right: ["G", "Y", "G"], // UFR-right=Y, UR(edge)=Y
     // NOTE: Slash (OLL 17) and Anti-Pinwheel (OLL 3) can look similar but are distinct.
     // Their side strip patterns are verified to be identical in some positions but
     // the algorithms show they are different cases. The exact corner twist directions
@@ -270,42 +303,48 @@ export const OLL_CASES: OLLCase[] = [
   },
 
   {
-    id: 18, name: 'Crown', group: 'Dot',
-    alg: "R U2 R2 F R F' U2 M' U R U' r'",
+    id: 18,
+    name: "Crown",
+    group: "Dot",
+    alg: "y (R U2 R') (R' F R F') U2 M' (U R U' r')",
     // Crown: UFL→Y left[2], UFR→Y right[0], UBL→Y left[0], UBR→Y right[2].
     // Both corners on each side point inward (toward center of left/right faces).
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['Y','Y','Y'],  // UBL-left=Y, UL(edge)=Y, UFL-left=Y
-    right: ['Y','Y','Y'],  // UFR-right=Y, UR(edge)=Y, UBR-right=Y
+    top: ["Y", "G", "Y", "G", "Y", "G", "G", "G", "G"],
+    back: ["G", "Y", "G"], // UB(edge)=Y
+    front: ["Y", "Y", "Y"], // UF(edge)=Y
+    left: ["G", "Y", "G"], // UBL-left=Y, UL(edge)=Y, UFL-left=Y
+    right: ["G", "Y", "G"], // UFR-right=Y, UR(edge)=Y, UBR-right=Y
   },
 
   {
-    id: 19, name: 'Bunny', group: 'Dot',
-    alg: "S' R U R' S U' R' F R F'",
+    id: 19,
+    name: "Bunny",
+    group: "Dot",
+    alg: "y S' R U R' S U' R' F R F'",
     // Bunny ears: UFL→Y front[0], UFR→Y front[2] (both front corners show yellow on front).
     // UBL→Y left[0], UBR→Y right[2].
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['Y','Y','Y'],  // UFL-front=Y, UF(edge)=Y, UFR-front=Y
-    left:  ['Y','Y','G'],  // UBL-left=Y, UL(edge)=Y
-    right: ['G','Y','Y'],  // UR(edge)=Y, UBR-right=Y
+    top: ["Y", "G", "Y", "G", "Y", "G", "G", "G", "G"],
+    back: ["G", "Y", "G"], // UB(edge)=Y
+    front: ["G", "Y", "G"], // UFL-front=Y, UF(edge)=Y, UFR-front=Y
+    left: ["G", "Y", "Y"], // UBL-left=Y, UL(edge)=Y
+    right: ["G", "Y", "Y"], // UR(edge)=Y, UBR-right=Y
   },
 
   {
-    id: 20, name: 'X / Checkers', group: 'Dot',
-    alg: "r' R U R U R' U' r R2 F R F'",
+    id: 20,
+    name: "X / Checkers",
+    group: "Dot",
+    alg: "(r U R' U') M2 (U R U' R') U' M'",
     // X pattern: UFL→Y front[0], UFR→Y front[2], UBL→Y back[0], UBR→Y back[2].
     // Same as OLL 1 but edges show differently.
     // Actually OLL 20 vs OLL 1: both have 4 front/back corner stickers,
     // but OLL 20 has UFL→Y on left, UFR→Y on right, UBL→Y on left, UBR→Y on right.
     // (All corners show yellow on the narrow side faces = X/checkers pattern when viewed from sides)
-    top:   ['G','G','G', 'G','Y','G', 'G','G','G'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['Y','Y','Y'],  // UBL-left=Y, UL(edge)=Y, UFL-left=Y
-    right: ['Y','Y','Y'],  // UFR-right=Y, UR(edge)=Y, UBR-right=Y
+    top: ["Y", "G", "Y", "G", "Y", "G", "Y", "G", "Y"],
+    back: ["G", "Y", "G"], // UB(edge)=Y
+    front: ["G", "Y", "G"], // UF(edge)=Y
+    left: ["G", "Y", "G"], // UBL-left=Y, UL(edge)=Y, UFL-left=Y
+    right: ["G", "Y", "G"], // UFR-right=Y, UR(edge)=Y, UBR-right=Y
     // Note: OLL 18 (Crown) and OLL 20 (X/Checkers) have same side pattern here.
     // They differ in algorithm due to the cube orientation when the alg is applied.
     // Both are legitimate "X" and "Crown" patterns — they ARE visually distinct
@@ -318,27 +357,31 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 5, name: 'Right Back Square', group: 'Square',
-    alg: "l' U2 L U L' U l",
+    id: 5,
+    name: "Right Back Square",
+    group: "Square",
+    alg: "r' U2 (R U R' U) r",
     // Top has BL and BE grey (UFL unoriented, UB edge unoriented).
     // All other edges oriented. UBL, UFR, UBR corners oriented.
     // UFL→Y front[0]. UB edge→ back[1]=Y.
-    top:   ['Y','Y','Y', 'Y','Y','Y', 'G','G','Y'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "G", "G", "Y", "Y", "G", "Y", "Y"],
+    back: ["Y", "Y", "G"], // UB(edge)=Y
+    front: ["G", "G", "G"], // UFL-front=Y
+    left: ["G", "Y", "Y"],
+    right: ["Y", "G", "G"],
   },
 
   {
-    id: 6, name: 'Right Front Square', group: 'Square',
-    alg: "r U2 R' U' R U' r'",
+    id: 6,
+    name: "Right Front Square",
+    group: "Square",
+    alg: "r U2 (R' U' R U') r'",
     // Mirror of OLL 5. Top has BR and BE grey (UFR unoriented, UF edge unoriented).
-    top:   ['Y','Y','Y', 'Y','Y','Y', 'Y','G','G'],
-    back:  ['G','G','G'],
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['G','G','G'],
-    right: ['Y','G','G'],  // UFR-right=Y
+    top: ["G", "Y", "Y", "G", "Y", "Y", "G", "G", "G"],
+    back: ["G", "G", "G"],
+    front: ["Y", "Y", "G"], // UF(edge)=Y
+    left: ["Y", "Y", "G"],
+    right: ["G", "G", "Y"], // UFR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -347,49 +390,57 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 7, name: 'Lightning / Wide Sune', group: 'Lightning',
-    alg: "r U R' U R U2 r'",
+    id: 7,
+    name: "Lightning / Wide Sune",
+    group: "Lightning",
+    alg: "r (U R' U R) U2 r' ",
     // All corners oriented except UBR. All edges oriented except UB.
     // UBR→Y on back[2]. UB edge→Y on back[1].
-    top:   ['Y','Y','Y', 'Y','Y','Y', 'Y','G','G'],
-    back:  ['G','Y','Y'],  // UB(edge)=Y, UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "Y", "G", "Y", "Y", "G", "Y", "G", "G"],
+    back: ["Y", "G", "G"], // UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "Y"],
+    left: ["G", "G", "G"],
+    right: ["Y", "Y", "G"],
   },
 
   {
-    id: 8, name: 'Wide Left Sune', group: 'Lightning',
-    alg: "l' U' L U' L' U2 l",
+    id: 8,
+    name: "Wide Left Sune",
+    group: "Lightning",
+    alg: "y2 r' (U' R U' R') U2 r",
     // Mirror of OLL 7. UBL unoriented, UB edge unoriented.
-    top:   ['Y','Y','Y', 'Y','Y','Y', 'G','G','Y'],
-    back:  ['Y','Y','G'],  // UBL-back=Y, UB(edge)=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "Y", "G", "G", "Y", "Y", "G", "G", "Y"],
+    back: ["G", "G", "Y"], // UBL-back=Y, UB(edge)=Y
+    front: ["Y", "Y", "G"],
+    left: ["Y", "Y", "G"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 11, name: 'Downstairs', group: 'Lightning',
+    id: 11,
+    name: "Downstairs",
+    group: "Lightning",
     alg: "r' R2 U R' U R U2 R' U M'",
     // UFR unoriented, UF edge unoriented.
     // UFR→Y on right[0]. UF edge→Y on front[1].
-    top:   ['Y','G','G', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','Y','Y'],  // UF(edge)=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "G", "G", "Y", "Y", "Y", "Y", "G"],
+    back: ["Y", "Y", "G"],
+    front: ["G", "G", "Y"], // UF(edge)=Y, UFR-front=Y
+    left: ["G", "Y", "G"],
+    right: ["Y", "G", "G"],
   },
 
   {
-    id: 12, name: 'Upstairs', group: 'Lightning',
-    alg: "r R2' U' R U' R' U2 R U' r' R",
+    id: 12,
+    name: "Upstairs",
+    group: "Lightning",
+    alg: "y' M' (R' U' R U' R' U2 R) U' M",
     // Mirror of OLL 11. UFL unoriented, UF edge unoriented.
-    top:   ['G','G','Y', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','Y','G'],  // UFL-front=Y, UF(edge)=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "Y", "G", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["Y", "G", "G"], // UFL-front=Y, UF(edge)=Y
+    left: ["Y", "Y", "G"],
+    right: ["G", "G", "Y"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -398,26 +449,30 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 39, name: 'Fung', group: 'Big Lightning Bolt',
-    alg: "L F' L' U' L U F U' L'",
+    id: 39,
+    name: "Fung",
+    group: "Big Lightning Bolt",
+    alg: "y L F' (L' U' L U) F U' L'",
     // UFL unoriented, UF edge unoriented, UL edge unoriented.
     // UFL→Y on front[0]. UF edge→Y on front[1]. UL edge→Y on left[1].
-    top:   ['G','G','Y', 'G','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','Y','G'],  // UFL-front=Y, UF(edge)=Y
-    left:  ['G','Y','G'],  // UL(edge)=Y
-    right: ['G','G','G'],
+    top: ["Y", "Y", "G", "G", "Y", "G", "G", "Y", "Y"],
+    back: ["G", "G", "Y"],
+    front: ["G", "G", "G"], // UFL-front=Y, UF(edge)=Y
+    left: ["G", "Y", "Y"], // UL(edge)=Y
+    right: ["G", "Y", "G"],
   },
 
   {
-    id: 40, name: 'Anti-Fung', group: 'Big Lightning Bolt',
-    alg: "R' F R U R' U' F' U R",
+    id: 40,
+    name: "Anti-Fung",
+    group: "Big Lightning Bolt",
+    alg: "y R' F (R U R' U') F' U R",
     // Mirror of OLL 39. UFR unoriented, UF edge unoriented, UR edge unoriented.
-    top:   ['Y','G','G', 'Y','Y','G', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','Y','Y'],  // UF(edge)=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "Y", "Y", "G", "Y", "G", "Y", "Y", "G"],
+    back: ["G", "G", "G"],
+    front: ["G", "G", "Y"], // UF(edge)=Y, UFR-front=Y
+    left: ["Y", "Y", "G"],
+    right: ["G", "Y", "G"], // UFR-right=Y, UR(edge)=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -426,50 +481,58 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 9, name: 'Kite', group: 'Fish',
-    alg: "R U R' U' R' F R2 U R' U' F'",
+    id: 9,
+    name: "Kite",
+    group: "Fish",
+    alg: "y (R U R' U') (R' F R) (R U R' U') F'",
     // UFR unoriented, UR edge unoriented. UBL unoriented, all others oriented.
     // UFR→Y right[0]. UR→Y right[1]. UBL→Y left[0].
-    top:   ['Y','Y','Y', 'Y','Y','G', 'G','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "G", "Y", "Y", "Y", "G", "G", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["Y", "G", "G"],
+    left: ["Y", "G", "G"], // UBL-left=Y
+    right: ["G", "Y", "Y"], // UFR-right=Y, UR(edge)=Y
   },
 
   {
-    id: 10, name: 'Anti-Kite', group: 'Fish',
-    alg: "R U R' U R' F R F' R U2 R'",
+    id: 10,
+    name: "Anti-Kite",
+    group: "Fish",
+    alg: "(R U R' U) (R' F R F') (R U2 R')",
     // Mirror of OLL 9. UFL unoriented, UL edge unoriented. UBR unoriented.
-    top:   ['Y','Y','Y', 'G','Y','Y', 'G','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["G", "G", "Y", "Y", "Y", "G", "G", "Y", "G"],
+    back: ["Y", "Y", "G"],
+    front: ["G", "G", "Y"],
+    left: ["G", "G", "Y"], // UL(edge)=Y, UFL-left=Y
+    right: ["G", "Y", "G"], // UBR-right=Y
   },
 
   {
-    id: 35, name: 'Fish Salad', group: 'Fish',
-    alg: "R U2 R2 F R F' R U2 R'",
+    id: 35,
+    name: "Fish Salad",
+    group: "Fish",
+    alg: "(R U2 R') (R' F R F') (R U2 R')",
     // UFR unoriented, UBL unoriented. All edges oriented.
     // UFR→Y on front[2]. UBL→Y on back[0].
-    top:   ['G','Y','G', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['Y','G','G'],  // UBL-back=Y
-    front: ['G','G','Y'],  // UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "G", "G", "G", "Y", "Y", "G", "Y", "Y"],
+    back: ["G", "Y", "G"], // UBL-back=Y
+    front: ["Y", "G", "G"], // UFR-front=Y
+    left: ["G", "Y", "G"],
+    right: ["Y", "G", "G"],
   },
 
   {
-    id: 37, name: 'Mounted Fish', group: 'Fish',
+    id: 37,
+    name: "Mounted Fish",
+    group: "Fish",
     alg: "F R' F' R U R U' R'",
     // UFL unoriented, UBR unoriented. All edges oriented.
     // UFL→Y on front[0]. UBR→Y on right[2].
-    top:   ['G','Y','Y', 'Y','Y','Y', 'G','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["Y", "Y", "G", "Y", "Y", "G", "G", "G", "Y"],
+    back: ["G", "G", "G"],
+    front: ["Y", "Y", "G"], // UFL-front=Y
+    left: ["G", "G", "G"],
+    right: ["Y", "Y", "G"], // UBR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -478,47 +541,55 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 13, name: 'Gun / Trigger', group: 'Knight Move',
+    id: 13,
+    name: "Gun / Trigger",
+    group: "Knight Move",
     alg: "F U R U2 R' U' R U R' F'",
     // UFR unoriented→Y right[0]. UR edge unoriented→Y right[1]. UBR unoriented→Y back[2].
-    top:   ['Y','Y','G', 'Y','Y','G', 'Y','Y','G'],
-    back:  ['G','G','Y'],  // UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "G", "G", "Y", "Y", "Y", "Y", "G", "G"],
+    back: ["Y", "Y", "G"], // UBR-back=Y
+    front: ["G", "Y", "Y"],
+    left: ["G", "G", "G"],
+    right: ["Y", "G", "G"], // UFR-right=Y, UR(edge)=Y
   },
 
   {
-    id: 14, name: 'Anti-Gun', group: 'Knight Move',
+    id: 14,
+    name: "Anti-Gun",
+    group: "Knight Move",
     alg: "R' F R U R' F' R F U' F'",
     // Mirror of OLL 13. UFL unoriented→Y left[2]. UL edge unoriented→Y left[1]. UBL unoriented→Y back[0].
-    top:   ['G','Y','Y', 'G','Y','Y', 'G','Y','Y'],
-    back:  ['Y','G','G'],  // UBL-back=Y
-    front: ['G','G','G'],
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['G','G','G'],
+    top: ["G", "G", "G", "Y", "Y", "Y", "G", "G", "Y"],
+    back: ["G", "Y", "Y"], // UBL-back=Y
+    front: ["Y", "Y", "G"],
+    left: ["Y", "G", "G"], // UL(edge)=Y, UFL-left=Y
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 15, name: 'Squeegee', group: 'Knight Move',
-    alg: "l' U' l L' U' L U l' U l",
+    id: 15,
+    name: "Squeegee",
+    group: "Knight Move",
+    alg: "r' U' r R' U' R U r' U r",
     // UFL unoriented→Y left[2]. UL edge unoriented→Y left[1]. UBR unoriented→Y back[2].
-    top:   ['Y','Y','G', 'G','Y','Y', 'Y','Y','G'],
-    back:  ['G','G','Y'],  // UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['G','G','G'],  // UR oriented (RE=Y in top), UBR-back=Y so UBR-right=G
+    top: ["G", "G", "G", "Y", "Y", "Y", "G", "G", "Y"],
+    back: ["Y", "Y", "G"], // UBR-back=Y
+    front: ["G", "Y", "G"],
+    left: ["G", "G", "Y"], // UL(edge)=Y, UFL-left=Y
+    right: ["Y", "G", "G"], // UR oriented (RE=Y in top), UBR-back=Y so UBR-right=G
   },
 
   {
-    id: 16, name: 'Anti-Squeegee', group: 'Knight Move',
+    id: 16,
+    name: "Anti-Squeegee",
+    group: "Knight Move",
     alg: "r U r' R U R' U' r U' r'",
     // Mirror of OLL 15. UFR→Y right[0]. UR unoriented→Y right[1]. UBL→Y back[0].
-    top:   ['G','Y','Y', 'Y','Y','G', 'G','Y','Y'],
-    back:  ['Y','G','G'],  // UBL-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "G", "Y", "Y", "Y", "Y", "G", "G", "G"],
+    back: ["G", "Y", "G"], // UBL-back=Y
+    front: ["Y", "Y", "G"],
+    left: ["Y", "G", "G"],
+    right: ["G", "G", "Y"], // UFR-right=Y, UR(edge)=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -527,50 +598,58 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 29, name: 'Spotted Chameleon', group: 'Awkward',
-    alg: "R U R' U' R U' R' F' U' F R U R'",
+    id: 29,
+    name: "Spotted Chameleon",
+    group: "Awkward",
+    alg: "r2 D' r U r' D r2 U' r' U' r",
     // UB edge unoriented (TE=G), UBR corner unoriented (TR=G), UFR corner unoriented (BR=G).
     // UB→Y back[1]. UBR→Y back[2]. UFR→Y front[2].
-    top:   ['Y','G','G', 'Y','Y','Y', 'Y','Y','G'],
-    back:  ['G','Y','Y'],  // UB(edge)=Y, UBR-back=Y
-    front: ['G','G','Y'],  // UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "G", "Y", "Y", "Y", "G", "G", "Y", "G"],
+    back: ["G", "Y", "G"], // UB(edge)=Y, UBR-back=Y
+    front: ["G", "G", "G"], // UFR-front=Y
+    left: ["G", "G", "Y"],
+    right: ["G", "Y", "Y"],
   },
 
   {
-    id: 30, name: 'Anti-Spotted Chameleon', group: 'Awkward',
-    alg: "F U R U2 R' U' R U2 R' U' F'",
+    id: 30,
+    name: "Anti-Spotted Chameleon",
+    group: "Awkward",
+    alg: "y' r' D' r U' r' D r2 U' r' U r U r'",
     // Mirror of OLL 29. UB edge unoriented (TE=G), UBL unoriented (TL=G), UFL unoriented (BL=G).
     // UB→Y back[1]. UBL→Y back[0]. UFL→Y front[0].
-    top:   ['G','G','Y', 'Y','Y','Y', 'G','Y','Y'],
-    back:  ['Y','Y','G'],  // UBL-back=Y, UB(edge)=Y
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "G", "Y", "G", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "Y", "G"], // UBL-back=Y, UB(edge)=Y
+    front: ["G", "G", "G"], // UFL-front=Y
+    left: ["G", "Y", "Y"],
+    right: ["G", "G", "Y"],
   },
 
   {
-    id: 41, name: 'Awkward Fish / Dalmation', group: 'Awkward',
-    alg: "R U R' U R U2 R' F R U R' U' F'",
+    id: 41,
+    name: "Awkward Fish / Dalmation",
+    group: "Awkward",
+    alg: "y2 (R U R' U) (R U2 R') F (R U R' U') F'",
     // UF edge unoriented (BE=G), UBR corner unoriented (TR=G). All others oriented.
     // UF→Y front[1]. UBR→Y right[2].
-    top:   ['Y','Y','G', 'Y','Y','Y', 'Y','G','Y'],
-    back:  ['G','G','G'],
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['G','G','G'],
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["Y", "G", "Y", "G", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["Y", "G", "Y"], // UF(edge)=Y
+    left: ["G", "Y", "G"],
+    right: ["G", "G", "G"], // UBR-right=Y
   },
 
   {
-    id: 42, name: 'Lefty Awkward Fish / Anti-Dalmation', group: 'Awkward',
-    alg: "R' U' R U' R' U2 R F R U R' U' F'",
+    id: 42,
+    name: "Lefty Awkward Fish / Anti-Dalmation",
+    group: "Awkward",
+    alg: "(R' U' R U') (R' U2 R) F (R U R' U') F' ",
     // Mirror of OLL 41. UF edge unoriented (BE=G), UBL corner unoriented (TL=G).
-    top:   ['G','Y','Y', 'Y','Y','Y', 'Y','G','Y'],
-    back:  ['G','G','G'],
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['G','G','G'],
+    top: ["Y", "G", "Y", "Y", "Y", "G", "G", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["Y", "G", "Y"], // UF(edge)=Y
+    left: ["G", "G", "G"], // UBL-left=Y
+    right: ["G", "Y", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -579,50 +658,58 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 31, name: 'Couch', group: 'P-shape',
-    alg: "R' U' F U R U' R' F' R",
+    id: 31,
+    name: "Couch",
+    group: "P-shape",
+    alg: "(R' U' F) (U R U' R') F' R",
     // UFR and UBR unoriented, UR edge unoriented.
     // UFR→Y right[0]. UR→Y right[1]. UBR→Y back[2].
-    top:   ['Y','Y','G', 'Y','Y','G', 'Y','Y','G'],
-    back:  ['G','G','Y'],  // UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['Y','Y','G'],  // UFR-right=Y, UR(edge)=Y
+    top: ["G", "Y", "Y", "G", "Y", "Y", "G", "G", "Y"],
+    back: ["Y", "G", "G"], // UBR-back=Y
+    front: ["Y", "Y", "G"],
+    left: ["G", "Y", "G"],
+    right: ["G", "G", "G"], // UFR-right=Y, UR(edge)=Y
   },
 
   {
-    id: 32, name: 'Anti-Couch', group: 'P-shape',
-    alg: "S R U R' U' R' F R f'",
+    id: 32,
+    name: "Anti-Couch",
+    group: "P-shape",
+    alg: "S (R U R' U') (R' F R f') ",
     // Mirror of OLL 31. UFL and UBL unoriented, UL edge unoriented.
-    top:   ['G','Y','Y', 'G','Y','Y', 'G','Y','Y'],
-    back:  ['Y','G','G'],  // UBL-back=Y
-    front: ['G','G','G'],
-    left:  ['G','Y','Y'],  // UL(edge)=Y, UFL-left=Y
-    right: ['G','G','G'],
+    top: ["G", "G", "Y", "G", "Y", "Y", "G", "Y", "Y"],
+    back: ["Y", "Y", "G"], // UBL-back=Y
+    front: ["Y", "G", "G"],
+    left: ["G", "Y", "G"], // UL(edge)=Y, UFL-left=Y
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 43, name: 'Anti-P', group: 'P-shape',
-    alg: "R' U' F' U F R",
+    id: 43,
+    name: "Anti-P",
+    group: "P-shape",
+    alg: "y R' U' (F' U F) R",
     // Only UFL unoriented, UF edge unoriented. All others oriented.
     // UFL→Y front[0]. UF→Y front[1].
-    top:   ['G','G','Y', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','Y','G'],  // UFL-front=Y, UF(edge)=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "G", "G", "Y", "Y", "G", "Y", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["G", "G", "G"], // UFL-front=Y, UF(edge)=Y
+    left: ["G", "G", "G"],
+    right: ["Y", "Y", "Y"],
   },
 
   {
-    id: 44, name: 'P', group: 'P-shape',
-    alg: "F (U R U' R') F'",
+    id: 44,
+    name: "P",
+    group: "P-shape",
+    alg: "f (R U R' U') f'",
     // Mirror of OLL 43. Only UFR unoriented, UF edge unoriented.
     // UFR→Y front[2]. UF→Y front[1].
-    top:   ['Y','G','G', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','Y','Y'],  // UF(edge)=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "Y", "G", "Y", "Y", "G", "Y", "Y"],
+    back: ["G", "Y", "G"],
+    front: ["G", "G", "G"], // UF(edge)=Y, UFR-front=Y
+    left: ["Y", "Y", "Y"],
+    right: ["G", "G", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -631,27 +718,31 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 33, name: 'Tying Shoelaces', group: 'T-shape',
-    alg: "R U R' U' R' F R F'",
+    id: 33,
+    name: "Tying Shoelaces",
+    group: "T-shape",
+    alg: "(R U R' U') (R' F R F')",
     // UFR and UFL unoriented, UF edge unoriented. UBL/UBR oriented.
     // UFR→Y front[2], UFL→Y front[0], UF→Y front[1].
-    top:   ['G','Y','G', 'Y','Y','Y', 'Y','G','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','Y','Y'],  // UFL-front=Y, UF(edge)=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "Y", "Y", "Y", "Y", "G", "G", "Y"],
+    back: ["Y", "Y", "G"],
+    front: ["Y", "Y", "G"], // UFL-front=Y, UF(edge)=Y, UFR-front=Y
+    left: ["G", "G", "G"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 45, name: 'Suit Up', group: 'T-shape',
-    alg: "F R U R' U' F'",
+    id: 45,
+    name: "Suit Up",
+    group: "T-shape",
+    alg: "F (R U R' U') F'",
     // UBR and UBL unoriented, UB edge unoriented. UFR/UFL oriented.
     // UBR→Y back[2], UBL→Y back[0], UB→Y back[1].
-    top:   ['Y','G','Y', 'Y','Y','Y', 'G','Y','G'],
-    back:  ['Y','Y','Y'],  // UBL-back=Y, UB(edge)=Y, UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "Y", "Y", "Y", "Y", "G", "G", "Y"],
+    back: ["G", "Y", "G"], // UBL-back=Y, UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "G"],
+    left: ["Y", "G", "Y"],
+    right: ["G", "G", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -660,26 +751,30 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 34, name: 'City', group: 'C-shape',
-    alg: "R U R2 U' R' F R U R U' F'",
+    id: 34,
+    name: "City",
+    group: "C-shape",
+    alg: "y f R f' U' r' U' R U M'",
     // UBL, UFL unoriented, UL edge unoriented. All point to left face.
     // UBL→Y left[0], UL→Y left[1], UFL→Y left[2].
-    top:   ['G','Y','Y', 'G','Y','Y', 'G','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','Y','Y'],  // UBL-left=Y, UL(edge)=Y, UFL-left=Y
-    right: ['G','G','G'],
+    top: ["Y", "G", "Y", "Y", "Y", "Y", "G", "G", "G"],
+    back: ["G", "Y", "G"],
+    front: ["G", "Y", "G"],
+    left: ["G", "G", "Y"], // UBL-left=Y, UL(edge)=Y, UFL-left=Y
+    right: ["G", "G", "Y"],
   },
 
   {
-    id: 46, name: "Seein' Headlights", group: 'C-shape',
-    alg: "R' U' R' F R F' U R",
+    id: 46,
+    name: "Seein' Headlights",
+    group: "C-shape",
+    alg: "R' U' (R' F R F') U R",
     // Mirror of OLL 34. UBR, UFR unoriented, UR edge unoriented. All point to right face.
-    top:   ['Y','Y','G', 'Y','Y','G', 'Y','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['Y','Y','Y'],  // UFR-right=Y, UR(edge)=Y, UBR-right=Y
+    top: ["Y", "Y", "G", "G", "Y", "G", "Y", "Y", "G"],
+    back: ["G", "G", "G"],
+    front: ["G", "G", "G"],
+    left: ["G", "Y", "G"],
+    right: ["Y", "Y", "Y"], // UFR-right=Y, UR(edge)=Y, UBR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -688,27 +783,31 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 36, name: 'Sea-Mew / Wario', group: 'W-shape',
-    alg: "L' U' L U' L' U L U L F' L' F",
+    id: 36,
+    name: "Sea-Mew / Wario",
+    group: "W-shape",
+    alg: "y R U R2 F' U' F U R2 U2 R'",
     // UFL, UFR unoriented (both front corners), UBR unoriented.
     // UFL→Y front[0], UFR→Y front[2], UBR→Y right[2].
-    top:   ['G','Y','G', 'Y','Y','Y', 'G','Y','G'],
-    back:  ['G','G','G'],
-    front: ['Y','G','Y'],  // UFL-front=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["Y", "G", "G", "Y", "Y", "G", "G", "Y", "Y"],
+    back: ["G", "Y", "G"],
+    front: ["Y", "G", "G"], // UFL-front=Y, UFR-front=Y
+    left: ["G", "G", "G"],
+    right: ["Y", "Y", "G"], // UBR-right=Y
   },
 
   {
-    id: 38, name: 'Mario / Moustache', group: 'W-shape',
-    alg: "R U R' U R U' R' U' R' F R F'",
+    id: 38,
+    name: "Mario / Moustache",
+    group: "W-shape",
+    alg: "(R U R' U) (R U' R' U') (R' F R F') ",
     // Mirror of OLL 36. UFL, UFR unoriented, UBL unoriented.
     // UFL→Y front[0], UFR→Y front[2], UBL→Y left[0].
-    top:   ['G','Y','G', 'Y','Y','Y', 'G','Y','G'],
-    back:  ['G','G','G'],
-    front: ['Y','G','Y'],  // UFL-front=Y, UFR-front=Y
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['G','G','G'],
+    top: ["G", "Y", "Y", "Y", "Y", "G", "Y", "G", "G"],
+    back: ["Y", "G", "G"],
+    front: ["G", "Y", "G"], // UFL-front=Y, UFR-front=Y
+    left: ["G", "G", "G"], // UBL-left=Y
+    right: ["G", "Y", "Y"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -717,75 +816,87 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 47, name: 'Anti-Breakneck', group: 'L-shape',
-    alg: "R' U' R' F R F' R' F R F' U R",
+    id: 47,
+    name: "Anti-Breakneck",
+    group: "L-shape",
+    alg: "y' F R' F' R U2 R U' R' U R U2 R'",
     // UFL unoriented, UL edge unoriented. UBL unoriented.
     // UFL→Y front[0], UL→Y left[1], UBL→Y left[0].
     // top: TL=G(UBL), TE=Y, TR=Y, LE=G(UL), CC=Y, RE=Y, BL=G(UFL), BE=Y, BR=Y
-    top:   ['G','Y','Y', 'G','Y','Y', 'G','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['Y','G','G'],  // UFL-front=Y
-    left:  ['Y','Y','G'],  // UBL-left=Y, UL(edge)=Y
-    right: ['G','G','G'],
+    top: ["G", "Y", "G", "G", "Y", "Y", "G", "G", "G"],
+    back: ["Y", "G", "G"],
+    front: ["Y", "Y", "G"], // UFL-front=Y
+    left: ["G", "Y", "G"], // UBL-left=Y, UL(edge)=Y
+    right: ["Y", "G", "Y"],
   },
 
   {
-    id: 48, name: 'Breakneck', group: 'L-shape',
-    alg: "F R U R' U' R U R' U' F'",
+    id: 48,
+    name: "Breakneck",
+    group: "L-shape",
+    alg: "F (R U R' U') (R U R' U') F'",
     // Mirror of OLL 47. UFR unoriented, UR edge unoriented. UBR unoriented.
-    top:   ['Y','Y','G', 'Y','Y','G', 'Y','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','Y'],  // UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','Y','Y'],  // UR(edge)=Y, UBR-right=Y
+    top: ["G", "Y", "G", "Y", "Y", "G", "G", "G", "G"],
+    back: ["G", "G", "Y"],
+    front: ["G", "Y", "Y"], // UFR-front=Y
+    left: ["Y", "G", "Y"],
+    right: ["G", "Y", "G"], // UR(edge)=Y, UBR-right=Y
   },
 
   {
-    id: 49, name: 'Right Back Squeezy', group: 'L-shape',
-    alg: "r U' r2 U r2 U r2 U' r",
+    id: 49,
+    name: "Right Back Squeezy",
+    group: "L-shape",
+    alg: "y2 r U' (r2 U) (r2 U) (r2) U' r",
     // UBL unoriented, UB edge unoriented, UL edge unoriented.
     // UBL→Y back[0], UB→Y back[1], UL→Y left[1].
     // top: TL=G(UBL), TE=G(UB), TR=Y, LE=G(UL), CC=Y, RE=Y, BL=Y, BE=Y, BR=Y
-    top:   ['G','G','Y', 'G','Y','Y', 'Y','Y','Y'],
-    back:  ['Y','Y','G'],  // UBL-back=Y, UB(edge)=Y
-    front: ['G','G','G'],
-    left:  ['G','Y','G'],  // UL(edge)=Y
-    right: ['G','G','G'],
+    top: ["G", "G", "G", "Y", "Y", "G", "G", "Y", "G"],
+    back: ["Y", "Y", "G"], // UBL-back=Y, UB(edge)=Y
+    front: ["Y", "G", "G"],
+    left: ["G", "G", "G"], // UL(edge)=Y
+    right: ["Y", "Y", "Y"],
   },
 
   {
-    id: 50, name: 'Right Front Squeezy', group: 'L-shape',
-    alg: "R' F R2 B' R2' F' R2 B R'",
+    id: 50,
+    name: "Right Front Squeezy",
+    group: "L-shape",
+    alg: "r' U (r2 U') (r2 U') (r2) U r'",
     // Mirror of OLL 49. UBR unoriented, UB edge unoriented, UR edge unoriented.
-    top:   ['Y','G','G', 'Y','Y','G', 'Y','Y','Y'],
-    back:  ['G','Y','Y'],  // UB(edge)=Y, UBR-back=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','Y','G'],  // UR(edge)=Y
+    top: ["G", "G", "G", "G", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "Y", "Y"], // UB(edge)=Y, UBR-back=Y
+    front: ["G", "G", "Y"],
+    left: ["Y", "Y", "Y"],
+    right: ["G", "G", "G"], // UR(edge)=Y
   },
 
   {
-    id: 53, name: 'Frying Pan', group: 'L-shape',
-    alg: "l' U' L U' L' U L U' L' U2 l",
+    id: 53,
+    name: "Frying Pan",
+    group: "L-shape",
+    alg: "(r' U' R U') (R' U R U') (R' U2 r)",
     // UBL, UFL unoriented, UL edge unoriented, UBR unoriented.
     // UBL→Y left[0], UL→Y left[1], UFL→Y left[2], UBR→Y right[2].
     // top: TL=G(UBL), TE=Y, TR=G(UBR), LE=G(UL), CC=Y, RE=Y, BL=G(UFL), BE=Y, BR=Y
-    top:   ['G','Y','G', 'G','Y','Y', 'G','Y','Y'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','Y','Y'],  // UBL-left=Y, UL(edge)=Y, UFL-left=Y
-    right: ['G','G','Y'],  // UBR-right=Y
+    top: ["G", "G", "G", "G", "Y", "Y", "G", "Y", "G"],
+    back: ["G", "Y", "G"],
+    front: ["G", "G", "G"],
+    left: ["Y", "Y", "Y"], // UBL-left=Y, UL(edge)=Y, UFL-left=Y
+    right: ["Y", "G", "Y"], // UBR-right=Y
   },
 
   {
-    id: 54, name: 'Anti-Frying Pan', group: 'L-shape',
-    alg: "r U R' U R U' R' U R U2 r'",
+    id: 54,
+    name: "Anti-Frying Pan",
+    group: "L-shape",
+    alg: "(r U R' U) (R U' R' U) (R U2 r')",
     // Mirror of OLL 53. UBR, UFR unoriented, UR edge unoriented, UBL unoriented.
-    top:   ['G','Y','G', 'Y','Y','G', 'Y','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','G','G'],  // UBL-left=Y
-    right: ['Y','Y','Y'],  // UFR-right=Y, UR(edge)=Y, UBR-right=Y
+    top: ["G", "Y", "G", "G", "Y", "Y", "G", "G", "G"],
+    back: ["G", "G", "G"],
+    front: ["G", "Y", "G"],
+    left: ["Y", "Y", "Y"], // UBL-left=Y
+    right: ["Y", "G", "Y"], // UFR-right=Y, UR(edge)=Y, UBR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -794,53 +905,61 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 51, name: 'Bottlecap / Ant', group: 'I-shape',
-    alg: "F U R U' R' U R U' R' F'",
+    id: 51,
+    name: "Bottlecap / Ant",
+    group: "I-shape",
+    alg: "y2 F U R U' R' U R U' R' F'",
     // UF and UB edges unoriented. All 4 corners unoriented.
     // All corners: UFL→Y front[0], UFR→Y front[2], UBL→Y back[0], UBR→Y back[2].
     // top: TL=G, TE=G(UB), TR=G, LE=Y(UL oriented), CC=Y, RE=Y(UR oriented), BL=G, BE=G(UF), BR=G
-    top:   ['G','G','G', 'Y','Y','Y', 'G','G','G'],
-    back:  ['Y','Y','Y'],  // UBL-back=Y, UB(edge)=Y, UBR-back=Y
-    front: ['Y','Y','Y'],  // UFL-front=Y, UF(edge)=Y, UFR-front=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["G", "G", "G", "Y", "Y", "Y", "G", "G", "G"],
+    back: ["G", "Y", "Y"], // UBL-back=Y, UB(edge)=Y, UBR-back=Y
+    front: ["G", "Y", "Y"], // UFL-front=Y, UF(edge)=Y, UFR-front=Y
+    left: ["Y", "G", "Y"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 52, name: 'Rice Cooker', group: 'I-shape',
-    alg: "R U R' U R U' B U' B' R'",
+    id: 52,
+    name: "Rice Cooker",
+    group: "I-shape",
+    alg: "y2 R' F' U' F U' R U R' U R",
     // Same top as OLL 51 (I-shape), but corners rotated differently.
     // UFL→Y left[2], UFR→Y right[0], UBL→Y left[0], UBR→Y right[2].
-    top:   ['G','G','G', 'Y','Y','Y', 'G','G','G'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['Y','G','Y'],  // UBL-left=Y, UFL-left=Y
-    right: ['Y','G','Y'],  // UFR-right=Y, UBR-right=Y
+    top: ["G", "Y", "G", "G", "Y", "G", "G", "Y", "G"],
+    back: ["Y", "G", "G"], // UB(edge)=Y
+    front: ["Y", "G", "G"], // UF(edge)=Y
+    left: ["G", "Y", "G"], // UBL-left=Y, UFL-left=Y
+    right: ["Y", "Y", "Y"], // UFR-right=Y, UBR-right=Y
   },
 
   {
-    id: 55, name: 'Highway / Freeway', group: 'I-shape',
-    alg: "R' F R U R U' R2 F' R2 U' R' U R U R'",
+    id: 55,
+    name: "Highway / Freeway",
+    group: "I-shape",
+    alg: "y R' F U R U' R2 F' R2 U R' U' R",
     // UL and UR edges unoriented. All 4 corners unoriented.
     // UFL→Y front[0], UFR→Y front[2], UBL→Y back[0], UBR→Y back[2].
     // top: TL=G, TE=Y(UB oriented), TR=G, LE=G(UL), CC=Y, RE=G(UR), BL=G, BE=Y(UF oriented), BR=G
-    top:   ['G','Y','G', 'G','Y','G', 'G','Y','G'],
-    back:  ['Y','G','Y'],  // UBL-back=Y, UBR-back=Y
-    front: ['Y','G','Y'],  // UFL-front=Y, UFR-front=Y
-    left:  ['G','Y','G'],  // UL(edge)=Y
-    right: ['G','Y','G'],  // UR(edge)=Y
+    top: ["G", "Y", "G", "G", "Y", "G", "G", "Y", "G"],
+    back: ["G", "G", "G"], // UBL-back=Y, UBR-back=Y
+    front: ["G", "G", "G"], // UFL-front=Y, UFR-front=Y
+    left: ["Y", "Y", "Y"], // UL(edge)=Y
+    right: ["Y", "Y", "Y"], // UR(edge)=Y
   },
 
   {
-    id: 56, name: 'Streetlights / Dead Man', group: 'I-shape',
-    alg: "r U r' U R U' R' U R U' R' r U' r'",
+    id: 56,
+    name: "Streetlights / Dead Man",
+    group: "I-shape",
+    alg: "(r U r') (U R U' R') (U R U' R') (r U' r')",
     // Same top as OLL 55 (vertical I-shape), corners rotated differently.
     // UFL→Y left[2], UFR→Y right[0], UBL→Y left[0], UBR→Y right[2].
-    top:   ['G','Y','G', 'G','Y','G', 'G','Y','G'],
-    back:  ['G','G','G'],
-    front: ['G','G','G'],
-    left:  ['Y','Y','Y'],  // UBL-left=Y, UL(edge)=Y, UFL-left=Y
-    right: ['Y','Y','Y'],  // UFR-right=Y, UR(edge)=Y, UBR-right=Y
+    top: ["G", "G", "G", "Y", "Y", "Y", "G", "G", "G"],
+    back: ["G", "Y", "G"],
+    front: ["G", "Y", "G"],
+    left: ["Y", "G", "Y"], // UBL-left=Y, UL(edge)=Y, UFL-left=Y
+    right: ["Y", "G", "Y"], // UFR-right=Y, UR(edge)=Y, UBR-right=Y
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -849,27 +968,30 @@ export const OLL_CASES: OLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 28, name: 'Stealth / Arrow', group: 'All Corners Oriented',
-    alg: "r U R' U' r' R U R U' R'",
+    id: 28,
+    name: "Stealth / Arrow",
+    group: "All Corners Oriented",
+    alg: "(r U R' U') M (U R U' R')",
     // All corners oriented. UB edge unoriented → back[1]=Y. All other edges oriented.
-    top:   ['Y','G','Y', 'Y','Y','Y', 'Y','Y','Y'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['G','G','G'],
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "Y", "Y", "Y", "Y", "G", "Y", "G", "Y"],
+    back: ["G", "G", "G"], // UB(edge)=Y
+    front: ["G", "Y", "G"],
+    left: ["G", "G", "G"],
+    right: ["G", "Y", "G"],
   },
 
   {
-    id: 57, name: 'Mummy', group: 'All Corners Oriented',
-    alg: "R U R' U' M' U R U' r'",
+    id: 57,
+    name: "Mummy",
+    group: "All Corners Oriented",
+    alg: "(R U R' U') M' (U R U' r')",
     // All corners oriented. UF and UB edges both unoriented.
-    top:   ['Y','G','Y', 'Y','Y','Y', 'Y','G','Y'],
-    back:  ['G','Y','G'],  // UB(edge)=Y
-    front: ['G','Y','G'],  // UF(edge)=Y
-    left:  ['G','G','G'],
-    right: ['G','G','G'],
+    top: ["Y", "G", "Y", "Y", "Y", "Y", "Y", "G", "Y"],
+    back: ["G", "Y", "G"], // UB(edge)=Y
+    front: ["G", "Y", "G"], // UF(edge)=Y
+    left: ["G", "G", "G"],
+    right: ["G", "G", "G"],
   },
-
 ];
 
 // ============================================================
@@ -893,14 +1015,15 @@ export const OLL_CASES: OLLCase[] = [
 // ============================================================
 
 export const PLL_CASES: PLLCase[] = [
-
   // ──────────────────────────────────────────────────────────────────────────
   // Group: Edges Only
   // Only the 4 edges are permuted; corners are in their solved positions. 4 cases.
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 'Ua', name: 'Ua-Perm', group: 'Edges Only',
+    id: "Ua",
+    name: "Ua-Perm",
+    group: "Edges Only",
     alg: "R U' R U R U R U' R' U' R2",
     // 3-cycle of edges: UF→UL→UB (CCW cycle of front, left, back edges).
     // UFR corner: correct. UBR corner: correct. UFL corner: correct. UBL corner: correct.
@@ -919,46 +1042,52 @@ export const PLL_CASES: PLLCase[] = [
     // Corner stickers determine the [0] and [2] positions of each strip.
     // Solved corners: UBL=[O,B], UBR=[O,G], UFR=[R,G], UFL=[R,B] (back/left, back/right, etc.)
     // After Ua (edges only): corners unchanged.
-    back:  ['O','B','O'],  // UBL-back=O(correct), UB(edge now has UL piece)=B, UBR-back=O(correct)
-    front: ['R','O','R'],  // UFL-front=R(correct), UF(edge now has UB piece)=O, UFR-front=R(correct)
-    left:  ['B','R','B'],  // UBL-left=B(correct), UL(edge now has UF piece)=R, UFL-left=B(correct)
-    right: ['G','G','G'],  // UR edge stays, corners correct → all G
+    back: ["O", "B", "O"], // UBL-back=O(correct), UB(edge now has UL piece)=B, UBR-back=O(correct)
+    front: ["R", "O", "R"], // UFL-front=R(correct), UF(edge now has UB piece)=O, UFR-front=R(correct)
+    left: ["B", "R", "B"], // UBL-left=B(correct), UL(edge now has UF piece)=R, UFL-left=B(correct)
+    right: ["G", "G", "G"], // UR edge stays, corners correct → all G
   },
 
   {
-    id: 'Ub', name: 'Ub-Perm', group: 'Edges Only',
+    id: "Ub",
+    name: "Ub-Perm",
+    group: "Edges Only",
     alg: "R2 U R U R' U' R' U' R' U R'",
     // Inverse of Ua. 3-cycle: UF→UB→UL (CW from top).
     // UF→UB, UB→UL, UL→UF.
     // UF piece (R sticker) → UB: back[1]=R
     // UB piece (O sticker) → UL: left[1]=O
     // UL piece (B sticker) → UF: front[1]=B
-    back:  ['O','R','O'],
-    front: ['R','B','R'],
-    left:  ['B','O','B'],
-    right: ['G','G','G'],
+    back: ["O", "R", "O"],
+    front: ["R", "B", "R"],
+    left: ["B", "O", "B"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 'H', name: 'H-Perm', group: 'Edges Only',
+    id: "H",
+    name: "H-Perm",
+    group: "Edges Only",
     alg: "M2 U M2 U2 M2 U M2",
     // Swaps UF↔UB and UL↔UR simultaneously.
-    back:  ['O','R','O'],  // UB position now has UF piece (R)
-    front: ['R','O','R'],  // UF position now has UB piece (O)
-    left:  ['B','G','B'],  // UL position now has UR piece (G)
-    right: ['G','B','G'],  // UR position now has UL piece (B)
+    back: ["O", "R", "O"], // UB position now has UF piece (R)
+    front: ["R", "O", "R"], // UF position now has UB piece (O)
+    left: ["B", "G", "B"], // UL position now has UR piece (G)
+    right: ["G", "B", "G"], // UR position now has UL piece (B)
   },
 
   {
-    id: 'Z', name: 'Z-Perm', group: 'Edges Only',
+    id: "Z",
+    name: "Z-Perm",
+    group: "Edges Only",
     alg: "M2 U M2 U M' U2 M2 U2 M'",
     // Swaps UF↔UL and UB↔UR.
     // UF(R)↔UL(B): front[1]=B, left[1]=R
     // UB(O)↔UR(G): back[1]=G, right[1]=O
-    back:  ['O','G','O'],
-    front: ['R','B','R'],
-    left:  ['B','R','B'],
-    right: ['G','O','G'],
+    back: ["O", "G", "O"],
+    front: ["R", "B", "R"],
+    left: ["B", "R", "B"],
+    right: ["G", "O", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -967,7 +1096,9 @@ export const PLL_CASES: PLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 'Aa', name: 'Aa-Perm', group: 'Corners Only',
+    id: "Aa",
+    name: "Aa-Perm",
+    group: "Corners Only",
     alg: "x R' U R' D2 R U' R' D2 R2 x'",
     // 3-cycle of corners: UFR→UBR→UBL (leaving UFL fixed).
     // Corners after cycle:
@@ -979,14 +1110,16 @@ export const PLL_CASES: PLLCase[] = [
     //   UBL (now has UFR piece): UBL position gets UFR's stickers (R,G originally at front/right)
     //     → back[0]=G, left[0]=R
     // Edges all stay: back[1]=O, front[1]=R, left[1]=B, right[1]=G
-    back:  ['G','O','B'],
-    front: ['R','R','G'],
-    left:  ['R','B','B'],
-    right: ['O','G','O'],
+    back: ["G", "O", "B"],
+    front: ["R", "R", "G"],
+    left: ["R", "B", "B"],
+    right: ["O", "G", "O"],
   },
 
   {
-    id: 'Ab', name: 'Ab-Perm', group: 'Corners Only',
+    id: "Ab",
+    name: "Ab-Perm",
+    group: "Corners Only",
     alg: "x R2 D2 R U R' D2 R U' R x'",
     // Inverse of Aa. 3-cycle: UFR→UBL→UBR (leaving UFL fixed).
     // UFL: stays → front[0]=R, left[2]=B
@@ -997,14 +1130,16 @@ export const PLL_CASES: PLLCase[] = [
     //   Simpler: Ab is mirror of Aa about left-right axis.
     //   Aa: back=[G,O,B], front=[R,R,G], left=[R,B,B], right=[O,G,O]
     //   Ab mirror: back=[B,O,G], front=[G,R,R], left=[O,B,B], right=[O,G,R]
-    back:  ['B','O','G'],
-    front: ['G','R','R'],
-    left:  ['O','B','B'],
-    right: ['R','G','O'],
+    back: ["B", "O", "G"],
+    front: ["G", "R", "R"],
+    left: ["O", "B", "B"],
+    right: ["R", "G", "O"],
   },
 
   {
-    id: 'E', name: 'E-Perm', group: 'Corners Only',
+    id: "E",
+    name: "E-Perm",
+    group: "Corners Only",
     alg: "x' R U' R' D R U R' D' R U R' D R U' R' D' x",
     // Swaps diagonal corner pairs: UFR↔UBL and UFL↔UBR.
     // UFR gets UBL's stickers, UBL gets UFR's stickers (swap).
@@ -1015,10 +1150,10 @@ export const PLL_CASES: PLLCase[] = [
     //   UBL now has UFR piece: back[0]=R, left[0]=G
     //   UFL now has UBR piece: front[0]=G, left[2]=O
     //   UBR now has UFL piece: back[2]=B, right[2]=R
-    back:  ['R','O','B'],
-    front: ['G','R','B'],
-    left:  ['G','B','O'],
-    right: ['O','G','R'],
+    back: ["R", "O", "B"],
+    front: ["G", "R", "B"],
+    left: ["G", "B", "O"],
+    right: ["O", "G", "R"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1027,7 +1162,9 @@ export const PLL_CASES: PLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 'T', name: 'T-Perm', group: 'Adjacent Corner Swap',
+    id: "T",
+    name: "T-Perm",
+    group: "Adjacent Corner Swap",
     alg: "R U R' U' R' F R2 U' R' U' R U R' F'",
     // Swaps UFR↔UFL corners AND swaps UF↔UB edges.
     // UFR(R,G) ↔ UFL(R,B): corners swap adjacent.
@@ -1041,41 +1178,47 @@ export const PLL_CASES: PLLCase[] = [
     //   UFR(R,G)→UBR position: back[2]=R, right[2]=G  ... corner orientation matters
     //   UBR(O,G)→UFR position: front[2]=O, right[0]=G
     //   UF(R)→UB: back[1]=R. UB(O)→UF: front[1]=O.
-    back:  ['O','R','R'],
-    front: ['R','O','O'],
-    left:  ['B','B','B'],
-    right: ['G','G','G'],
+    back: ["O", "R", "R"],
+    front: ["R", "O", "O"],
+    left: ["B", "B", "B"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 'F', name: 'F-Perm', group: 'Adjacent Corner Swap',
+    id: "F",
+    name: "F-Perm",
+    group: "Adjacent Corner Swap",
     alg: "R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R",
     // F-perm: swaps UFL↔UBL corners and UL↔UF edges.
     // UFL(R,B)→UBL position: back[0]=R, left[0]=B
     // UBL(O,B)→UFL position: front[0]=O, left[2]=B
     // UL(B)→UF: front[1]=B. UF(R)→UL: left[1]=R.
-    back:  ['R','O','O'],
-    front: ['O','B','R'],
-    left:  ['B','R','B'],
-    right: ['G','G','G'],
+    back: ["R", "O", "O"],
+    front: ["O", "B", "R"],
+    left: ["B", "R", "B"],
+    right: ["G", "G", "G"],
   },
 
   {
-    id: 'Ja', name: 'Ja-Perm', group: 'Adjacent Corner Swap',
+    id: "Ja",
+    name: "Ja-Perm",
+    group: "Adjacent Corner Swap",
     alg: "x R2 F R F' R U2 r' U r U2 x'",
     // Swaps UFL↔UFR corners and UL↔UF edges.
     // Classic Ja-perm: (UFR UFL)(UF UL) — front two corners swap, front and left edges swap.
     // UFR(R,G)→UFL: front[0]=G(UFR's right→UFL's front?), left[2]=R
     // UFL(R,B)→UFR: front[2]=B(UFL's left→UFR's front?), right[0]=R
     // UF(R)→UL: left[1]=R. UL(B)→UF: front[1]=B.
-    back:  ['O','O','O'],
-    front: ['G','B','B'],
-    left:  ['B','R','R'],
-    right: ['R','G','G'],
+    back: ["O", "O", "O"],
+    front: ["G", "B", "B"],
+    left: ["B", "R", "R"],
+    right: ["R", "G", "G"],
   },
 
   {
-    id: 'Jb', name: 'Jb-Perm', group: 'Adjacent Corner Swap',
+    id: "Jb",
+    name: "Jb-Perm",
+    group: "Adjacent Corner Swap",
     alg: "R U R' F' R U R' U' R' F R2 U' R'",
     // Mirror of Ja. Swaps UFR↔UBR corners and UR↔UF edges.
     // UFR(R,G)→UBR: back[2]=R, right[2]=G
@@ -1087,32 +1230,36 @@ export const PLL_CASES: PLLCase[] = [
     //   At UFR: front face shows, right face shows. UBR piece: back=O→front[2]=O, right=G→right[0]=G
     // UF→UR: UF piece (front sticker R) → UR slot: right[1]=R
     // UR→UF: UR piece (right sticker G) → UF slot: front[1]=G
-    back:  ['O','O','R'],
-    front: ['R','G','O'],
-    left:  ['B','B','B'],
-    right: ['G','R','G'],
+    back: ["O", "O", "R"],
+    front: ["R", "G", "O"],
+    left: ["B", "B", "B"],
+    right: ["G", "R", "G"],
   },
 
   {
-    id: 'Ra', name: 'Ra-Perm', group: 'Adjacent Corner Swap',
+    id: "Ra",
+    name: "Ra-Perm",
+    group: "Adjacent Corner Swap",
     alg: "R U' R' U' R U R D R' U' R D' R' U2 R'",
     // Ra involves a 3-cycle of corners and a 3-cycle of edges on the same side.
     // Ra: (UFR UBR UBL) corners, (UF UR UB) edges — complex cycle.
     // Ra standard pattern (from reference):
-    back:  ['B','O','O'],
-    front: ['R','R','G'],
-    left:  ['O','B','B'],
-    right: ['G','G','R'],
+    back: ["B", "O", "O"],
+    front: ["R", "R", "G"],
+    left: ["O", "B", "B"],
+    right: ["G", "G", "R"],
   },
 
   {
-    id: 'Rb', name: 'Rb-Perm', group: 'Adjacent Corner Swap',
+    id: "Rb",
+    name: "Rb-Perm",
+    group: "Adjacent Corner Swap",
     alg: "R' U2 R U2 R' F R U R' U' R' F' R2",
     // Mirror of Ra.
-    back:  ['O','O','G'],
-    front: ['B','R','R'],
-    left:  ['B','B','O'],
-    right: ['R','G','G'],
+    back: ["O", "O", "G"],
+    front: ["B", "R", "R"],
+    left: ["B", "B", "O"],
+    right: ["R", "G", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1121,7 +1268,9 @@ export const PLL_CASES: PLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 'Y', name: 'Y-Perm', group: 'Diagonal Corner Swap',
+    id: "Y",
+    name: "Y-Perm",
+    group: "Diagonal Corner Swap",
     alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
     // Swaps UFR↔UBL (diagonal) and UF↔UR edges.
     // UFR(R,G)→UBL: at UBL, back face and left face show.
@@ -1129,27 +1278,31 @@ export const PLL_CASES: PLLCase[] = [
     // UBL(O,B)→UFR: at UFR, front face and right face show.
     //   UBL back sticker O → UFR right[0]=O, UBL left sticker B → UFR front[2]=B
     // UF(R)→UR: right[1]=R. UR(G)→UF: front[1]=G.
-    back:  ['G','O','O'],
-    front: ['R','G','B'],
-    left:  ['R','B','B'],
-    right: ['O','R','G'],
+    back: ["G", "O", "O"],
+    front: ["R", "G", "B"],
+    left: ["R", "B", "B"],
+    right: ["O", "R", "G"],
   },
 
   {
-    id: 'V', name: 'V-Perm', group: 'Diagonal Corner Swap',
+    id: "V",
+    name: "V-Perm",
+    group: "Diagonal Corner Swap",
     alg: "R' U R' U' y R' F' R2 U' R' U R' F R F",
     // Swaps UFR↔UBL (diagonal) and UR↔UB edges.
     // UFR(R,G)→UBL: back[0]=G, left[0]=R (same corner swap as Y-perm but diff edges)
     // UBL(O,B)→UFR: right[0]=O, front[2]=B (same corner swap)
     // UR(G)→UB: back[1]=G. UB(O)→UR: right[1]=O.
-    back:  ['G','G','O'],
-    front: ['R','R','B'],
-    left:  ['R','B','B'],
-    right: ['O','O','G'],
+    back: ["G", "G", "O"],
+    front: ["R", "R", "B"],
+    left: ["R", "B", "B"],
+    right: ["O", "O", "G"],
   },
 
   {
-    id: 'Na', name: 'Na-Perm', group: 'Diagonal Corner Swap',
+    id: "Na",
+    name: "Na-Perm",
+    group: "Diagonal Corner Swap",
     alg: "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'",
     // Swaps two pairs of diagonal corners: UFR↔UBL AND UFL↔UBR.
     // All edges stay solved.
@@ -1159,21 +1312,23 @@ export const PLL_CASES: PLLCase[] = [
     // UFL(R,B)↔UBR(O,G) swap:
     //   UFL→UBR: back[2]=B(UFL left→back), right[2]=R(UFL front→right)
     //   UBR→UFL: front[0]=G(UBR right→front), left[2]=O(UBR back→left)
-    back:  ['G','O','B'],
-    front: ['G','R','B'],
-    left:  ['R','B','O'],
-    right: ['O','G','R'],
+    back: ["G", "O", "B"],
+    front: ["G", "R", "B"],
+    left: ["R", "B", "O"],
+    right: ["O", "G", "R"],
   },
 
   {
-    id: 'Nb', name: 'Nb-Perm', group: 'Diagonal Corner Swap',
+    id: "Nb",
+    name: "Nb-Perm",
+    group: "Diagonal Corner Swap",
     alg: "R' U R U' R' F' U' F R U R' F R' F' R U' R",
     // Mirror of Na (same two diagonal swaps but opposite twist).
     // UFR↔UBL and UFL↔UBR swap, but with opposite corner twists.
-    back:  ['R','O','G'],
-    front: ['O','R','G'],
-    left:  ['B','B','R'],
-    right: ['O','G','B'],
+    back: ["R", "O", "G"],
+    front: ["O", "R", "G"],
+    left: ["B", "B", "R"],
+    right: ["O", "G", "B"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1182,7 +1337,9 @@ export const PLL_CASES: PLLCase[] = [
   // ──────────────────────────────────────────────────────────────────────────
 
   {
-    id: 'Ga', name: 'Ga-Perm', group: 'G-Perms',
+    id: "Ga",
+    name: "Ga-Perm",
+    group: "G-Perms",
     alg: "R2 U R' U R' U' R U' R2 D U' R' U R D'",
     // Ga: corners (UFR UBL UFL) cycle, edges (UF UB UL) cycle (same direction).
     // UFR→UBL→UFL→UFR (CCW corners from top), UF→UB→UL→UF (CCW edges).
@@ -1194,42 +1351,47 @@ export const PLL_CASES: PLLCase[] = [
     //   UL slot has UB piece (O): left[1]=O
     //   UF slot has UL piece (B): front[1]=B
     //   UBR corner and UR edge stay: back[2]=O, right[2]=G, right[1]=G
-    back:  ['R','R','O'],
-    front: ['O','B','R'],
-    left:  ['G','O','B'],
-    right: ['B','G','G'],
+    back: ["R", "R", "O"],
+    front: ["O", "B", "R"],
+    left: ["G", "O", "B"],
+    right: ["B", "G", "G"],
   },
 
   {
-    id: 'Gb', name: 'Gb-Perm', group: 'G-Perms',
+    id: "Gb",
+    name: "Gb-Perm",
+    group: "G-Perms",
     alg: "R' U' R U D' R2 U R' U R U' R U' R2 D",
     // Inverse of Ga (or Ga with opposite cycles).
     // Corners: UFR→UFL→UBL→UFR (CW), Edges: UF→UL→UB→UF (CW).
-    back:  ['G','O','O'],
-    front: ['R','R','B'],
-    left:  ['O','B','B'],
-    right: ['R','G','G'],
+    back: ["G", "O", "O"],
+    front: ["R", "R", "B"],
+    left: ["O", "B", "B"],
+    right: ["R", "G", "G"],
   },
 
   {
-    id: 'Gc', name: 'Gc-Perm', group: 'G-Perms',
+    id: "Gc",
+    name: "Gc-Perm",
+    group: "G-Perms",
     alg: "R2 F2 R U2 R U2 R' F R U R' U' R' F R2",
     // Gc: corners (UFR UBR UBL) cycle, edges (UF UR UB) cycle.
     // UFR→UBR→UBL→UFR cycle with UF→UR→UB→UF.
-    back:  ['R','G','O'],
-    front: ['R','B','O'],
-    left:  ['B','B','B'],
-    right: ['O','R','G'],
+    back: ["R", "G", "O"],
+    front: ["R", "B", "O"],
+    left: ["B", "B", "B"],
+    right: ["O", "R", "G"],
   },
 
   {
-    id: 'Gd', name: 'Gd-Perm', group: 'G-Perms',
+    id: "Gd",
+    name: "Gd-Perm",
+    group: "G-Perms",
     alg: "R U R' U' D R2 U' R U' R' U R' U R2 D'",
     // Inverse of Gc.
-    back:  ['O','B','R'],
-    front: ['O','G','R'],
-    left:  ['B','B','B'],
-    right: ['G','O','R'],
+    back: ["O", "B", "R"],
+    front: ["O", "G", "R"],
+    left: ["B", "B", "B"],
+    right: ["G", "O", "R"],
   },
-
 ];
