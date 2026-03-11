@@ -247,93 +247,190 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 // ─── Algorithm Trainer ───────────────────────────────────────────────────────
+// Diagram components mirror the algorithms page exactly.
 
-type Algorithm = {
-  name: string; // e.g. "T-Perm"
-  notation: string; // move sequence
-  // ASCII art rows representing the top-face sticker pattern (3×3 grid, U-face)
-  // Each char: W=white Y=yellow R=red B=blue G=green O=orange
-  faceColors: string[]; // 9 chars, row by row
-};
-
+type S = "Y" | "G";
+type PColor = "Y" | "R" | "G" | "O" | "B";
 type Category = "OLL" | "PLL";
 
-const ALGORITHMS: Record<Category, Algorithm[]> = {
-  OLL: [
-    {
-      name: "Sune",
-      notation: "R U R' U R U2 R'",
-      faceColors: ["Y", "Y", "Y", "W", "Y", "Y", "W", "W", "Y"],
-    },
-    {
-      name: "Anti-Sune",
-      notation: "R' U' R U' R' U2 R",
-      faceColors: ["Y", "W", "W", "Y", "Y", "W", "Y", "Y", "Y"],
-    },
-    {
-      name: "H-OLL",
-      notation: "F R U R' U' F' f R U R' U' f'",
-      faceColors: ["W", "Y", "W", "Y", "Y", "Y", "W", "Y", "W"],
-    },
-    {
-      name: "Pi-OLL",
-      notation: "R U2 R2 U' R2 U' R2 U2 R",
-      faceColors: ["Y", "W", "Y", "W", "Y", "W", "Y", "W", "Y"],
-    },
-  ],
-  PLL: [
-    {
-      name: "T-Perm",
-      notation: "R U R' U' R' F R2 U' R' U' R U R' F'",
-      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
-    },
-    {
-      name: "U-Perm (a)",
-      notation: "R U' R U R U R U' R' U' R2",
-      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
-    },
-    {
-      name: "U-Perm (b)",
-      notation: "R2 U R U R' U' R' U' R' U R'",
-      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
-    },
-    {
-      name: "Z-Perm",
-      notation: "M2 U M2 U M' U2 M2 U2 M' U2",
-      faceColors: ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"],
-    },
-  ],
-};
+const Y_COL = "#FFD700";
+const G_COL = "#3a3a3a";
+function sty(c: S): React.CSSProperties {
+  return { backgroundColor: c === "Y" ? Y_COL : G_COL, borderRadius: 2 };
+}
 
-const COLOR_MAP: Record<string, string> = {
-  Y: "#FFD500",
-  W: "#ffffff",
-  R: "#C41E3A",
-  B: "#0051A2",
-  G: "#009B48",
-  O: "#FF5800",
+const PLL_COLORS: Record<PColor, string> = {
+  Y: "#FFD500", R: "#C41E3A", G: "#009B48", O: "#FF5800", B: "#0051A2",
 };
+function psty(c: PColor): React.CSSProperties {
+  return { backgroundColor: PLL_COLORS[c], borderRadius: 2 };
+}
 
-function CubeFacePreview({ colors }: { colors: string[] }) {
+interface OLLDiagram {
+  top: [S, S, S, S, S, S, S, S, S];
+  back: [S, S, S]; front: [S, S, S]; left: [S, S, S]; right: [S, S, S];
+}
+interface PLLDiagram {
+  top: [PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor];
+  back: [PColor, PColor, PColor]; front: [PColor, PColor, PColor];
+  left: [PColor, PColor, PColor]; right: [PColor, PColor, PColor];
+}
+
+function OLLDiagramView({ top, back, front, left, right }: OLLDiagram) {
+  const cell = 28, side = 10, gap = 2;
   return (
-    <div className="grid grid-cols-3 gap-1 w-36 h-36">
-      {colors.map((c, i) => (
-        <div
-          key={i}
-          className="rounded-sm"
-          style={{ backgroundColor: COLOR_MAP[c] ?? "#3f3f46" }}
-        />
-      ))}
+    <div style={{ display: "inline-grid", gridTemplateColumns: `${side}px ${cell}px ${cell}px ${cell}px ${side}px`, gridTemplateRows: `${side}px ${cell}px ${cell}px ${cell}px ${side}px`, gap }}>
+      <div /><div style={sty(back[0])} /><div style={sty(back[1])} /><div style={sty(back[2])} /><div />
+      <div style={sty(left[0])} /><div style={sty(top[0])} /><div style={sty(top[1])} /><div style={sty(top[2])} /><div style={sty(right[0])} />
+      <div style={sty(left[1])} /><div style={sty(top[3])} /><div style={sty(top[4])} /><div style={sty(top[5])} /><div style={sty(right[1])} />
+      <div style={sty(left[2])} /><div style={sty(top[6])} /><div style={sty(top[7])} /><div style={sty(top[8])} /><div style={sty(right[2])} />
+      <div /><div style={sty(front[0])} /><div style={sty(front[1])} /><div style={sty(front[2])} /><div />
     </div>
   );
 }
+
+function PLLDiagramView({ top, back, front, left, right }: PLLDiagram) {
+  const cell = 28, side = 10, gap = 2;
+  return (
+    <div style={{ display: "inline-grid", gridTemplateColumns: `${side}px ${cell}px ${cell}px ${cell}px ${side}px`, gridTemplateRows: `${side}px ${cell}px ${cell}px ${cell}px ${side}px`, gap }}>
+      <div /><div style={psty(back[0])} /><div style={psty(back[1])} /><div style={psty(back[2])} /><div />
+      <div style={psty(left[0])} /><div style={psty(top[0])} /><div style={psty(top[1])} /><div style={psty(top[2])} /><div style={psty(right[0])} />
+      <div style={psty(left[1])} /><div style={psty(top[3])} /><div style={psty(top[4])} /><div style={psty(top[5])} /><div style={psty(right[1])} />
+      <div style={psty(left[2])} /><div style={psty(top[6])} /><div style={psty(top[7])} /><div style={psty(top[8])} /><div style={psty(right[2])} />
+      <div /><div style={psty(front[0])} /><div style={psty(front[1])} /><div style={psty(front[2])} /><div />
+    </div>
+  );
+}
+
+type OLLAlgorithm = { name: string; notation: string; diagram: OLLDiagram };
+type PLLAlgorithm = { name: string; notation: string; diagram: PLLDiagram };
+
+const OLL_ALGORITHMS: OLLAlgorithm[] = [
+  // Edge orientation
+  {
+    name: "Dot Shape",
+    notation: "F R U R' U' F' f R U R' U' f'",
+    diagram: {
+      top: ["G","G","G","G","Y","G","G","G","G"],
+      back: ["G","Y","G"], front: ["G","Y","G"], left: ["G","Y","G"], right: ["G","Y","G"],
+    },
+  },
+  {
+    name: "I-Shape",
+    notation: "F R U R' U' F'",
+    diagram: {
+      top: ["G","G","G","Y","Y","Y","G","G","G"],
+      back: ["G","Y","G"], front: ["G","Y","G"], left: ["G","G","G"], right: ["G","G","G"],
+    },
+  },
+  {
+    name: "L-Shape",
+    notation: "f R U R' U' f'",
+    diagram: {
+      top: ["G","G","G","G","Y","Y","G","Y","G"],
+      back: ["G","Y","G"], front: ["G","G","G"], left: ["G","Y","G"], right: ["G","G","G"],
+    },
+  },
+  // Corner orientation
+  {
+    name: "Antisune",
+    notation: "R U2 R' U' R U' R'",
+    diagram: {
+      top: ["G","Y","Y","Y","Y","Y","G","Y","G"],
+      back: ["G","G","G"], front: ["Y","G","G"], left: ["Y","G","G"], right: ["G","G","Y"],
+    },
+  },
+  {
+    name: "Sune",
+    notation: "R U R' U R U2 R'",
+    diagram: {
+      top: ["G","Y","G","Y","Y","Y","Y","Y","G"],
+      back: ["Y","G","G"], front: ["G","G","Y"], left: ["G","G","G"], right: ["Y","G","G"],
+    },
+  },
+  {
+    name: "H",
+    notation: "R U R' U R U' R' U R U2 R'",
+    diagram: {
+      top: ["G","Y","G","Y","Y","Y","G","Y","G"],
+      back: ["G","G","G"], front: ["G","G","G"], left: ["Y","G","Y"], right: ["Y","G","Y"],
+    },
+  },
+  {
+    name: "L",
+    notation: "F R' F' r U R U' r'",
+    diagram: {
+      top: ["Y","Y","G","Y","Y","Y","G","Y","Y"],
+      back: ["G","G","G"], front: ["Y","G","G"], left: ["G","G","G"], right: ["Y","G","G"],
+    },
+  },
+  {
+    name: "Pi",
+    notation: "R U2 R2 U' R2 U' R2 U2 R",
+    diagram: {
+      top: ["G","Y","G","Y","Y","Y","G","Y","G"],
+      back: ["G","G","Y"], front: ["G","G","Y"], left: ["Y","G","Y"], right: ["G","G","G"],
+    },
+  },
+  {
+    name: "T",
+    notation: "r U R' U' r' F R F'",
+    diagram: {
+      top: ["G","Y","Y","Y","Y","Y","G","Y","Y"],
+      back: ["Y","G","G"], front: ["Y","G","G"], left: ["G","G","G"], right: ["G","G","G"],
+    },
+  },
+  {
+    name: "U",
+    notation: "R2 D R' U2 R D' R' U2 R'",
+    diagram: {
+      top: ["Y","Y","Y","Y","Y","Y","G","Y","G"],
+      back: ["G","G","G"], front: ["Y","G","Y"], left: ["G","G","G"], right: ["G","G","G"],
+    },
+  },
+];
+
+const TOP_ALL_Y: PLLDiagram["top"] = ["Y","Y","Y","Y","Y","Y","Y","Y","Y"];
+
+const PLL_ALGORITHMS: PLLAlgorithm[] = [
+  {
+    name: "T-Perm",
+    notation: "R U R' U' R' F R2 U' R' U' R U R' F'",
+    diagram: { top: TOP_ALL_Y, front: ["B","B","R"], back: ["G","G","R"], left: ["O","R","O"], right: ["B","O","G"] },
+  },
+  {
+    name: "Y-Perm",
+    notation: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+    diagram: { top: TOP_ALL_Y, front: ["R","R","O"], back: ["R","B","O"], left: ["G","O","B"], right: ["B","G","G"] },
+  },
+  {
+    name: "U-Perm (a)",
+    notation: "R U' R U R U R U' R' U' R2",
+    diagram: { top: TOP_ALL_Y, front: ["B","R","B"], back: ["G","G","G"], left: ["O","B","O"], right: ["R","O","R"] },
+  },
+  {
+    name: "U-Perm (b)",
+    notation: "R2 U R U R' U' R' U' R' U R'",
+    diagram: { top: TOP_ALL_Y, front: ["B","O","B"], back: ["G","G","G"], left: ["O","R","O"], right: ["R","B","R"] },
+  },
+  {
+    name: "H-Perm",
+    notation: "M2 U M2 U2 M2 U M2",
+    diagram: { top: TOP_ALL_Y, front: ["R","O","R"], back: ["O","R","O"], left: ["B","G","B"], right: ["G","B","G"] },
+  },
+  {
+    name: "Z-Perm",
+    notation: "M2 U M2 U M' U2 M2 U2 M'",
+    diagram: { top: TOP_ALL_Y, front: ["R","B","R"], back: ["O","G","O"], left: ["B","R","B"], right: ["G","O","G"] },
+  },
+];
 
 function AlgorithmTrainer() {
   const [category, setCategory] = useState<Category>("OLL");
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const algs = ALGORITHMS[category];
+  const algs = category === "OLL" ? OLL_ALGORITHMS : PLL_ALGORITHMS;
   const current = algs[index];
 
   function handleCategoryChange(cat: Category) {
@@ -384,10 +481,13 @@ function AlgorithmTrainer() {
           <h2 className="font-heading text-xs text-white">{current.name}</h2>
         </div>
 
-        {/* Cube face preview */}
+        {/* Diagram */}
         <div className="flex flex-col items-center gap-6 py-12 px-8">
-          <div className="p-4 rounded-xl border border-zinc-800 bg-[#13131f]">
-            <CubeFacePreview colors={current.faceColors} />
+          <div className="p-3 rounded-lg border border-zinc-800 bg-[#13131f] flex items-center justify-center">
+            {category === "OLL"
+              ? <OLLDiagramView {...(current as OLLAlgorithm).diagram} />
+              : <PLLDiagramView {...(current as PLLAlgorithm).diagram} />
+            }
           </div>
 
           {/* Solution reveal */}
