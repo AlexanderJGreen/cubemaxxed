@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  OLL_CASES,
+  PLL_CASES,
+  type OLLCase as FullOLLCase,
+  type PLLCase as FullPLLCase,
+} from "./data";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = "oll" | "pll";
+type Tab = "oll" | "full-oll" | "pll" | "full-pll";
 type S = "Y" | "G";
 
 interface DiagramProps {
-  // Top face — 9 cells, row-major: [TL, TE, TR, LE, CC, RE, BL, BE, BR]
   top: [S, S, S, S, S, S, S, S, S];
-  // Side strips — 3 cells each
-  back: [S, S, S]; // left→right: TL-side, TE-side, TR-side
-  front: [S, S, S]; // left→right: BL-side, BE-side, BR-side
-  left: [S, S, S]; // top→bottom: TL-side, LE-side, BL-side
-  right: [S, S, S]; // top→bottom: TR-side, RE-side, BR-side
+  back: [S, S, S];
+  front: [S, S, S];
+  left: [S, S, S];
+  right: [S, S, S];
 }
 
 interface OLLCase {
@@ -88,19 +92,7 @@ export function CaseDiagram({ top, back, front, left, right }: DiagramProps) {
   );
 }
 
-// ── OLL Case Data ─────────────────────────────────────────────────────────────
-//
-// Top face positions:  [TL][TE][TR]   indices 0 1 2
-//                      [LE][CC][RE]   indices 3 4 5
-//                      [BL][BE][BR]   indices 6 7 8
-//
-// EOLL side stickers: middle cell (edge) flips with top orientation.
-//   Corner cells for EOLL are G (corner orientation unknown at this step).
-// OCLL side stickers: middle cells are G (cross already done).
-//   Corner cells derived from the standard OLL state for each case.
-//   H, L, Pi side stickers are explicitly specified in the design doc.
-
-// ── Edge Orientation (3 cases) ───────────────────────────────────────────────
+// ── OLL Case Data (2-Look) ────────────────────────────────────────────────────
 
 const EDGE_ORI: OLLCase[] = [
   {
@@ -138,15 +130,11 @@ const EDGE_ORI: OLLCase[] = [
   },
 ];
 
-// ── Corner Orientation (7 cases) ─────────────────────────────────────────────
-// All edges are Y (cross done). Middle cell of every side strip is G.
-
 const CORNER_ORI: OLLCase[] = [
   {
     name: "Antisune",
     diagram: {
       top: ["G", "Y", "Y", "Y", "Y", "Y", "G", "Y", "G"],
-      // TL solved. Unoriented: TR faces back, BL faces front, BR faces right.
       back: ["G", "G", "G"],
       front: ["Y", "G", "G"],
       left: ["Y", "G", "G"],
@@ -158,7 +146,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "Sune",
     diagram: {
       top: ["G", "Y", "G", "Y", "Y", "Y", "Y", "Y", "G"],
-      // BR solved. Unoriented: TL faces back, TR faces right, BL faces left.
       back: ["Y", "G", "G"],
       front: ["G", "G", "Y"],
       left: ["G", "G", "G"],
@@ -170,7 +157,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "H",
     diagram: {
       top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
-      // Spec: left Y G Y, right Y G Y, back/front all G.
       back: ["G", "G", "G"],
       front: ["G", "G", "G"],
       left: ["Y", "G", "Y"],
@@ -182,7 +168,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "L",
     diagram: {
       top: ["Y", "Y", "G", "Y", "Y", "Y", "G", "Y", "Y"],
-      // Spec: front Y G Y, left Y G Y, back/right all G.
       back: ["G", "G", "G"],
       front: ["Y", "G", "G"],
       left: ["G", "G", "G"],
@@ -194,7 +179,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "Pi",
     diagram: {
       top: ["G", "Y", "G", "Y", "Y", "Y", "G", "Y", "G"],
-      // Spec: back Y G Y, front Y G Y, left/right all G.
       back: ["G", "G", "Y"],
       front: ["G", "G", "Y"],
       left: ["Y", "G", "Y"],
@@ -206,7 +190,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "T",
     diagram: {
       top: ["G", "Y", "Y", "Y", "Y", "Y", "G", "Y", "Y"],
-      // TR, BL solved. Unoriented: TL faces left, BR faces front.
       back: ["Y", "G", "G"],
       front: ["Y", "G", "G"],
       left: ["G", "G", "G"],
@@ -218,7 +201,6 @@ const CORNER_ORI: OLLCase[] = [
     name: "U",
     diagram: {
       top: ["Y", "Y", "Y", "Y", "Y", "Y", "G", "Y", "G"],
-      // BL, BR solved. Unoriented TL + TR show headlights on back face.
       back: ["G", "G", "G"],
       front: ["Y", "G", "Y"],
       left: ["G", "G", "G"],
@@ -228,7 +210,7 @@ const CORNER_ORI: OLLCase[] = [
   },
 ];
 
-// ── Card ──────────────────────────────────────────────────────────────────────
+// ── Card & Section (2-Look OLL) ───────────────────────────────────────────────
 
 function CaseCard({ c }: { c: OLLCase }) {
   return (
@@ -246,12 +228,9 @@ function CaseCard({ c }: { c: OLLCase }) {
   );
 }
 
-// ── Section ───────────────────────────────────────────────────────────────────
-
 function Section({ title, cases }: { title: string; cases: OLLCase[] }) {
   return (
     <div className="flex flex-col gap-5">
-      {/* Section header */}
       <div className="flex items-center gap-4">
         <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
@@ -261,8 +240,6 @@ function Section({ title, cases }: { title: string; cases: OLLCase[] }) {
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
-
-      {/* Card grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {cases.map((c) => (
           <CaseCard key={c.name} c={c} />
@@ -302,7 +279,7 @@ function psty(c: PColor): React.CSSProperties {
   return { backgroundColor: PLL_COLORS[c], borderRadius: 2 };
 }
 
-function PLLCaseDiagram({ top, back, front, left, right }: PLLDiagramProps) {
+export function PLLCaseDiagram({ top, back, front, left, right }: PLLDiagramProps) {
   const cell = 28;
   const side = 10;
   const gap = 2;
@@ -345,20 +322,10 @@ function PLLCaseDiagram({ top, back, front, left, right }: PLLDiagramProps) {
   );
 }
 
-// ── PLL Case Data ─────────────────────────────────────────────────────────────
-// Orientation: Front=Red(R), Right=Green(G), Back=Orange(O), Left=Blue(B)
-// Top face is always all-Y for PLL.
+// ── PLL Case Data (2-Look) ────────────────────────────────────────────────────
 
 const TOP_ALL_Y: PLLDiagramProps["top"] = [
-  "Y",
-  "Y",
-  "Y",
-  "Y",
-  "Y",
-  "Y",
-  "Y",
-  "Y",
-  "Y",
+  "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y",
 ];
 
 const CORNER_PERM: PLLCase[] = [
@@ -433,7 +400,7 @@ const EDGE_PERM: PLLCase[] = [
   },
 ];
 
-// ── PLL Card & Section ────────────────────────────────────────────────────────
+// ── Card & Section (2-Look PLL) ───────────────────────────────────────────────
 
 function PLLCaseCard({ c }: { c: PLLCase }) {
   return (
@@ -472,10 +439,129 @@ function PLLSection({ title, cases }: { title: string; cases: PLLCase[] }) {
   );
 }
 
+// ── Full OLL Components ───────────────────────────────────────────────────────
+
+function FullOLLCard({ c }: { c: FullOLLCase }) {
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+      <div className="text-center">
+        <p className="font-heading text-zinc-500 text-[9px] tracking-widest">
+          OLL {c.id}
+        </p>
+        <p className="font-heading text-white text-[11px] leading-snug mt-0.5">
+          {c.name}
+        </p>
+      </div>
+      <div className="rounded-lg bg-[#13131f] border border-zinc-800 p-3 flex items-center justify-center">
+        <CaseDiagram
+          top={c.top}
+          back={c.back}
+          front={c.front}
+          left={c.left}
+          right={c.right}
+        />
+      </div>
+      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
+        {c.alg}
+      </p>
+    </div>
+  );
+}
+
+function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] }) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center gap-4">
+        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+          {title.toUpperCase()}
+        </span>
+        <div className="flex-1 h-px bg-white/[0.05]" />
+        <span className="font-heading text-[9px] text-zinc-700">
+          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {cases.map((c) => (
+          <FullOLLCard key={c.id} c={c} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Full PLL Components ───────────────────────────────────────────────────────
+
+function FullPLLCard({ c }: { c: FullPLLCase }) {
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+      <p className="font-heading text-white text-[11px] leading-snug text-center">
+        {c.name}
+      </p>
+      <div className="rounded-lg bg-[#13131f] border border-zinc-800 p-3 flex items-center justify-center">
+        <PLLCaseDiagram
+          top={TOP_ALL_Y}
+          back={c.back as [PColor, PColor, PColor]}
+          front={c.front as [PColor, PColor, PColor]}
+          left={c.left as [PColor, PColor, PColor]}
+          right={c.right as [PColor, PColor, PColor]}
+        />
+      </div>
+      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
+        {c.alg}
+      </p>
+    </div>
+  );
+}
+
+function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] }) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center gap-4">
+        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+          {title.toUpperCase()}
+        </span>
+        <div className="flex-1 h-px bg-white/[0.05]" />
+        <span className="font-heading text-[9px] text-zinc-700">
+          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {cases.map((c) => (
+          <FullPLLCard key={c.id} c={c} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function groupBy<T>(arr: T[], key: keyof T): [string, T[]][] {
+  const map = new Map<string, T[]>();
+  for (const item of arr) {
+    const k = String(item[key]);
+    if (!map.has(k)) map.set(k, []);
+    map.get(k)!.push(item);
+  }
+  return Array.from(map.entries());
+}
+
+// ── Tab config ────────────────────────────────────────────────────────────────
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "oll",      label: "2-Look OLL" },
+  { id: "pll",      label: "2-Look PLL" },
+  { id: "full-oll", label: "Full OLL"   },
+  { id: "full-pll", label: "Full PLL"   },
+];
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Algorithms() {
   const [tab, setTab] = useState<Tab>("oll");
+
+  const ollGroups = groupBy(OLL_CASES, "group");
+  const pllGroups = groupBy(PLL_CASES, "group");
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
@@ -491,28 +577,31 @@ export default function Algorithms() {
           ALGORITHMS
         </h1>
         <p className="text-zinc-400 text-sm mt-2">
-          2-Look OLL and PLL reference. All 16 cases.
+          {tab === "oll" && "2-Look OLL — 10 cases to orient the last layer in two steps."}
+          {tab === "full-oll" && "Full OLL — all 57 orientation cases."}
+          {tab === "pll" && "2-Look PLL — 6 cases to permute the last layer in two steps."}
+          {tab === "full-pll" && "Full PLL — all 21 permutation cases."}
         </p>
       </div>
 
       {/* Tab bar */}
       <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1 w-fit mb-10">
-        {(["oll", "pll"] as Tab[]).map((t) => (
+        {TABS.map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              tab === t
-                ? "bg-[#FFD500] text-black"
-                : "text-zinc-400 hover:text-zinc-100"
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-5 py-2 rounded-md text-sm transition-colors cursor-pointer ${
+              tab === t.id
+                ? "font-bold text-[#C41E3A]"
+                : "font-medium text-zinc-400 hover:text-zinc-100"
             }`}
           >
-            {t === "oll" ? "2-Look OLL" : "2-Look PLL"}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {/* OLL tab */}
+      {/* 2-Look OLL */}
       {tab === "oll" && (
         <div className="flex flex-col gap-12">
           <Section
@@ -526,11 +615,29 @@ export default function Algorithms() {
         </div>
       )}
 
-      {/* PLL tab */}
+      {/* Full OLL */}
+      {tab === "full-oll" && (
+        <div className="flex flex-col gap-12">
+          {ollGroups.map(([group, cases]) => (
+            <FullOLLSection key={group} title={group} cases={cases} />
+          ))}
+        </div>
+      )}
+
+      {/* 2-Look PLL */}
       {tab === "pll" && (
         <div className="flex flex-col gap-12">
           <PLLSection title="Corner Permutation" cases={CORNER_PERM} />
           <PLLSection title="Edge Permutation" cases={EDGE_PERM} />
+        </div>
+      )}
+
+      {/* Full PLL */}
+      {tab === "full-pll" && (
+        <div className="flex flex-col gap-12">
+          {pllGroups.map(([group, cases]) => (
+            <FullPLLSection key={group} title={group} cases={cases} />
+          ))}
         </div>
       )}
     </div>
