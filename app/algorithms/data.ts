@@ -1099,7 +1099,7 @@ export const PLL_CASES: PLLCase[] = [
     id: "Aa",
     name: "Aa-Perm",
     group: "Corners Only",
-    alg: "x R' U R' D2 R U' R' D2 R2 x'",
+    alg: "x (R' U R') D2 (R U' R') D2 R2 x'",
     // 3-cycle of corners: UFR→UBR→UBL (leaving UFL fixed).
     // Corners after cycle:
     //   UFL: stays → front[0]=R, left[2]=B
@@ -1110,17 +1110,17 @@ export const PLL_CASES: PLLCase[] = [
     //   UBL (now has UFR piece): UBL position gets UFR's stickers (R,G originally at front/right)
     //     → back[0]=G, left[0]=R
     // Edges all stay: back[1]=O, front[1]=R, left[1]=B, right[1]=G
-    back: ["G", "O", "B"],
-    front: ["R", "R", "G"],
-    left: ["R", "B", "B"],
-    right: ["O", "G", "O"],
+    back: ["O", "B", "O"],
+    front: ["G", "G", "B"],
+    left: ["B", "R", "R"],
+    right: ["G", "O", "R"],
   },
 
   {
     id: "Ab",
     name: "Ab-Perm",
     group: "Corners Only",
-    alg: "x R2 D2 R U R' D2 R U' R x'",
+    alg: "x R2 D2 (R U R') D2 (R U' R) x'",
     // Inverse of Aa. 3-cycle: UFR→UBL→UBR (leaving UFL fixed).
     // UFL: stays → front[0]=R, left[2]=B
     // UFR (now has UBL piece): UBL stickers at UFR position.
@@ -1130,17 +1130,17 @@ export const PLL_CASES: PLLCase[] = [
     //   Simpler: Ab is mirror of Aa about left-right axis.
     //   Aa: back=[G,O,B], front=[R,R,G], left=[R,B,B], right=[O,G,O]
     //   Ab mirror: back=[B,O,G], front=[G,R,R], left=[O,B,B], right=[O,G,R]
-    back: ["B", "O", "G"],
-    front: ["G", "R", "R"],
-    left: ["O", "B", "B"],
-    right: ["R", "G", "O"],
+    back: ["G", "B", "R"],
+    front: ["G", "G", "O"],
+    left: ["O", "R", "R"],
+    right: ["B", "O", "B"],
   },
 
   {
     id: "E",
     name: "E-Perm",
     group: "Corners Only",
-    alg: "x' R U' R' D R U R' D' R U R' D R U' R' D' x",
+    alg: "y x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x",
     // Swaps diagonal corner pairs: UFR↔UBL and UFL↔UBR.
     // UFR gets UBL's stickers, UBL gets UFR's stickers (swap).
     // UFL gets UBR's stickers, UBR gets UFL's stickers (swap).
@@ -1150,9 +1150,9 @@ export const PLL_CASES: PLLCase[] = [
     //   UBL now has UFR piece: back[0]=R, left[0]=G
     //   UFL now has UBR piece: front[0]=G, left[2]=O
     //   UBR now has UFL piece: back[2]=B, right[2]=R
-    back: ["R", "O", "B"],
+    back: ["G", "O", "B"],
     front: ["G", "R", "B"],
-    left: ["G", "B", "O"],
+    left: ["O", "B", "R"],
     right: ["O", "G", "R"],
   },
 
@@ -1165,7 +1165,7 @@ export const PLL_CASES: PLLCase[] = [
     id: "T",
     name: "T-Perm",
     group: "Adjacent Corner Swap",
-    alg: "R U R' U' R' F R2 U' R' U' R U R' F'",
+    alg: "(R U R' U') (R' F R2) (U' R' U') (R U R' F')",
     // Swaps UFR↔UFL corners AND swaps UF↔UB edges.
     // UFR(R,G) ↔ UFL(R,B): corners swap adjacent.
     //   UFR slot now has UFL piece: right[0]=B, front[2]=R(wrong... )
@@ -1178,48 +1178,48 @@ export const PLL_CASES: PLLCase[] = [
     //   UFR(R,G)→UBR position: back[2]=R, right[2]=G  ... corner orientation matters
     //   UBR(O,G)→UFR position: front[2]=O, right[0]=G
     //   UF(R)→UB: back[1]=R. UB(O)→UF: front[1]=O.
-    back: ["O", "R", "R"],
-    front: ["R", "O", "O"],
-    left: ["B", "B", "B"],
-    right: ["G", "G", "G"],
+    back: ["B", "B", "O"],
+    front: ["G", "G", "O"],
+    left: ["R", "O", "R"],
+    right: ["G", "R", "B"],
   },
 
   {
     id: "F",
     name: "F-Perm",
     group: "Adjacent Corner Swap",
-    alg: "R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R",
+    alg: "y (R' U' F') (R U R' U') R' F R2 (U' R' U') (R U R' U) R",
     // F-perm: swaps UFL↔UBL corners and UL↔UF edges.
     // UFL(R,B)→UBL position: back[0]=R, left[0]=B
     // UBL(O,B)→UFL position: front[0]=O, left[2]=B
     // UL(B)→UF: front[1]=B. UF(R)→UL: left[1]=R.
-    back: ["R", "O", "O"],
-    front: ["O", "B", "R"],
-    left: ["B", "R", "B"],
-    right: ["G", "G", "G"],
+    back: ["G", "O", "B"],
+    front: ["R", "R", "R"],
+    left: ["O", "G", "B"],
+    right: ["O", "B", "G"],
   },
 
   {
     id: "Ja",
     name: "Ja-Perm",
     group: "Adjacent Corner Swap",
-    alg: "x R2 F R F' R U2 r' U r U2 x'",
+    alg: "y2 x R2 F R F' R U2 r' U r U2 x'",
     // Swaps UFL↔UFR corners and UL↔UF edges.
     // Classic Ja-perm: (UFR UFL)(UF UL) — front two corners swap, front and left edges swap.
     // UFR(R,G)→UFL: front[0]=G(UFR's right→UFL's front?), left[2]=R
     // UFL(R,B)→UFR: front[2]=B(UFL's left→UFR's front?), right[0]=R
     // UF(R)→UL: left[1]=R. UL(B)→UF: front[1]=B.
-    back: ["O", "O", "O"],
-    front: ["G", "B", "B"],
-    left: ["B", "R", "R"],
-    right: ["R", "G", "G"],
+    back: ["O", "G", "G"],
+    front: ["O", "O", "B"],
+    left: ["B", "B", "G"],
+    right: ["R", "R", "R"],
   },
 
   {
     id: "Jb",
     name: "Jb-Perm",
     group: "Adjacent Corner Swap",
-    alg: "R U R' F' R U R' U' R' F R2 U' R'",
+    alg: "(R U R' F') (R U R' U') R' F R2 U' R'",
     // Mirror of Ja. Swaps UFR↔UBR corners and UR↔UF edges.
     // UFR(R,G)→UBR: back[2]=R, right[2]=G
     // UBR(O,G)→UFR: front[2]=O, right[0]=G ... wait corners cycle not just swap
@@ -1230,36 +1230,36 @@ export const PLL_CASES: PLLCase[] = [
     //   At UFR: front face shows, right face shows. UBR piece: back=O→front[2]=O, right=G→right[0]=G
     // UF→UR: UF piece (front sticker R) → UR slot: right[1]=R
     // UR→UF: UR piece (right sticker G) → UF slot: front[1]=G
-    back: ["O", "O", "R"],
-    front: ["R", "G", "O"],
+    back: ["O", "O", "G"],
+    front: ["R", "G", "G"],
     left: ["B", "B", "B"],
-    right: ["G", "R", "G"],
+    right: ["R", "R", "O"],
   },
 
   {
     id: "Ra",
     name: "Ra-Perm",
     group: "Adjacent Corner Swap",
-    alg: "R U' R' U' R U R D R' U' R D' R' U2 R'",
+    alg: "y (R U' R' U') (R U R D) (R' U' R D') (R' U2 R')",
     // Ra involves a 3-cycle of corners and a 3-cycle of edges on the same side.
     // Ra: (UFR UBR UBL) corners, (UF UR UB) edges — complex cycle.
     // Ra standard pattern (from reference):
-    back: ["B", "O", "O"],
-    front: ["R", "R", "G"],
-    left: ["O", "B", "B"],
-    right: ["G", "G", "R"],
+    back: ["R", "G", "O"],
+    front: ["B", "O", "B"],
+    left: ["G", "B", "O"],
+    right: ["G", "R", "R"],
   },
 
   {
     id: "Rb",
     name: "Rb-Perm",
     group: "Adjacent Corner Swap",
-    alg: "R' U2 R U2 R' F R U R' U' R' F' R2",
+    alg: "(R' U2) (R U2) (R' F R) (U R' U' R') F' R2",
     // Mirror of Ra.
-    back: ["O", "O", "G"],
-    front: ["B", "R", "R"],
-    left: ["B", "B", "O"],
-    right: ["R", "G", "G"],
+    back: ["G", "O", "B"],
+    front: ["R", "G", "R"],
+    left: ["O", "B", "B"],
+    right: ["O", "R", "G"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1271,39 +1271,39 @@ export const PLL_CASES: PLLCase[] = [
     id: "Y",
     name: "Y-Perm",
     group: "Diagonal Corner Swap",
-    alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+    alg: "F R (U' R' U') (R U R' F') (R U R' U') (R' F R F')",
     // Swaps UFR↔UBL (diagonal) and UF↔UR edges.
     // UFR(R,G)→UBL: at UBL, back face and left face show.
     //   UFR right sticker G → UBL back[0]=G, UFR front sticker R → UBL left[0]=R
     // UBL(O,B)→UFR: at UFR, front face and right face show.
     //   UBL back sticker O → UFR right[0]=O, UBL left sticker B → UFR front[2]=B
     // UF(R)→UR: right[1]=R. UR(G)→UF: front[1]=G.
-    back: ["G", "O", "O"],
-    front: ["R", "G", "B"],
-    left: ["R", "B", "B"],
-    right: ["O", "R", "G"],
+    back: ["G", "R", "B"],
+    front: ["G", "G", "B"],
+    left: ["O", "B", "R"],
+    right: ["O", "O", "R"],
   },
 
   {
     id: "V",
     name: "V-Perm",
     group: "Diagonal Corner Swap",
-    alg: "R' U R' U' y R' F' R2 U' R' U R' F R F",
+    alg: "(R' U R' U') (R D' R' D) (R' U D') (R2 U' R2) D R2",
     // Swaps UFR↔UBL (diagonal) and UR↔UB edges.
     // UFR(R,G)→UBL: back[0]=G, left[0]=R (same corner swap as Y-perm but diff edges)
     // UBL(O,B)→UFR: right[0]=O, front[2]=B (same corner swap)
     // UR(G)→UB: back[1]=G. UB(O)→UR: right[1]=O.
-    back: ["G", "G", "O"],
-    front: ["R", "R", "B"],
-    left: ["R", "B", "B"],
-    right: ["O", "O", "G"],
+    back: ["G", "O", "B"],
+    front: ["G", "G", "B"],
+    left: ["O", "R", "R"],
+    right: ["O", "B", "R"],
   },
 
   {
     id: "Na",
     name: "Na-Perm",
     group: "Diagonal Corner Swap",
-    alg: "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'",
+    alg: "(R U R' U) (R U R' F') (R U R' U') R' F R2 U' R' U2 (R U' R')",
     // Swaps two pairs of diagonal corners: UFR↔UBL AND UFL↔UBR.
     // All edges stay solved.
     // UFR(R,G)↔UBL(O,B) swap:
@@ -1312,23 +1312,23 @@ export const PLL_CASES: PLLCase[] = [
     // UFL(R,B)↔UBR(O,G) swap:
     //   UFL→UBR: back[2]=B(UFL left→back), right[2]=R(UFL front→right)
     //   UBR→UFL: front[0]=G(UBR right→front), left[2]=O(UBR back→left)
-    back: ["G", "O", "B"],
-    front: ["G", "R", "B"],
-    left: ["R", "B", "O"],
-    right: ["O", "G", "R"],
+    back: ["B", "B", "G"],
+    front: ["B", "G", "G"],
+    left: ["R", "O", "O"],
+    right: ["R", "R", "O"],
   },
 
   {
     id: "Nb",
     name: "Nb-Perm",
     group: "Diagonal Corner Swap",
-    alg: "R' U R U' R' F' U' F R U R' F R' F' R U' R",
+    alg: "(R' U R U' R') (F' U' F) (R U R') (F R' F') (R U' R)",
     // Mirror of Na (same two diagonal swaps but opposite twist).
     // UFR↔UBL and UFL↔UBR swap, but with opposite corner twists.
-    back: ["R", "O", "G"],
-    front: ["O", "R", "G"],
-    left: ["B", "B", "R"],
-    right: ["O", "G", "B"],
+    back: ["G", "B", "B"],
+    front: ["G", "G", "B"],
+    left: ["O", "O", "R"],
+    right: ["O", "R", "R"],
   },
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -1340,7 +1340,7 @@ export const PLL_CASES: PLLCase[] = [
     id: "Ga",
     name: "Ga-Perm",
     group: "G-Perms",
-    alg: "R2 U R' U R' U' R U' R2 D U' R' U R D'",
+    alg: "R2 (U R' U R' U' R U') R2 D (U' R' U R) D'",
     // Ga: corners (UFR UBL UFL) cycle, edges (UF UB UL) cycle (same direction).
     // UFR→UBL→UFL→UFR (CCW corners from top), UF→UB→UL→UF (CCW edges).
     // After cycle:
@@ -1351,47 +1351,47 @@ export const PLL_CASES: PLLCase[] = [
     //   UL slot has UB piece (O): left[1]=O
     //   UF slot has UL piece (B): front[1]=B
     //   UBR corner and UR edge stay: back[2]=O, right[2]=G, right[1]=G
-    back: ["R", "R", "O"],
-    front: ["O", "B", "R"],
-    left: ["G", "O", "B"],
-    right: ["B", "G", "G"],
+    back: ["B", "G", "O"],
+    front: ["G", "O", "O"],
+    left: ["R", "B", "R"],
+    right: ["G", "R", "B"],
   },
 
   {
     id: "Gb",
     name: "Gb-Perm",
     group: "G-Perms",
-    alg: "R' U' R U D' R2 U R' U R U' R U' R2 D",
+    alg: "(R' U' R U) D' R2 (U R' U R U' R U') R2 D",
     // Inverse of Ga (or Ga with opposite cycles).
     // Corners: UFR→UFL→UBL→UFR (CW), Edges: UF→UL→UB→UF (CW).
-    back: ["G", "O", "O"],
-    front: ["R", "R", "B"],
-    left: ["O", "B", "B"],
-    right: ["R", "G", "G"],
+    back: ["B", "G", "O"],
+    front: ["G", "B", "O"],
+    left: ["R", "O", "R"],
+    right: ["G", "G", "B"],
   },
 
   {
     id: "Gc",
     name: "Gc-Perm",
     group: "G-Perms",
-    alg: "R2 F2 R U2 R U2 R' F R U R' U' R' F R2",
+    alg: "R2 (U' R U' R U R' U) R2 D' (U R U' R') D",
     // Gc: corners (UFR UBR UBL) cycle, edges (UF UR UB) cycle.
     // UFR→UBR→UBL→UFR cycle with UF→UR→UB→UF.
-    back: ["R", "G", "O"],
-    front: ["R", "B", "O"],
-    left: ["B", "B", "B"],
-    right: ["O", "R", "G"],
+    back: ["B", "O", "O"],
+    front: ["G", "B", "O"],
+    left: ["R", "G", "R"],
+    right: ["G", "R", "B"],
   },
 
   {
     id: "Gd",
     name: "Gd-Perm",
     group: "G-Perms",
-    alg: "R U R' U' D R2 U' R U' R' U R' U R2 D'",
+    alg: "(R U R' U') D R2 (U' R U' R' U R' U) R2 D'",
     // Inverse of Gc.
-    back: ["O", "B", "R"],
-    front: ["O", "G", "R"],
-    left: ["B", "B", "B"],
-    right: ["G", "O", "R"],
+    back: ["B", "G", "R"],
+    front: ["G", "R", "O"],
+    left: ["R", "O", "R"],
+    right: ["G", "B", "B"],
   },
 ];

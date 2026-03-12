@@ -11,7 +11,8 @@
       "WebFetch(domain:www.cubelelo.com)",
       "WebFetch(domain:alg.cubing.net)",
       "Bash(grep \"id: [0-9]\" /mnt/c/Users/User/Desktop/projects/cubemaxxed/app/algorithms/data.ts | grep -v \"//\" | sort -t: -k2 -n)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed/app -type f \\\\\\( -name \"*.tsx\" -o -name \"*.ts\" \\\\\\) -exec wc -l {} + | sort -n)"
     ]
   }
 }
