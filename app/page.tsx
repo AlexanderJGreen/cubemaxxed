@@ -60,7 +60,7 @@ const RANK_PATTERNS: Record<string, {
   // Hollow outline square — empty vessel, nothing earned yet
   UNRANKED: {
     highlight: "#7a7a8f",
-    cellSize: 4,
+    cellSize: 3,
     pattern: [
       ["_","_","_","_","_","_","_","_","_"],
       ["_","_","P","P","P","P","P","_","_"],
@@ -76,7 +76,7 @@ const RANK_PATTERNS: Record<string, {
   // Upward triangle — first step forward
   BRONZE: {
     highlight: "#e8a96a",
-    cellSize: 4,
+    cellSize: 3,
     pattern: [
       ["_","_","_","_","_","_","_","_","_"],
       ["_","_","_","_","P","_","_","_","_"],
@@ -105,47 +105,47 @@ const RANK_PATTERNS: Record<string, {
       ["_","_","_","_","_","_","_","_","_"],
     ],
   },
-  // 4-pointed star
+  // Circle/coin — solid round medal
   GOLD: {
     highlight: "#fffaaa",
     cellSize: 4,
     pattern: [
-      ["_","_","_","_","P","_","_","_","_"],
-      ["_","_","_","_","P","_","_","_","_"],
       ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
       ["_","P","P","P","L","P","P","P","_"],
-      ["P","P","P","P","L","P","P","P","P"],
+      ["P","P","P","L","L","L","P","P","P"],
+      ["P","P","L","L","L","L","L","P","P"],
+      ["P","P","P","L","L","L","P","P","P"],
       ["_","P","P","P","L","P","P","P","_"],
+      ["_","_","P","P","P","P","P","_","_"],
       ["_","_","_","P","P","P","_","_","_"],
-      ["_","_","_","_","P","_","_","_","_"],
-      ["_","_","_","_","P","_","_","_","_"],
     ],
   },
-  // 8-pointed star
+  // Flat hexagon — cold, geometric, metallic
   PLATINUM: {
     highlight: "#b8f8ff",
-    cellSize: 4,
+    cellSize: 5,
     pattern: [
-      ["_","_","_","_","P","_","_","_","_"],
-      ["_","P","_","_","P","_","_","P","_"],
-      ["_","_","P","_","P","_","P","_","_"],
-      ["_","_","_","P","P","P","_","_","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","P","P","P","P","P","P","P","_"],
       ["P","P","P","P","L","P","P","P","P"],
-      ["_","_","_","P","P","P","_","_","_"],
-      ["_","_","P","_","P","_","P","_","_"],
-      ["_","P","_","_","P","_","_","P","_"],
-      ["_","_","_","_","P","_","_","_","_"],
+      ["P","P","P","L","L","L","P","P","P"],
+      ["P","P","P","L","L","L","P","P","P"],
+      ["P","P","P","P","L","P","P","P","P"],
+      ["_","P","P","P","P","P","P","P","_"],
+      ["_","_","P","P","P","P","P","_","_"],
+      ["_","_","_","_","_","_","_","_","_"],
     ],
   },
-  // Gem/crystal — wide top, pointed bottom
+  // Classic cut gem — flat top, pointed bottom
   DIAMOND: {
     highlight: "#d0f4ff",
-    cellSize: 4,
+    cellSize: 5,
     pattern: [
       ["_","_","_","_","_","_","_","_","_"],
       ["_","_","P","P","P","P","P","_","_"],
-      ["_","P","P","P","P","P","P","P","_"],
-      ["P","P","P","L","L","P","P","P","P"],
+      ["_","P","P","L","L","L","P","P","_"],
+      ["P","P","L","L","L","L","L","P","P"],
       ["_","P","P","P","P","P","P","P","_"],
       ["_","_","P","P","P","P","P","_","_"],
       ["_","_","_","P","P","P","_","_","_"],
@@ -153,33 +153,33 @@ const RANK_PATTERNS: Record<string, {
       ["_","_","_","_","_","_","_","_","_"],
     ],
   },
-  // Crown — three peaks, broad base
+  // Crown — five peaks, broad base
   MASTER: {
     highlight: "#efbfff",
     cellSize: 5,
     pattern: [
-      ["_","_","_","_","_","_","_","_","_"],
-      ["P","_","_","P","_","P","_","_","P"],
-      ["P","_","P","P","P","P","P","_","P"],
+      ["P","_","P","_","P","_","P","_","P"],
+      ["P","_","P","_","P","_","P","_","P"],
       ["P","P","P","P","P","P","P","P","P"],
-      ["P","P","P","P","L","P","P","P","P"],
+      ["P","P","L","L","L","L","L","P","P"],
+      ["P","P","L","L","L","L","L","P","P"],
       ["P","P","_","_","_","_","_","P","P"],
       ["P","P","_","_","_","_","_","P","P"],
       ["P","P","P","P","P","P","P","P","P"],
       ["_","_","_","_","_","_","_","_","_"],
     ],
   },
-  // Crown with center gems — peak rank
+  // Sun crown — radiating top + crown base
   GRANDMASTER: {
     highlight: "#ffd700",
-    cellSize: 5,
+    cellSize: 7,
     pattern: [
-      ["P","_","P","_","_","_","P","_","P"],
-      ["P","_","P","_","P","_","P","_","P"],
-      ["P","P","P","P","P","P","P","P","P"],
+      ["P","_","_","P","P","P","_","_","P"],
+      ["_","P","_","P","L","P","_","P","_"],
+      ["_","_","P","P","L","P","P","_","_"],
       ["P","P","P","L","L","L","P","P","P"],
-      ["P","P","P","L","L","L","P","P","P"],
-      ["P","P","_","_","_","_","_","P","P"],
+      ["P","P","L","L","L","L","L","P","P"],
+      ["P","P","P","_","_","_","P","P","P"],
       ["P","P","_","_","_","_","_","P","P"],
       ["P","P","P","P","P","P","P","P","P"],
       ["_","_","_","_","_","_","_","_","_"],
@@ -474,16 +474,9 @@ export default function Home() {
             />
 
             {RANKS.map((rank, i) => {
-              const g = rank.glow;
-              const glowFilter =
-                i === 0 ? "none" :
-                i === 1 ? `drop-shadow(0 0 3px ${g})` :
-                i === 2 ? `drop-shadow(0 0 4px ${g}) drop-shadow(0 0 8px ${g})` :
-                i === 3 ? `drop-shadow(0 0 5px ${g}) drop-shadow(0 0 12px ${g})` :
-                i === 4 ? `drop-shadow(0 0 6px ${g}) drop-shadow(0 0 14px ${g})` :
-                i === 5 ? `drop-shadow(0 0 7px ${g}) drop-shadow(0 0 16px ${g})` :
-                i === 6 ? `drop-shadow(0 0 8px ${g}) drop-shadow(0 0 18px ${g}) drop-shadow(0 0 28px ${g})` :
-                          `drop-shadow(0 0 6px ${g}) drop-shadow(0 0 12px ${g}) drop-shadow(0 0 18px ${g})`;
+              const glowFilter = rank.name === "GRANDMASTER"
+                ? `drop-shadow(0 0 3px ${rank.glow})`
+                : "none";
               return (
               <div key={rank.name} className="flex flex-col items-center gap-3 relative z-10">
 
