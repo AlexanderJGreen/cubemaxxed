@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { OLL_CASES, PLL_CASES } from "../algorithms/data";
 
 type Tab = "timer" | "trainer" | "free";
 
@@ -247,11 +248,17 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 // ─── Algorithm Trainer ───────────────────────────────────────────────────────
-// Diagram components mirror the algorithms page exactly.
 
 type S = "Y" | "G";
 type PColor = "Y" | "R" | "G" | "O" | "B";
-type Category = "OLL" | "PLL";
+type TrainerTab = "full-oll" | "full-pll";
+
+const TRAINER_TABS: { id: TrainerTab; label: string }[] = [
+  { id: "full-oll", label: "Full OLL" },
+  { id: "full-pll", label: "Full PLL" },
+];
+const PLL_TOP_Y: [PColor,PColor,PColor,PColor,PColor,PColor,PColor,PColor,PColor] =
+  ["Y","Y","Y","Y","Y","Y","Y","Y","Y"];
 
 const Y_COL = "#FFD700";
 const G_COL = "#3a3a3a";
@@ -302,139 +309,21 @@ function PLLDiagramView({ top, back, front, left, right }: PLLDiagram) {
   );
 }
 
-type OLLAlgorithm = { name: string; notation: string; diagram: OLLDiagram };
-type PLLAlgorithm = { name: string; notation: string; diagram: PLLDiagram };
-
-const OLL_ALGORITHMS: OLLAlgorithm[] = [
-  // Edge orientation
-  {
-    name: "Dot Shape",
-    notation: "F R U R' U' F' f R U R' U' f'",
-    diagram: {
-      top: ["G","G","G","G","Y","G","G","G","G"],
-      back: ["G","Y","G"], front: ["G","Y","G"], left: ["G","Y","G"], right: ["G","Y","G"],
-    },
-  },
-  {
-    name: "I-Shape",
-    notation: "F R U R' U' F'",
-    diagram: {
-      top: ["G","G","G","Y","Y","Y","G","G","G"],
-      back: ["G","Y","G"], front: ["G","Y","G"], left: ["G","G","G"], right: ["G","G","G"],
-    },
-  },
-  {
-    name: "L-Shape",
-    notation: "f R U R' U' f'",
-    diagram: {
-      top: ["G","G","G","G","Y","Y","G","Y","G"],
-      back: ["G","Y","G"], front: ["G","G","G"], left: ["G","Y","G"], right: ["G","G","G"],
-    },
-  },
-  // Corner orientation
-  {
-    name: "Antisune",
-    notation: "R U2 R' U' R U' R'",
-    diagram: {
-      top: ["G","Y","Y","Y","Y","Y","G","Y","G"],
-      back: ["G","G","G"], front: ["Y","G","G"], left: ["Y","G","G"], right: ["G","G","Y"],
-    },
-  },
-  {
-    name: "Sune",
-    notation: "R U R' U R U2 R'",
-    diagram: {
-      top: ["G","Y","G","Y","Y","Y","Y","Y","G"],
-      back: ["Y","G","G"], front: ["G","G","Y"], left: ["G","G","G"], right: ["Y","G","G"],
-    },
-  },
-  {
-    name: "H",
-    notation: "R U R' U R U' R' U R U2 R'",
-    diagram: {
-      top: ["G","Y","G","Y","Y","Y","G","Y","G"],
-      back: ["G","G","G"], front: ["G","G","G"], left: ["Y","G","Y"], right: ["Y","G","Y"],
-    },
-  },
-  {
-    name: "L",
-    notation: "F R' F' r U R U' r'",
-    diagram: {
-      top: ["Y","Y","G","Y","Y","Y","G","Y","Y"],
-      back: ["G","G","G"], front: ["Y","G","G"], left: ["G","G","G"], right: ["Y","G","G"],
-    },
-  },
-  {
-    name: "Pi",
-    notation: "R U2 R2 U' R2 U' R2 U2 R",
-    diagram: {
-      top: ["G","Y","G","Y","Y","Y","G","Y","G"],
-      back: ["G","G","Y"], front: ["G","G","Y"], left: ["Y","G","Y"], right: ["G","G","G"],
-    },
-  },
-  {
-    name: "T",
-    notation: "r U R' U' r' F R F'",
-    diagram: {
-      top: ["G","Y","Y","Y","Y","Y","G","Y","Y"],
-      back: ["Y","G","G"], front: ["Y","G","G"], left: ["G","G","G"], right: ["G","G","G"],
-    },
-  },
-  {
-    name: "U",
-    notation: "R2 D R' U2 R D' R' U2 R'",
-    diagram: {
-      top: ["Y","Y","Y","Y","Y","Y","G","Y","G"],
-      back: ["G","G","G"], front: ["Y","G","Y"], left: ["G","G","G"], right: ["G","G","G"],
-    },
-  },
-];
-
-const TOP_ALL_Y: PLLDiagram["top"] = ["Y","Y","Y","Y","Y","Y","Y","Y","Y"];
-
-const PLL_ALGORITHMS: PLLAlgorithm[] = [
-  {
-    name: "T-Perm",
-    notation: "R U R' U' R' F R2 U' R' U' R U R' F'",
-    diagram: { top: TOP_ALL_Y, front: ["B","B","R"], back: ["G","G","R"], left: ["O","R","O"], right: ["B","O","G"] },
-  },
-  {
-    name: "Y-Perm",
-    notation: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
-    diagram: { top: TOP_ALL_Y, front: ["R","R","O"], back: ["R","B","O"], left: ["G","O","B"], right: ["B","G","G"] },
-  },
-  {
-    name: "U-Perm (a)",
-    notation: "R U' R U R U R U' R' U' R2",
-    diagram: { top: TOP_ALL_Y, front: ["B","R","B"], back: ["G","G","G"], left: ["O","B","O"], right: ["R","O","R"] },
-  },
-  {
-    name: "U-Perm (b)",
-    notation: "R2 U R U R' U' R' U' R' U R'",
-    diagram: { top: TOP_ALL_Y, front: ["B","O","B"], back: ["G","G","G"], left: ["O","R","O"], right: ["R","B","R"] },
-  },
-  {
-    name: "H-Perm",
-    notation: "M2 U M2 U2 M2 U M2",
-    diagram: { top: TOP_ALL_Y, front: ["R","O","R"], back: ["O","R","O"], left: ["B","G","B"], right: ["G","B","G"] },
-  },
-  {
-    name: "Z-Perm",
-    notation: "M2 U M2 U M' U2 M2 U2 M'",
-    diagram: { top: TOP_ALL_Y, front: ["R","B","R"], back: ["O","G","O"], left: ["B","R","B"], right: ["G","O","G"] },
-  },
-];
 
 function AlgorithmTrainer() {
-  const [category, setCategory] = useState<Category>("OLL");
+  const [tab, setTab] = useState<TrainerTab>("2oll");
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const algs = category === "OLL" ? OLL_ALGORITHMS : PLL_ALGORITHMS;
-  const current = algs[index];
+  const isOLL = tab === "2oll" || tab === "full-oll";
 
-  function handleCategoryChange(cat: Category) {
-    setCategory(cat);
+  const algs = tab === "full-oll" ? OLL_CASES : PLL_CASES;
+
+  const current = algs[index % algs.length];
+  const tabLabel = TRAINER_TABS.find((t) => t.id === tab)!.label;
+
+  function handleTabChange(t: TrainerTab) {
+    setTab(t);
     setIndex(0);
     setRevealed(false);
   }
@@ -446,27 +335,24 @@ function AlgorithmTrainer() {
 
   return (
     <div className="space-y-4">
-      {/* Category selector */}
-      <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 flex items-center gap-4">
-        <span className="text-xs text-zinc-500 uppercase tracking-widest shrink-0">
-          Category
-        </span>
-        <div className="flex gap-1">
-          {(["OLL", "PLL"] as Category[]).map((cat) => (
+      {/* Tab selector */}
+      <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 flex items-center gap-4 flex-wrap">
+        <div className="flex gap-1 flex-wrap">
+          {TRAINER_TABS.map((t) => (
             <button
-              key={cat}
-              onClick={() => handleCategoryChange(cat)}
+              key={t.id}
+              onClick={() => handleTabChange(t.id)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                category === cat
+                tab === t.id
                   ? "bg-[#FFD500] text-black"
                   : "text-zinc-400 hover:text-zinc-100"
               }`}
             >
-              {cat}
+              {t.label}
             </button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-zinc-600">
+        <span className="ml-auto text-xs text-zinc-600 shrink-0">
           {index + 1} / {algs.length}
         </span>
       </div>
@@ -476,7 +362,7 @@ function AlgorithmTrainer() {
         {/* Algorithm name */}
         <div className="border-b border-zinc-800 px-8 py-4 text-center">
           <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">
-            {category}
+            {tabLabel}
           </p>
           <h2 className="font-heading text-xs text-white">{current.name}</h2>
         </div>
@@ -484,17 +370,30 @@ function AlgorithmTrainer() {
         {/* Diagram */}
         <div className="flex flex-col items-center gap-6 py-12 px-8">
           <div className="p-3 rounded-lg border border-zinc-800 bg-[#13131f] flex items-center justify-center">
-            {category === "OLL"
-              ? <OLLDiagramView {...(current as OLLAlgorithm).diagram} />
-              : <PLLDiagramView {...(current as PLLAlgorithm).diagram} />
-            }
+            {isOLL ? (
+              <OLLDiagramView
+                top={(current as typeof OLL_CASES[0]).top}
+                back={current.back as [S,S,S]}
+                front={current.front as [S,S,S]}
+                left={current.left as [S,S,S]}
+                right={current.right as [S,S,S]}
+              />
+            ) : (
+              <PLLDiagramView
+                top={PLL_TOP_Y}
+                back={current.back as [PColor,PColor,PColor]}
+                front={current.front as [PColor,PColor,PColor]}
+                left={current.left as [PColor,PColor,PColor]}
+                right={current.right as [PColor,PColor,PColor]}
+              />
+            )}
           </div>
 
           {/* Solution reveal */}
           <div className="text-center min-h-[3rem] flex items-center justify-center">
             {revealed ? (
               <p className="font-mono text-[#FFD500] text-lg tracking-wide">
-                {current.notation}
+                {current.alg}
               </p>
             ) : (
               <button
