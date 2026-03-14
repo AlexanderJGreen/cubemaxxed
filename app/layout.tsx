@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Press_Start_2P, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
+import AuthButton from "./components/AuthButton";
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pressStart2P.variable} ${inter.variable} antialiased`}>
-        <Header />
+        <Header authButton={<AuthButton />} />
         <main>{children}</main>
       </body>
     </html>

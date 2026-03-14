@@ -361,8 +361,7 @@ export default function Home() {
                   style={{
                     fontSize: "clamp(26px, 5.5vw, 60px)",
                     color: "#FFD500",
-                    textShadow:
-                      "0 0 60px rgba(255,213,0,0.15)",
+                    textShadow: "0 0 60px rgba(255,213,0,0.15)",
                   }}
                 >
                   THE FUN WAY.

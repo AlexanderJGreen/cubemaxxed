@@ -23,7 +23,7 @@ function randomCubeColor(exclude?: string) {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-export default function Header() {
+export default function Header({ authButton }: { authButton?: React.ReactNode }) {
   const pathname = usePathname();
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
 
@@ -61,6 +61,7 @@ export default function Header() {
             );
           })}
         </nav>
+        {authButton}
       </div>
 
       {/* Cube-color accent bar */}
