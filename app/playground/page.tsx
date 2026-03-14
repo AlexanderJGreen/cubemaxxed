@@ -319,10 +319,16 @@ function AlgorithmTrainer() {
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const isOLL = tab === "full-oll";
 
   const algs = tab === "full-oll" ? OLL_CASES : PLL_CASES;
+
+  const filtered = search.trim()
+    ? algs.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+    : [];
 
   const current = algs[index % algs.length];
   const tabLabel = TRAINER_TABS.find((t) => t.id === tab)!.label;
@@ -333,6 +339,8 @@ function AlgorithmTrainer() {
     setTab(t);
     setIndex(0);
     setRevealed(false);
+    setSearch("");
+    setSearchOpen(false);
   }
 
   function handleNext() {
@@ -340,10 +348,18 @@ function AlgorithmTrainer() {
     setRevealed(false);
   }
 
+  function jumpTo(target: typeof algs[0]) {
+    const i = algs.indexOf(target as never);
+    if (i !== -1) setIndex(i);
+    setRevealed(false);
+    setSearch("");
+    setSearchOpen(false);
+  }
+
   return (
     <div className="space-y-4">
-      {/* Tab selector */}
-      <div className="flex items-center gap-4 w-fit">
+      {/* Tab selector + search */}
+      <div className="flex items-center gap-3 flex-wrap">
         <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
           {TRAINER_TABS.map((t) => (
             <button
@@ -358,7 +374,45 @@ function AlgorithmTrainer() {
             </button>
           ))}
         </div>
-        <span className="text-xs text-zinc-600 shrink-0">
+
+        {/* Search */}
+        <div className="relative">
+          <div className="flex items-center gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
+            <div className="flex items-center gap-2 px-3 py-1.5">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-zinc-500 shrink-0">
+                <circle cx="6.5" cy="6.5" r="5" /><path d="M11 11l3 3" strokeLinecap="round" />
+              </svg>
+              <input
+                value={search}
+                onFocus={() => setSearchOpen(true)}
+                onBlur={() => { if (!search) setSearchOpen(false); }}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..."
+                className="bg-transparent text-sm text-white placeholder-zinc-600 outline-none w-14"
+              />
+            </div>
+          </div>
+          {searchOpen && filtered.length > 0 && (
+            <div className="absolute top-full mt-1 left-0 w-full bg-[#0a0a11] border border-zinc-700 rounded-lg overflow-hidden z-10 shadow-xl">
+              {filtered.map((a) => (
+                <button
+                  key={a.name}
+                  onMouseDown={() => jumpTo(a)}
+                  className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  {a.name}
+                </button>
+              ))}
+            </div>
+          )}
+          {searchOpen && search && filtered.length === 0 && (
+            <div className="absolute top-full mt-1 left-0 w-full bg-[#0a0a11] border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-600 z-10">
+              No results
+            </div>
+          )}
+        </div>
+
+        <span className="text-xs text-zinc-600 shrink-0 ml-auto">
           {index + 1} / {algs.length}
         </span>
       </div>
