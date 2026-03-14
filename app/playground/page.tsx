@@ -28,10 +28,8 @@ export default function Playground() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === tab.id
-                ? "bg-[#FFD500] text-black"
-                : "text-zinc-400 hover:text-zinc-100"
+            className={`px-5 py-2 rounded-md text-sm cursor-pointer transition-colors ${
+              activeTab === tab.id ? "font-bold text-white" : "font-medium text-zinc-400 hover:text-zinc-100"
             }`}
           >
             {tab.label}
@@ -310,12 +308,19 @@ function PLLDiagramView({ top, back, front, left, right }: PLLDiagram) {
 }
 
 
+const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
+function randomCubeColor(exclude?: string) {
+  const options = CUBE_COLORS.filter((c) => c !== exclude);
+  return options[Math.floor(Math.random() * options.length)];
+}
+
 function AlgorithmTrainer() {
-  const [tab, setTab] = useState<TrainerTab>("2oll");
+  const [tab, setTab] = useState<TrainerTab>("full-oll");
+  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const isOLL = tab === "2oll" || tab === "full-oll";
+  const isOLL = tab === "full-oll";
 
   const algs = tab === "full-oll" ? OLL_CASES : PLL_CASES;
 
@@ -323,6 +328,8 @@ function AlgorithmTrainer() {
   const tabLabel = TRAINER_TABS.find((t) => t.id === tab)!.label;
 
   function handleTabChange(t: TrainerTab) {
+    const next = randomCubeColor(activeColor);
+    setActiveColor(next);
     setTab(t);
     setIndex(0);
     setRevealed(false);
@@ -336,23 +343,22 @@ function AlgorithmTrainer() {
   return (
     <div className="space-y-4">
       {/* Tab selector */}
-      <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 flex items-center gap-4 flex-wrap">
-        <div className="flex gap-1 flex-wrap">
+      <div className="flex items-center gap-4 w-fit">
+        <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
           {TRAINER_TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => handleTabChange(t.id)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                tab === t.id
-                  ? "bg-[#FFD500] text-black"
-                  : "text-zinc-400 hover:text-zinc-100"
+              className={`px-4 py-1.5 rounded-md text-sm cursor-pointer transition-all duration-300 ease-in-out ${
+                tab === t.id ? "font-bold" : "font-medium text-zinc-400 hover:text-zinc-100"
               }`}
+              style={tab === t.id ? { color: activeColor } : undefined}
             >
               {t.label}
             </button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-zinc-600 shrink-0">
+        <span className="text-xs text-zinc-600 shrink-0">
           {index + 1} / {algs.length}
         </span>
       </div>
