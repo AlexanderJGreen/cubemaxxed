@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { OLL_CASES, PLL_CASES } from "../algorithms/data";
+import { formatTime } from "@/lib/rank";
 
 type Tab = "timer" | "trainer" | "free";
 
@@ -53,12 +54,6 @@ type Solve = {
   scramble: string;
 };
 
-function formatTime(ms: number): string {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  const centiseconds = Math.floor((ms % 1000) / 10);
-  return `${minutes}:${String(seconds).padStart(2, "0")}.${String(centiseconds).padStart(2, "0")}`;
-}
 
 function calcAverage(solves: Solve[], n: number): string {
   if (solves.length < n) return "—";

@@ -65,7 +65,7 @@ export const STAGES: Record<number, StageData> = {
     title: "Intro to CFOP & The Cross",
     goal: "Understand CFOP and master the cross at a higher level.",
     color: "#FF5800",
-    xpPerLesson: 100,
+    xpPerLesson: 125,
     lessons: [
       { number: "4.1", title: "What is CFOP?" },
       { number: "4.2", title: "Cross on Bottom" },
@@ -79,7 +79,7 @@ export const STAGES: Record<number, StageData> = {
     title: "F2L (First Two Layers)",
     goal: "Learn intuitive F2L — the hardest and most rewarding stage.",
     color: "#C41E3A",
-    xpPerLesson: 125,
+    xpPerLesson: 150,
     lessons: [
       { number: "5.1", title: "What is F2L?" },
       { number: "5.2", title: "Pairs and Slots" },
