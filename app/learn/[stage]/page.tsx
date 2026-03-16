@@ -5,6 +5,34 @@ import { STAGES } from "../data";
 
 type LessonStatus = "completed" | "available" | "locked";
 
+// Pixel art checkmark — 7×5 grid, opacity values for a faded-tip artsy feel
+const CHECK_PIXELS = [
+  [0,   0,   0,   0,   0,   0.75, 1  ],
+  [0,   0,   0,   0,   0.85, 1,   0  ],
+  [0.8, 0,   0,   0.9, 1,   0,    0  ],
+  [0,   0.9, 1,   1,   0,   0,    0  ],
+  [0,   0,   0.8, 0,   0,   0,    0  ],
+];
+
+function PixelCheck() {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 2px)", gap: "1px" }}>
+      {CHECK_PIXELS.flat().map((opacity, i) => (
+        <div
+          key={i}
+          style={{
+            width: 2,
+            height: 2,
+            backgroundColor: opacity > 0 ? "#0d0d14" : "transparent",
+            opacity: opacity > 0 ? opacity : 1,
+            borderRadius: 1,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default async function StagePage({
   params,
 }: {
@@ -129,15 +157,15 @@ export default async function StagePage({
                     boxShadow: isCompleted ? `0 0 10px ${GREEN}60` : isAvailable ? `0 0 8px ${stage.color}30` : "none",
                   }}
                 >
-                  {isCompleted ? "✓" : lessonIndex}
+                  {isCompleted ? <PixelCheck /> : lessonIndex}
                 </div>
                 {!isLast && (
-                  <div className="w-px flex-1" style={{ minHeight: 20, backgroundColor: isLocked ? "rgba(255,255,255,0.04)" : `${isCompleted ? GREEN : stage.color}25` }} />
+                  <div className="w-px flex-1" style={{ backgroundColor: isLocked ? "rgba(255,255,255,0.04)" : `${isCompleted ? GREEN : stage.color}25` }} />
                 )}
               </div>
 
               {/* Lesson row */}
-              <div className="flex-1 pb-3 pl-4">
+              <div className="flex-1 pb-7 pl-4">
                 <div
                   className="flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-150"
                   style={{

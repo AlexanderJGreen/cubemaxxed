@@ -625,4 +625,306 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
       text: "Try solving it a few more times before moving to Stage 3. Do at least 3 complete solves without looking anything up. Repetition is how the algorithms move from short-term memory to muscle memory.",
     },
   ],
+
+  // ─────────────────────────────────────────────────────────
+  // STAGE 3 — Getting Comfortable
+  // ─────────────────────────────────────────────────────────
+
+  "3.1": [
+    { type: "h2", text: "Why Finger Tricks Matter" },
+    {
+      type: "p",
+      text: "Right now you're probably turning the cube by gripping a face with your whole hand and rotating your wrist. That works — but it's slow. Every wrist turn requires you to re-grip the cube, breaking your rhythm and adding time. Finger tricks replace those full-hand movements with small, precise pushes and pulls using individual fingers. The result is faster turns with less effort.",
+    },
+    {
+      type: "p",
+      text: "This is what separates a 3-minute solver from a 1-minute solver. Not knowing more algorithms — just being able to execute the ones you already know more fluidly.",
+    },
+    { type: "h2", text: "The Core Finger Assignments" },
+    {
+      type: "list",
+      items: [
+        "U (clockwise) — Right index finger pushes the top-back edge of the U face from right to left.",
+        "U' (counterclockwise) — Left index finger pulls the top-back edge of the U face from left to right.",
+        "R (clockwise/counterclockwise) — Use your wrist for these movements, try to avoid any fancy tricks.",
+        "L (clockwise/counterclockwise) — Use your wrist for these movements, try to avoid any fancy tricks.",
+        "F (clockwise) — Right thumb on the top right corner piece to pull clockwise (use your pinky fingers to stop two layers moving at the same time)",
+        "D (clockwise) — Left ring finger or pinky finger pulls on the left side bottom layer corner",
+        "D' (counterclockwise) — Right ring finger or pinky finger pushes on the right side bottom layer corner",
+      ],
+    },
+    {
+      type: "tip",
+      text: "You don't need to master all of these instantly. Focus on U and R first — those two moves appear in almost every algorithm you know.",
+    },
+    { type: "h2", text: "Grip Position" },
+    {
+      type: "p",
+      text: "Hold the cube with your fingertips, not your palms. Your palms should barely touch the cube at all.",
+    },
+    {
+      type: "warn",
+      text: "Don't try to fix your grip and learn finger tricks at the same time as solving. Practice the movements with a solved cube first — just do U, U', R, R' over and over until the finger motion feels natural, then apply it to algorithms.",
+    },
+    { type: "h2", text: "The Goal" },
+    {
+      type: "p",
+      text: "By the end of Stage 3, your finger tricks don't need to be fast — they just need to exist. You're building the habit now. Speed comes from repetition over weeks, not from a single practice session.",
+    },
+  ],
+
+  "3.2": [
+    { type: "h2", text: "Putting Finger Tricks Into Algorithms" },
+    {
+      type: "p",
+      text: "Knowing how to do a finger trick in isolation is one thing. Chaining them smoothly through a full algorithm is another. This lesson is about drilling the algorithms you already know using proper finger technique.",
+    },
+    { type: "h2", text: "Start With the Sexy Move" },
+    {
+      type: "p",
+      text: "The sexy move (R U R' U') is the best algorithm to learn finger tricks on. It's short, it repeats cleanly, and it uses the two most important moves: R and U.",
+    },
+    {
+      type: "algo",
+      name: "The Sexy Move",
+      moves: "R U R' U'",
+      note: "Execute this slowly with the finger tricks you learned from the previous lesson. Wrist movements for (R / R') and index finger (U / U') Repeat until it flows.",
+    },
+    {
+      type: "tip",
+      text: "A good drill: do the sexy move 6 times in a row (which returns the cube to its start state) using only finger tricks. Time yourself. Do it again. Your goal is smooth, not fast.",
+    },
+    { type: "h2", text: "Apply to Corner Insertion" },
+    {
+      type: "p",
+      text: "The corner insertion from Stage 2 (R' D' R D) also benefits from finger tricks. The D move is trickier — your right ring or pinky finger pushes the bottom face. Practice this separately before combining.",
+    },
+    {
+      type: "algo",
+      name: "Corner Insertion",
+      moves: "R' D' R D",
+      note: "Slight wrist movement for right side movements, ring or pinky for bottom face flicks",
+    },
+    { type: "h2", text: "The Middle Layer Algorithms" },
+    {
+      type: "p",
+      text: "The insert-right and insert-left algorithms (U R U' R' U' F' U F and U' L' U L U F U' F') are longer and involve more varied moves. Don't try to finger-trick all of them immediately. Start with the first 4 moves of each and get those smooth before tackling the full sequence.",
+    },
+    {
+      type: "warn",
+      text: "Speed is not the goal here. If you rush and sloppy turns become a habit, they're hard to unlearn. Slow and clean now means fast and clean later.",
+    },
+    { type: "h2", text: "Practice Routine" },
+    {
+      type: "list",
+      items: [
+        "Do the sexy move 6 times in a row using only finger tricks. Repeat 5 times.",
+        "Do R' D' R D 4 times in a row using finger tricks. Repeat 5 times.",
+        "Do a full solve — whenever you hit a move, ask yourself: can I do this without a full regrip of the cube? Or without gripping the cube with my palm?",
+      ],
+    },
+  ],
+
+  "3.3": [
+    { type: "h2", text: "The Cross Is Your Foundation" },
+    {
+      type: "p",
+      text: "Every solve starts with the white cross. At the beginner level, most people spend 30–60 seconds on it — hunting for pieces, turning randomly, fixing mistakes. An efficient cross solver does it in under 8 moves and under 5 seconds. That gap alone can cut minutes off your solve time.",
+    },
+    { type: "h2", text: "Solve the Cross on the Bottom" },
+    {
+      type: "p",
+      text: "In Stage 2 you built the cross on top (white facing up). From now on, build it on the bottom — white facing down. This is the standard for all speedsolving methods because it means you never have to flip the cube after the cross. You can go straight from the cross into solving corners and middle layer edges without any interruption.",
+    },
+    {
+      type: "tip",
+      text: "Flipping a cube over mid-solve takes about 0.5 seconds. That sounds small, but at the beginner level you flip multiple times per solve. Eliminating those flips adds up fast.",
+    },
+    { type: "h2", text: "Use Your Inspection Time" },
+    {
+      type: "p",
+      text: "In official competitions you get 15 seconds of inspection before starting the timer. Even in casual practice, take 3–5 seconds before you start turning to find the white cross pieces. Locate all 4 of them. Figure out roughly where they need to go. Having a plan before you start means fewer wasted moves.",
+    },
+    { type: "h2", text: "The 8-Move Target" },
+    {
+      type: "p",
+      text: "An optimal white cross can almost always be solved in 8 moves or fewer. You don't need to find the perfect solution every time — but aiming for under 8 moves forces you to think rather than turn. Ask yourself: is there a shorter way to get this piece where it needs to go?",
+    },
+    {
+      type: "list",
+      items: [
+        "Look for white edge pieces that are already close to their correct slot — solve those first.",
+        "Try to solve two cross pieces with one sequence of moves.",
+        "Avoid undoing moves — if you just did an R move, doing R' next cancels it out.",
+        "Plan at least the first two cross pieces before you start turning.",
+      ],
+    },
+    {
+      type: "warn",
+      text: "Don't get paralyzed trying to find the perfect cross. An 8-move cross done quickly beats a 6-move cross you spent 20 seconds calculating. As you practice, efficient solutions will come faster and more naturally.",
+    },
+    { type: "h2", text: "Practice: Cross Only" },
+    {
+      type: "p",
+      text: "Scramble your cube, then solve only the cross. Stop there and count how many moves it took. Reset and do it again. Aim to get it under 10 moves consistently before trying to get under 8. This isolated practice is one of the fastest ways to improve your overall solve time.",
+    },
+  ],
+
+  "3.4": [
+    { type: "h2", text: "What Pauses Are Costing You" },
+    {
+      type: "p",
+      text: "If you video yourself solving, you'll notice something: a significant portion of your solve time is spent not turning. You finish a step, then stop and stare at the cube trying to figure out what's next. These pauses are normal at this stage — but eliminating them is where the biggest time gains come from.",
+    },
+    { type: "h2", text: "Lookahead: The Core Skill" },
+    {
+      type: "p",
+      text: "Lookahead means tracking where the next piece is while you're still executing the current move. Instead of: finish algorithm → stop → find piece → start turning, you're: executing algorithm + already tracking the next piece → no pause between steps.",
+    },
+    {
+      type: "tip",
+      text: "You don't need to plan multiple steps ahead right now. Just try to locate the next piece you need before you finish the current one. That one habit alone will noticeably reduce your times.",
+    },
+    { type: "h2", text: "Where Pauses Happen Most" },
+    {
+      type: "list",
+      items: [
+        "After the cross — pausing to find the first white corner piece.",
+        "After each corner — pausing to find the next one.",
+        "After the first layer — pausing before starting middle layer edges.",
+        "After each middle layer edge — pausing to find the next.",
+        "Before OLL — pausing to identify which case you have.",
+      ],
+    },
+    { type: "h2", text: "How to Build Lookahead" },
+    {
+      type: "p",
+      text: "The most effective way to practice lookahead is to slow down. This sounds counterintuitive, but deliberate slow solving forces you to have time to look ahead. When you're rushing, you only have time to react to each piece as you find it. When you slow down, you have time to look at two things at once.",
+    },
+    {
+      type: "list",
+      items: [
+        "Solve at 70% of your normal speed. Use the extra time to look for the next piece while finishing the current step.",
+        "After each major step (cross, corners, middle layer), don't stop — immediately start scanning for the next piece.",
+        "During long algorithms (like middle layer insertions), let your eyes wander to the rest of the cube rather than just watching your hands.",
+      ],
+    },
+    {
+      type: "warn",
+      text: "Don't try to force lookahead during fast solves. Practice it during slow, deliberate solves and it will naturally carry over as your muscle memory improves.",
+    },
+    { type: "h2", text: "A Realistic Expectation" },
+    {
+      type: "p",
+      text: "Lookahead takes weeks to develop. Don't expect to eliminate all pauses immediately. The goal for this stage is just awareness — notice when you pause, notice why, and consciously try to bridge that gap. The improvement happens gradually through repetition.",
+    },
+  ],
+
+  "3.5": [
+    { type: "h2", text: "Bad Habits Are Invisible" },
+    {
+      type: "p",
+      text: "The frustrating thing about bad habits is that they feel normal. You don't notice you're doing them because you've always done them that way. This lesson names the most common ones so you can start catching yourself.",
+    },
+    { type: "h2", text: "Excessive Cube Rotations" },
+    {
+      type: "p",
+      text: "A cube rotation (x, y, z) reorients the whole cube so you can reach a face more easily. Beginners use them constantly. The problem: every rotation takes time, breaks your rhythm, and forces your brain to re-map which face is which.",
+    },
+    {
+      type: "warn",
+      text: "If you find yourself rotating the cube to do an L or B move — stop. Instead, reach your fingers around the cube to execute the move from your current grip. It feels awkward at first but it's faster.",
+    },
+    { type: "h2", text: "Always Solving the Cross in the Same Order" },
+    {
+      type: "p",
+      text: "Some beginners always place the white-green edge first, then white-red, then white-blue, then white-orange — in the same fixed order every time. This is slower because it ignores which pieces are actually easiest to place first on that specific scramble. Always start with whichever cross piece requires the fewest moves.",
+    },
+    { type: "h2", text: "One-Handed Turning" },
+    {
+      type: "p",
+      text: "Holding the cube in one hand and turning with the other is a very common beginner habit. It strictly limits your turning speed. Both hands should always be active — while one hand turns a face, the other hand is gripping and stabilizing, ready to turn immediately after.",
+    },
+    { type: "h2", text: "Constant Re-gripping" },
+    {
+      type: "p",
+      text: "Re-gripping means shifting your hand position between moves. Every re-grip is a tiny pause. Finger tricks reduce re-gripping because you can execute more moves from the same grip position. If you find yourself shuffling your hands around between every move, your grip position is wrong.",
+    },
+    {
+      type: "tip",
+      text: "Film a solve on your phone and watch it back. Bad habits are obvious from the outside — you'll immediately see the pauses, the re-grips, and the cube rotations that you didn't notice while solving.",
+    },
+    { type: "h2", text: "Staring at Your Hands" },
+    {
+      type: "p",
+      text: "Your hands know what to do during familiar algorithms. If you're watching your hands execute R U R' U', your eyes aren't available to look for the next piece. During algorithms you know well, let your hands work on their own and use your eyes to look ahead.",
+    },
+    { type: "h2", text: "Moving On" },
+    {
+      type: "p",
+      text: "You don't need to eliminate every bad habit before moving forward. Just being aware of them is the first step. As you practice, consciously check in: am I rotating unnecessarily? Am I using both hands? Am I watching my hands when I don't need to?",
+    },
+  ],
+
+  "3.6": [
+    { type: "h2", text: "Time to Find Your Baseline" },
+    {
+      type: "p",
+      text: "You've learned finger tricks, cross efficiency, lookahead, and you know what habits to watch for. Now it's time to establish a real baseline — a number you can actually measure progress against.",
+    },
+    {
+      type: "p",
+      text: "A baseline average means nothing without the context of where you started. The time you record today is the number you'll look back on later and feel good about beating.",
+    },
+    { type: "h2", text: "The Challenge" },
+    {
+      type: "list",
+      items: [
+        "Go into Playground mode and open the Timer.",
+        "Do 5 complete solves. Don't skip any — even if one goes badly.",
+        "Your average of 5 is your Stage 3 baseline.",
+        "Write it down or remember it. You'll want to know this number.",
+      ],
+    },
+    {
+      type: "tip",
+      text: "Don't cherry-pick your solves or redo ones you didn't like. An honest average is more useful than a flattering one. A bad solve in the set is data — it tells you where things break down.",
+    },
+    { type: "h2", text: "What the Numbers Mean" },
+    {
+      type: "table",
+      headers: ["Average", "What it means"],
+      rows: [
+        [
+          "Under 1:00",
+          "You're already moving fast — focus on consistency and lookahead",
+        ],
+        [
+          "1:00 – 2:00",
+          "Right on track for this stage. Keep drilling algorithms and reducing pauses",
+        ],
+        [
+          "2:00 – 4:00",
+          "Your algorithms aren't fully memorized yet. More reps before Stage 4",
+        ],
+        [
+          "Over 4:00",
+          "Spend more time on Stage 2 — the steps aren't automatic enough yet",
+        ],
+      ],
+    },
+    { type: "h2", text: "The Sub-2:00 Goal" },
+    {
+      type: "p",
+      text: "The target for Stage 3 is consistent sub-2:00 solves. You don't need to be there before moving to Stage 4 — but if you're averaging over 3 minutes, it's worth spending more time with the fundamentals before adding more complexity.",
+    },
+    {
+      type: "p",
+      text: "Stage 4 introduces CFOP — a completely different approach to the first layer. If your current solve is shaky, the new method will feel overwhelming. A solid beginner solve is the best foundation for everything that comes next.",
+    },
+    {
+      type: "tip",
+      text: "Come back to the timer regularly. Your average after 50 more solves will be noticeably lower than today's just from repetition alone — even without learning anything new.",
+    },
+  ],
 };

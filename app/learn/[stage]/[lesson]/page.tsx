@@ -195,14 +195,13 @@ export default async function LessonPage({
       <div className="flex flex-col gap-6">
         {user ? (
           <form>
-            <input type="hidden" name="lessonId" value={lesson.number} />
             <button
               formAction={async () => {
                 "use server";
                 await completeLesson(lesson.number, stageNum, stage.xpPerLesson);
               }}
               disabled={alreadyCompleted}
-              className="w-full font-heading text-[11px] leading-none py-4 transition-all duration-75"
+              className={`btn-shine w-full font-heading text-[11px] leading-none py-4 transition-all duration-75 ${alreadyCompleted ? "cursor-default" : "cursor-pointer active:translate-y-[2px]"}`}
               style={alreadyCompleted ? {
                 backgroundColor: "rgba(0,155,72,0.1)",
                 color: "#009B48",
