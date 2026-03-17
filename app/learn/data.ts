@@ -70,7 +70,7 @@ export const STAGES: Record<number, StageData> = {
       { number: "4.1", title: "What is CFOP?" },
       { number: "4.2", title: "Cross on Bottom" },
       { number: "4.3", title: "Planning the Full Cross" },
-      { number: "4.4", title: "Efficient Cross Solutions" },
+      { number: "4.4", title: "Cross Efficiency" },
       { number: "4.5", title: "Cross Drills" },
     ],
   },

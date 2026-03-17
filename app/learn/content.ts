@@ -927,4 +927,300 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
       text: "Come back to the timer regularly. Your average after 50 more solves will be noticeably lower than today's just from repetition alone — even without learning anything new.",
     },
   ],
+
+  // ─────────────────────────────────────────────────────────
+  // STAGE 4 — Intro to CFOP & The Cross
+  // ─────────────────────────────────────────────────────────
+
+  "4.1": [
+    { type: "h2", text: "What is CFOP?" },
+    {
+      type: "p",
+      text: "CFOP is the most popular speedcubing method in the world. Nearly every top solver uses it. The name stands for the four steps of the solve: Cross, F2L, OLL, PLL.",
+    },
+    {
+      type: "table",
+      headers: ["Step", "Full Name", "What it does"],
+      rows: [
+        [
+          "Cross",
+          "Cross",
+          "Solve 4 edge pieces to form a cross on the bottom face",
+        ],
+        [
+          "F2L",
+          "First Two Layers",
+          "Pair corners and edges, insert them to complete the first two layers",
+        ],
+        [
+          "OLL",
+          "Orientation of the Last Layer",
+          "Make the entire top face one color (yellow)",
+        ],
+        [
+          "PLL",
+          "Permutation of the Last Layer",
+          "Move the top layer pieces into their correct positions",
+        ],
+      ],
+    },
+    { type: "h2", text: "How It Differs from the Beginner Method" },
+    {
+      type: "p",
+      text: "In the beginner layer-by-layer method, you solve pieces one at a time — white cross, white corners, middle layer, yellow cross, and so on. That's 6–7 separate steps. CFOP collapses all of that into 4 more efficient steps.",
+    },
+    {
+      type: "p",
+      text: "The biggest change is F2L. Instead of solving white corners and middle edges separately (2 steps), you pair them up and insert them together in one step. This alone cuts seconds off every solve.",
+    },
+    {
+      type: "list",
+      items: [
+        "Beginner method: ~6–7 steps, 80–120 moves on average",
+        "CFOP: 4 steps, 50–60 moves on average for beginners, under 45 for advanced solvers",
+        "World records are set with CFOP — the method scales all the way to sub-5 seconds",
+      ],
+    },
+    { type: "h2", text: "Other Methods (And Why We're Doing CFOP)" },
+    {
+      type: "p",
+      text: "Other popular methods exist — Roux uses block-building and is favored for its low move count, and ZZ pre-orients edges at the start to simplify the rest of the solve. Both are legitimate paths to becoming fast.",
+    },
+    {
+      type: "p",
+      text: "We're focusing on CFOP because it's the most documented, most taught, and most used method at every skill level. The learning resources, algorithm sheets, and community knowledge are unmatched. If you ever get stuck, help is everywhere.",
+    },
+    {
+      type: "tip",
+      text: "You already know how to do a CFOP cross — it's the same white cross you learned in Stage 2. Stage 4 is about doing it better, faster, and on the bottom instead of the top.",
+    },
+  ],
+
+  "4.2": [
+    { type: "h2", text: "Why Solve the Cross on the Bottom?" },
+    {
+      type: "p",
+      text: "Earlier, you solved the white cross on top because it's a lot easier to see whats happening. With the CFOP method, you always solve it with the white side facing down.",
+    },
+    {
+      type: "warn",
+      text: "Flipping the cube after every cross costs time. Every cube rotation (x, y, z) is a pause where your hands aren't solving. CFOP solvers aim for zero unnecessary rotations.",
+    },
+    { type: "h2", text: "How to Solve the Cross on the Bottom" },
+    {
+      type: "p",
+      text: "The process is the same as before — find white edge pieces and get them to their correct spots. The difference is orientation. You're now looking at the cube from above, working with the bottom face in mind.",
+    },
+    {
+      type: "list",
+      items: [
+        "Find a white edge, each one has: White + one other color (Red, Green, Orange, or Blue)",
+        "If needed, bring the edge piece/pair to the top. Think of the top as your main workspace for now",
+        "Now match the side color. For example, if you have a White + Green edge piece, line it up with the green center piece",
+        "Once it is lined up, it is time to insert it into the bottom. There's two common cases here:",
+        "1. White facing up (on top) — Do a double turn to bring it down. R2, L2, F2, or B2",
+        "2. White edge facing sideways. Move it to the front-top position and do a F or F' move to drop it into place",
+      ],
+    },
+    {
+      type: "tip",
+      text: "Right now, don't worry about speed. Keep the white on bottom, don't break pieces you already solved, and match colors before you insert (this matters a lot)",
+    },
+    {
+      type: "p",
+      text: "At this point, you're gonna wanna focus on solving without rotating the cube, understanding where pieces need to go, and getting comfortable working 'from the top' while solving the cross",
+    },
+    {
+      type: "tip",
+      text: "It's okay to temporarily displace a placed cross edge to work around it — just make sure to restore it before moving on. Planning ahead (Lesson 4.3) eliminates most of this.",
+    },
+    { type: "h2", text: "Getting Comfortable" },
+    {
+      type: "p",
+      text: "Solving on the bottom feels awkward at first. Stick with it. After 20–30 practice crosses it becomes second nature. The discomfort is just your brain adjusting to a new perspective — not a sign that you're doing it wrong.",
+    },
+  ],
+
+  "4.3": [
+    { type: "h2", text: "What Does 'Planning the Cross' Mean?" },
+    {
+      type: "p",
+      text: "Before every competitive solve, there's a 15-second inspection period. Top solvers use this time to plan the entire cross before touching the cube. No moves, just eyes — trace the pieces mentally and figure out the solution in advance.",
+    },
+    {
+      type: "p",
+      text: "This is called cross planning, and it's one of the highest-leverage skills in speedcubing. A planned cross takes 1–3 seconds to execute. An unplanned cross takes 5–10. That difference compounds across hundreds of solves.",
+    },
+    { type: "h2", text: "Start with Two Pieces" },
+    {
+      type: "p",
+      text: "Planning all 4 cross pieces simultaneously is an advanced skill. Start by planning just 2. Pick the two easiest-looking cross pieces and figure out how to solve them before you start. Execute those 2 from memory, then solve the remaining 2 normally.",
+    },
+    {
+      type: "list",
+      items: [
+        "During inspection: scan the cube and find 2 white edges",
+        "Figure out the moves to place both — mentally simulate the solution",
+        "Start the solve and execute your plan",
+        "Solve the remaining 2 cross edges normally",
+        "Over time, expand your planning to 3 pieces, then all 4",
+      ],
+    },
+    { type: "h2", text: "What to Look For" },
+    {
+      type: "p",
+      text: "When scanning for cross pieces, identify two things for each edge: where is it now, and which slot does it belong in? The slot is determined by the non-white color — a white-green edge belongs in the slot next to the green center.",
+    },
+    {
+      type: "table",
+      headers: ["Edge location", "What to think"],
+      rows: [
+        [
+          "Top face, white up",
+          "Which move aligns it? Then a double move drops it in.",
+        ],
+        ["Top face, white sideways", "Which face move puts white facing down?"],
+        [
+          "Middle layer",
+          "Which moves bring it to the top without disturbing others?",
+        ],
+        [
+          "Bottom (wrong slot)",
+          "Which move repositions it, or pull it out and re-insert?",
+        ],
+      ],
+    },
+    { type: "h2", text: "Use Inspection Time Actively" },
+    {
+      type: "p",
+      text: "Most beginners use inspection to find one piece and then figure out the rest on the fly. That's fine when starting out, but you want to shift toward complete pre-planning as soon as possible. Every second of thinking during the solve is a second of not turning.",
+    },
+    {
+      type: "tip",
+      text: "Practice cross planning without solving. Pick up a scrambled cube, inspect it for 15 seconds, then put it down. Write down your planned moves. Pick it up again and check if your plan was correct. This trains planning without the pressure of timing.",
+    },
+    {
+      type: "warn",
+      text: "Don't rush planning to the point where your plan is wrong. A confident, correct 4-move plan beats a panicked 8-move scramble any day.",
+    },
+  ],
+
+  "4.4": [
+    { type: "h2", text: "The 6-Move Goal" },
+    {
+      type: "p",
+      text: "A well-planned cross should be solvable in 6 moves or fewer — and often in 4 or 5. Beginners typically use 8–12 moves per cross. That gap is where seconds are hiding.",
+    },
+    {
+      type: "p",
+      text: "The key insight: there are usually multiple ways to solve the cross. The beginner instinct is to grab the first approach that works. The CFOP instinct is to quickly compare a few options and pick the shortest.",
+    },
+    { type: "h2", text: "Recognizing Multiple Solutions" },
+    {
+      type: "p",
+      text: "When you look at a cross piece, ask: is there a 1-move solution? A 2-move solution? Before accepting a 4-move approach, see if a setup move creates a faster sequence. This takes practice but becomes fast and automatic.",
+    },
+    {
+      type: "list",
+      items: [
+        "1-move solutions: edge is already in position but needs one flip (F, R, etc.)",
+        "2-move solutions: one alignment move + one insertion move",
+        "3-move solutions: one setup + one flip + one restore",
+        "4+ move solutions: usually avoidable with better sequencing",
+      ],
+    },
+    { type: "h2", text: "Cross Efficiency in Practice" },
+    {
+      type: "p",
+      text: "When practicing efficiency, solve the cross and then count your moves. If you used more than 8, look back and find where you could have done better. Don't just move on — this reflection is where improvement actually happens.",
+    },
+    {
+      type: "tip",
+      text: "The 'U' layer is your best friend for cross efficiency. Turning U costs nothing in terms of disrupting the cross itself — all 4 cross slots rotate together. Use 'U' moves to setup easy inserts",
+    },
+  ],
+
+  "4.5": [
+    { type: "h2", text: "Why Drills?" },
+    {
+      type: "p",
+      text: "The cross is the foundation of every CFOP solve. A slow cross creates a slow solve, no matter how fast your F2L and last layer are. Dedicated cross drills train speed and planning simultaneously — and they're the fastest way to make the cross automatic.",
+    },
+    {
+      type: "p",
+      text: "The goal for this stage: a consistent cross in 2–3 seconds. That sounds fast, but it's achievable within a few weeks of regular drilling. Top solvers average under 1.5 seconds. Most intermediate solvers land at 2–3.",
+    },
+    { type: "h2", text: "Cross-Only Practice" },
+    {
+      type: "p",
+      text: "Set a timer. Scramble the cube. Solve only the cross as fast as possible, then stop and reset. Don't finish the full solve — just the cross, over and over. This isolates the skill and builds dedicated speed.",
+    },
+    {
+      type: "list",
+      items: [
+        "Scramble, inspect for up to 5 seconds, execute",
+        "Record your time for each cross-only attempt",
+        "Aim for 10 attempts per session",
+        "Track your best and average across sessions",
+        "Once your average drops under 4 seconds, reduce inspection to 3 seconds",
+      ],
+    },
+    { type: "h2", text: "The Drill Progression" },
+    {
+      type: "table",
+      headers: ["Phase", "Inspection time", "Target cross time", "Goal"],
+      rows: [
+        [
+          "1 — Foundations",
+          "15 sec",
+          "Under 8 sec",
+          "Plan all 4 pieces, execute cleanly",
+        ],
+        [
+          "2 — Speed",
+          "15 sec",
+          "Under 5 sec",
+          "Tighten move count to 6 or fewer",
+        ],
+        [
+          "3 — Competition",
+          "15 sec",
+          "Under 3 sec",
+          "Fast recognition, fluid execution",
+        ],
+        [
+          "4 — Advanced",
+          "15 sec",
+          "Under 2 sec",
+          "Solve cross mid-inspection from memory",
+        ],
+      ],
+    },
+    {
+      type: "tip",
+      text: "If you wanna challenge yourself even more, give your self only 5-10 seconds of inspection time. Once you go back to the standard 15 second inspection time, you will feel far more confident.",
+    },
+    { type: "h2", text: "What Good Feels Like" },
+    {
+      type: "p",
+      text: "A good cross doesn't feel fast — it feels smooth. There are no pauses to think. The pieces seem to fall into place with minimal effort. That smoothness comes from planning. When you know exactly what to do before you start, execution becomes effortless.",
+    },
+    {
+      type: "warn",
+      text: "Don't sacrifice accuracy for speed. A broken cross that you have to fix mid-solve is always slower than a slightly slower but correct cross. Speed up only when your current pace is consistent and clean.",
+    },
+    {
+      type: "tip",
+      text: "Use the Playground timer to log cross-only times. After 50+ attempts, your average will tell you which drill phase you're in — and where to focus next.",
+    },
+    { type: "h2", text: "Stage 4 Complete" },
+    {
+      type: "p",
+      text: "At this point, you should have a basic understanding of CFOP. You can solve the cross on the bottom, plan pieces during inspection, and optimize for fewer moves. Stage 5 is where the method gets deep — F2L is the heart of CFOP and the most rewarding thing to learn. The better your cross is, the more mental space you'll have to focus on F2L.",
+    },
+    {
+      type: "tip",
+      text: "Before moving to Stage 5, make sure you can consistently solve the cross in under 6 seconds with no more than 8 moves. If you're not there yet, keep drilling — a solid cross makes all of F2L easier.",
+    },
+  ],
 };
