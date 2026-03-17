@@ -16,14 +16,25 @@ const navLinks = [
 const CUBE_GRADIENT =
   "linear-gradient(to right, #C41E3A, #FF5800, #FFD500, #009B48, #0051A2, #ffffff)";
 
-const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
+const CUBE_COLORS = [
+  "#C41E3A",
+  "#0051A2",
+  "#009B48",
+  "#FF5800",
+  "#FFD500",
+  "#ffffff",
+];
 
 function randomCubeColor(exclude?: string) {
   const options = CUBE_COLORS.filter((c) => c !== exclude);
   return options[Math.floor(Math.random() * options.length)];
 }
 
-export default function Header({ authButton }: { authButton?: React.ReactNode }) {
+export default function Header({
+  authButton,
+}: {
+  authButton?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -34,13 +45,16 @@ export default function Header({ authButton }: { authButton?: React.ReactNode })
   }
 
   return (
-    <header className="relative bg-[#0a0a11]">
+    <header className="relative bg-black">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         {/* Site name */}
         <Link
           href="/"
           className="font-heading text-base leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80"
-          style={{ textShadow: "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A, 3px 3px 0 #C41E3A" }}
+          style={{
+            textShadow:
+              "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A, 3px 3px 0 #C41E3A",
+          }}
         >
           CubeMaxxed
         </Link>

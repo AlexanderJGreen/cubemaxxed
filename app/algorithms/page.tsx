@@ -10,7 +10,7 @@ import {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = "oll" | "full-oll" | "pll" | "full-pll";
+type Tab = "oll-pll" | "full-oll" | "full-pll";
 type S = "Y" | "G";
 
 interface DiagramProps {
@@ -44,9 +44,9 @@ function sty(c: S): React.CSSProperties {
   return { backgroundColor: c === "Y" ? Y_COL : G_COL, borderRadius: 2 };
 }
 
-export function CaseDiagram({ top, back, front, left, right }: DiagramProps) {
-  const cell = 28;
-  const side = 10;
+export function CaseDiagram({ top, back, front, left, right, compact }: DiagramProps & { compact?: boolean }) {
+  const cell = compact ? 20 : 28;
+  const side = compact ? 7 : 10;
   const gap = 2;
 
   return (
@@ -212,14 +212,14 @@ const CORNER_ORI: OLLCase[] = [
 
 // ── Card & Section (2-Look OLL) ───────────────────────────────────────────────
 
-function CaseCard({ c }: { c: OLLCase }) {
+function CaseCard({ c, compact }: { c: OLLCase; compact?: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] ${compact ? "p-4" : "p-7"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
-      <div className="rounded-lg bg-[#13131f] border border-zinc-800 p-3 flex items-center justify-center">
-        <CaseDiagram {...c.diagram} />
+      <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
+        <CaseDiagram {...c.diagram} compact={compact} />
       </div>
       <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
         {c.alg}
@@ -228,7 +228,8 @@ function CaseCard({ c }: { c: OLLCase }) {
   );
 }
 
-function Section({ title, cases }: { title: string; cases: OLLCase[] }) {
+function Section({ title, cases, cols = "auto" }: { title: string; cases: OLLCase[]; cols?: "3" | "auto" }) {
+  const compact = cols === "3";
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
@@ -240,9 +241,9 @@ function Section({ title, cases }: { title: string; cases: OLLCase[] }) {
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className={compact ? "grid grid-cols-3 gap-3" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"}>
         {cases.map((c) => (
-          <CaseCard key={c.name} c={c} />
+          <CaseCard key={c.name} c={c} compact={compact} />
         ))}
       </div>
     </div>
@@ -279,9 +280,9 @@ function psty(c: PColor): React.CSSProperties {
   return { backgroundColor: PLL_COLORS[c], borderRadius: 2 };
 }
 
-export function PLLCaseDiagram({ top, back, front, left, right }: PLLDiagramProps) {
-  const cell = 28;
-  const side = 10;
+export function PLLCaseDiagram({ top, back, front, left, right, compact }: PLLDiagramProps & { compact?: boolean }) {
+  const cell = compact ? 20 : 28;
+  const side = compact ? 7 : 10;
   const gap = 2;
 
   return (
@@ -402,14 +403,14 @@ const EDGE_PERM: PLLCase[] = [
 
 // ── Card & Section (2-Look PLL) ───────────────────────────────────────────────
 
-function PLLCaseCard({ c }: { c: PLLCase }) {
+function PLLCaseCard({ c, compact }: { c: PLLCase; compact?: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] ${compact ? "p-4" : "p-7"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
-      <div className="rounded-lg bg-[#13131f] border border-zinc-800 p-3 flex items-center justify-center">
-        <PLLCaseDiagram {...c.diagram} />
+      <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
+        <PLLCaseDiagram {...c.diagram} compact={compact} />
       </div>
       <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
         {c.alg}
@@ -418,7 +419,8 @@ function PLLCaseCard({ c }: { c: PLLCase }) {
   );
 }
 
-function PLLSection({ title, cases }: { title: string; cases: PLLCase[] }) {
+function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLLCase[]; cols?: "3" | "auto" }) {
+  const compact = cols === "3";
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
@@ -430,9 +432,9 @@ function PLLSection({ title, cases }: { title: string; cases: PLLCase[] }) {
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className={compact ? "grid grid-cols-3 gap-3" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"}>
         {cases.map((c) => (
-          <PLLCaseCard key={c.name} c={c} />
+          <PLLCaseCard key={c.name} c={c} compact={compact} />
         ))}
       </div>
     </div>
@@ -443,7 +445,7 @@ function PLLSection({ title, cases }: { title: string; cases: PLLCase[] }) {
 
 function FullOLLCard({ c }: { c: FullOLLCase }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7">
       <div className="text-center">
         <p className="font-heading text-zinc-500 text-[9px] tracking-widest">
           OLL {c.id}
@@ -493,7 +495,7 @@ function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] 
 
 function FullPLLCard({ c }: { c: FullPLLCase }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-5">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7">
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
@@ -549,10 +551,9 @@ function groupBy<T>(arr: T[], key: keyof T): [string, T[]][] {
 // ── Tab config ────────────────────────────────────────────────────────────────
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "oll",      label: "2-Look OLL" },
-  { id: "pll",      label: "2-Look PLL" },
-  { id: "full-oll", label: "Full OLL"   },
-  { id: "full-pll", label: "Full PLL"   },
+  { id: "oll-pll",  label: "2-Look OLL + PLL" },
+  { id: "full-oll", label: "Full OLL"          },
+  { id: "full-pll", label: "Full PLL"          },
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -565,7 +566,7 @@ function randomCubeColor(exclude?: string) {
 }
 
 export default function Algorithms() {
-  const [tab, setTab] = useState<Tab>("oll");
+  const [tab, setTab] = useState<Tab>("oll-pll");
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
 
   const ollGroups = groupBy(OLL_CASES, "group");
@@ -585,9 +586,8 @@ export default function Algorithms() {
           ALGORITHMS
         </h1>
         <p className="text-zinc-400 text-sm mt-2">
-          {tab === "oll" && "2-Look OLL — 10 cases to orient the last layer in two steps."}
+          {tab === "oll-pll" && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
           {tab === "full-oll" && "Full OLL — all 57 orientation cases."}
-          {tab === "pll" && "2-Look PLL — 6 cases to permute the last layer in two steps."}
           {tab === "full-pll" && "Full PLL — all 21 permutation cases."}
         </p>
       </div>
@@ -617,17 +617,27 @@ export default function Algorithms() {
         ))}
       </div>
 
-      {/* 2-Look OLL */}
-      {tab === "oll" && (
-        <div className="flex flex-col gap-12">
-          <Section
-            title="Edge Orientation — Make the Yellow Cross"
-            cases={EDGE_ORI}
-          />
-          <Section
-            title="Corner Orientation — Complete the Yellow Face"
-            cases={CORNER_ORI}
-          />
+      {/* 2-Look OLL + PLL side by side */}
+      {tab === "oll-pll" && (
+        <div className="flex flex-col lg:flex-row lg:justify-between gap-12">
+          {/* OLL column — far left */}
+          <div className="flex flex-col gap-10 lg:w-[46%]">
+            <div className="font-heading text-[9px] text-zinc-500 tracking-widest border-b border-white/[0.05] pb-3">
+              2-LOOK OLL
+            </div>
+            <Section title="Edge Orientation — Yellow Cross" cases={EDGE_ORI} cols="3" />
+            <Section title="Corner Orientation — Full Yellow Face" cases={CORNER_ORI} cols="3" />
+          </div>
+          {/* Vertical divider */}
+          <div className="hidden lg:block w-px bg-white/[0.06] self-stretch" />
+          {/* PLL column — far right */}
+          <div className="flex flex-col gap-10 lg:w-[46%]">
+            <div className="font-heading text-[9px] text-zinc-500 tracking-widest border-b border-white/[0.05] pb-3">
+              2-LOOK PLL
+            </div>
+            <PLLSection title="Corner Permutation" cases={CORNER_PERM} cols="3" />
+            <PLLSection title="Edge Permutation" cases={EDGE_PERM} cols="3" />
+          </div>
         </div>
       )}
 
@@ -637,14 +647,6 @@ export default function Algorithms() {
           {ollGroups.map(([group, cases]) => (
             <FullOLLSection key={group} title={group} cases={cases} />
           ))}
-        </div>
-      )}
-
-      {/* 2-Look PLL */}
-      {tab === "pll" && (
-        <div className="flex flex-col gap-12">
-          <PLLSection title="Corner Permutation" cases={CORNER_PERM} />
-          <PLLSection title="Edge Permutation" cases={EDGE_PERM} />
         </div>
       )}
 
