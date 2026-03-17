@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const navLinks = [
   { href: "/dashboard", label: "Home" },
@@ -26,10 +26,12 @@ function randomCubeColor(exclude?: string) {
 export default function Header({ authButton }: { authButton?: React.ReactNode }) {
   const pathname = usePathname();
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
+  const [prevPathname, setPrevPathname] = useState(pathname);
 
-  useEffect(() => {
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setActiveColor((prev) => randomCubeColor(prev));
-  }, [pathname]);
+  }
 
   return (
     <header className="relative bg-[#0a0a11]">
