@@ -3,6 +3,45 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 
+const FIRE_GRID = [
+  [0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 1, 1, 1, 0, 0],
+  [0, 1, 1, 1, 1, 1, 0],
+  [0, 1, 2, 2, 2, 1, 0],
+  [1, 1, 2, 2, 2, 1, 1],
+  [1, 2, 2, 3, 2, 2, 1],
+  [0, 2, 3, 3, 3, 2, 0],
+  [0, 0, 3, 3, 3, 0, 0],
+  [0, 0, 0, 3, 0, 0, 0],
+];
+const FIRE_COLORS: Record<number, string> = {
+  1: "#FFD500",
+  2: "#FF5800",
+  3: "#C41E3A",
+};
+
+function PixelFire() {
+  return (
+    <div className="flex flex-col gap-px select-none shrink-0 self-center">
+      {FIRE_GRID.map((row, r) => (
+        <div key={r} className="flex gap-px">
+          {row.map((cell, c) => (
+            <div
+              key={c}
+              style={{
+                width: 4,
+                height: 4,
+                backgroundColor: cell ? FIRE_COLORS[cell] : "transparent",
+                boxShadow: cell === 1 ? "0 0 3px #FFD500" : cell === 2 ? "0 0 3px #FF5800" : cell === 3 ? "0 0 3px #C41E3A" : undefined,
+              }}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default async function Dashboard() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -112,9 +151,7 @@ export default async function Dashboard() {
           className="flex items-center gap-5 p-6 bg-[#0f0f1a]"
           style={{ border: "1px solid rgba(255,255,255,0.05)" }}
         >
-          <span className="text-4xl leading-none select-none" style={{ filter: "saturate(1.4)" }}>
-            🔥
-          </span>
+          <PixelFire />
           <div className="flex flex-col gap-1.5">
             <span
               className="font-heading leading-none"
