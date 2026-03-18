@@ -82,7 +82,7 @@ export const STAGES: Record<number, StageData> = {
     xpPerLesson: 150,
     lessons: [
       { number: "5.1", title: "What is F2L?" },
-      { number: "5.2", title: "Pairs and Slots" },
+      { number: "5.2", title: "Find and Prepare an F2L pair" },
       { number: "5.3", title: "Basic Insertions" },
       { number: "5.4", title: "Pairing on Top" },
       { number: "5.5", title: "Dealing with Pieces in the Wrong Slot" },

@@ -17,6 +17,14 @@ export type Block =
        */
       stickerColors: { [face: string]: (string | null)[] };
       size?: number;
+    }
+  | {
+      type: "f2l-diagram-row";
+      diagrams: {
+        label?: string;
+        stickerColors: { [face: string]: (string | null)[] };
+        size?: number;
+      }[];
     };
 
 export const LESSON_CONTENT: Record<string, Block[]> = {
@@ -1396,43 +1404,123 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
   ],
 
   "5.2": [
-    { type: "h2", text: "Finding Your Pair" },
+    { type: "h2", text: "Finding a F2L pair" },
     {
       type: "p",
-      text: "Before you can insert a pair, you need to find it. Every pair starts as one white corner somewhere on the cube and one matching edge somewhere else. Here is how to identify them.",
+      text: "Before you can insert a pair, you need to find it. The very first thing to look for is if both pieces are in the top layer.",
     },
     {
       type: "list",
       items: [
-        "Find any white corner piece — it has exactly 3 colors: white plus two others",
-        "Note the two non-white colors (for example: red and green)",
+        "Find any white corner piece — it has exactly 3 colors: white plus two others (through out this lesson, we will use red and green as an example)",
+        "Note the two non-white colors (red and green)",
         "Find the edge piece with those exact same two colors (the red-green edge)",
         "That corner and that edge are a pair",
       ],
     },
-    { type: "h2", text: "The Four Slots" },
+
+    {
+      type: "tip",
+      text: "The pair itself most likely will not be grouped together perfectly. Most the time, the corner and edge piece will be seperated. Just make sure they are both in the top layer for now.",
+    },
+
+    {
+      type: "h2",
+      text: "What if the edge piece is on top but a corner is in the bottom layer?",
+    },
     {
       type: "p",
-      text: "There are 4 F2L slots, one at each of the four vertical edges of the cube. Hold the cube with white on the bottom. Each slot is named by its position relative to you:",
+      text: "This is a scenario you will come across a lot. When it happens, simply bring the corner piece up with (R U' R')",
     },
+
     {
-      type: "table",
-      headers: ["Slot", "Position", "Adjacent centers"],
-      rows: [
-        ["Front-Right (FR)", "Nearest right column", "Front + Right"],
-        ["Front-Left (FL)", "Nearest left column", "Front + Left"],
-        ["Back-Right (BR)", "Far right column", "Back + Right"],
-        ["Back-Left (BL)", "Far left column", "Back + Left"],
+      type: "f2l-diagram-row",
+      diagrams: [
+        {
+          // Corner UFR: white on U[8], green on F[2], red on R[0]
+          // Edge UF:    red on U[7],   green on F[1]
+          // Green center F[4], red center R[4] shown for orientation context.
+          // All other stickers grey.
+
+          // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+          label: "Corner on bottom",
+          stickerColors: {
+            U: [null, "#B90000", null, null, "#FFD500", null, null, null, null],
+            F: [null, null, null, null, "#B90000", null, null, null, "#B90000"],
+            R: [null, null, null, null, "#009B48", null, "#009B48", null, null],
+          },
+        },
+        {
+          label: "After (R U' R')",
+          stickerColors: {
+            U: [
+              null,
+              "#B90000",
+              null,
+              null,
+              "#FFD500",
+              null,
+              null,
+              null,
+              "#009B48",
+            ],
+            F: [null, null, "#B90000", null, "#B90000", null, null, null, null],
+            R: ["#FFFFFF", null, null, null, "#009B48", null, null, null, null],
+          },
+        },
       ],
     },
+
     {
       type: "p",
       text: "To identify which slot a pair belongs in: look at the two non-white colors of the pair. The slot is the one between those two color centers. A white-red-green pair goes in the slot between the red center and the green center.",
     },
+
+    {
+      // Corner UFR: white on U[8], green on F[2], red on R[0]
+      // Edge UF:    red on U[7],   green on F[1]
+      // Green center F[4], red center R[4] shown for orientation context.
+      // All other stickers grey.
+
+      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "f2l-diagram",
+      label: "Correct Slot",
+      stickerColors: {
+        U: [null, null, null, null, "#FFD500", null, null, null, null],
+        F: [
+          null,
+          null,
+          null,
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+        ],
+        R: [
+          null,
+          null,
+          null,
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+        ],
+      },
+    },
+
+    {
+      type: "warn",
+      text: "These are very simplified examples. While these cases are of course possible, you will bump in to MANY different cases which will be covered later on.",
+    },
+
     { type: "h2", text: "Using the U Layer as Your Workspace" },
     {
       type: "p",
-      text: "The top layer (U layer) is your workspace in F2L. You bring both pieces of a pair up to the top layer, manipulate them there to connect them, then drive them down into the correct slot. The bottom two layers are already solved and should not be disturbed.",
+      text: "The top layer (U layer) is your workspace in F2L. You bring both pieces of a pair up to the top layer, manipulate them there to connect them.",
     },
     {
       type: "tip",
@@ -1547,11 +1635,7 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
     { type: "h2", text: "When the Pair Isn't Formed Yet" },
     {
       type: "p",
-      text: "The previous lesson assumed the pair was already 'connected' in the top layer. Most of the time it won't be. Both pieces will be in the top layer, but not adjacent or not facing the right direction. This lesson covers how to pair them up before inserting.",
-    },
-    {
-      type: "p",
-      text: "The core technique: use U moves to align the two pieces relative to each other, use one setup move to connect them into a pair, then insert. The process is always: align → connect → insert.",
+      text: "Most of the time, you won't have a pair thats already connected. You will most likely have both pieces in the top layer but not adjacent/not facing the right direction.",
     },
     { type: "h2", text: "Case 1: Corner White Up, Edge Needs Alignment" },
     {
