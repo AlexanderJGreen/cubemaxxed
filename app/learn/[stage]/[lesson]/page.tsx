@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "../../data";
 import { LESSON_CONTENT, type Block } from "../../content";
 import { completeLesson } from "../../actions";
+import F2LDiagram from "@/app/components/F2LDiagram";
 
 function renderBlock(block: Block, stageColor: string) {
   switch (block.type) {
@@ -77,6 +78,20 @@ function renderBlock(block: Block, stageColor: string) {
               ))}
             </tbody>
           </table>
+        </div>
+      );
+    case "f2l-diagram":
+      return (
+        <div
+          key={block.label ?? "f2l"}
+          className="flex justify-center py-4 rounded"
+          style={{ backgroundColor: "#080810", border: `1px solid ${stageColor}18` }}
+        >
+          <F2LDiagram
+            label={block.label}
+            stickerColors={block.stickerColors}
+            size={block.size}
+          />
         </div>
       );
     default:

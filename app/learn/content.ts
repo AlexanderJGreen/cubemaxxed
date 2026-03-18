@@ -5,7 +5,19 @@ export type Block =
   | { type: "warn"; text: string }
   | { type: "algo"; name: string; moves: string; note?: string }
   | { type: "list"; items: string[] }
-  | { type: "table"; headers: string[]; rows: string[][] };
+  | { type: "table"; headers: string[]; rows: string[][] }
+  | {
+      type: "f2l-diagram";
+      label?: string;
+      /**
+       * Per-face sticker colors. Each face takes 9 entries indexed as:
+       *   0 1 2 / 3 4 5 / 6 7 8  (row-major, viewed from outside the cube)
+       * Use a hex string to color a sticker, null to grey it out.
+       * Faces not listed default to all-grey. Keys: U, D, F, B, L, R
+       */
+      stickerColors: { [face: string]: (string | null)[] };
+      size?: number;
+    };
 
 export const LESSON_CONTENT: Record<string, Block[]> = {
   // ─────────────────────────────────────────────────────────
@@ -1252,6 +1264,65 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
         "White-orange-blue corner + orange-blue edge → back-left slot",
       ],
     },
+
+    {
+      // Corner UFR: white on U[8], green on F[2], red on R[0]
+      // Edge UF:    red on U[7],   green on F[1]
+      // Green center F[4], red center R[4] shown for orientation context.
+      // All other stickers grey.
+
+      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "f2l-diagram",
+      label: "Solved Pair Before Insertion",
+      stickerColors: {
+        U: [
+          null,
+          null,
+          null,
+          null,
+          "#FFD500",
+          "#B90000",
+          null,
+          null,
+          "#B90000",
+        ],
+        F: [
+          null,
+          null,
+          "#FFFFFF",
+          "#B90000",
+          "#B90000",
+          null,
+          "#B90000",
+          "#B90000",
+          null,
+        ],
+        R: [
+          "#009B48",
+          "#009B48",
+          null,
+          null,
+          "#009B48",
+          "#009B48",
+          null,
+          "#009B48",
+          "#009B48",
+        ],
+      },
+    },
+
+    {
+      type: "h2",
+      text: "Here we have a solved pair. Now it is just a matter of inserting it.",
+    },
+
+    {
+      type: "algo",
+      name: "Right Slot Insert",
+      moves: "U (R U' R')",
+      note: "This algorithm is very simple. Here is the sequence: Move pair out of the way (U) > Bring up slot the pair needs to go in (R) > Bring the pair into the slot (U') > Insert the slot into its proper position (R')",
+    },
+
     { type: "h2", text: "What a Slot Is" },
     {
       type: "p",
@@ -1261,6 +1332,43 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
       type: "p",
       text: "When a pair is correctly inserted into its slot, the corner sits at the bottom of the slot with white facing down, and the edge sits in the middle layer with its two colors matching the two adjacent centers. Two pieces solved together in one operation.",
     },
+
+    {
+      // Corner UFR: white on U[8], green on F[2], red on R[0]
+      // Edge UF:    red on U[7],   green on F[1]
+      // Green center F[4], red center R[4] shown for orientation context.
+      // All other stickers grey.
+
+      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "f2l-diagram",
+      label: "Solved Pair After Insertion (In Correct Slot)",
+      stickerColors: {
+        U: [null, null, null, null, "#FFD500", null, null, null, null],
+        F: [
+          null,
+          null,
+          null,
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          "#B90000",
+        ],
+        R: [
+          null,
+          null,
+          null,
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+          "#009B48",
+        ],
+      },
+    },
+
     { type: "h2", text: "How F2L Compares to the Beginner Method" },
     {
       type: "table",
@@ -1356,28 +1464,64 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
       type: "p",
       text: "For these basic cases, assume the pair belongs in the front-right slot. Hold the cube so the front-right slot is the one you're inserting into. The front center and right center show you where the pair needs to go.",
     },
-    { type: "h2", text: "Setting Up the Pair" },
-    {
-      type: "p",
-      text: "Before you can insert, the pair needs to be in the right position. A 'connected' pair means: the corner is sitting directly above the target slot (at the UFR position), and the edge is immediately to its right (at the UR position), with matching colors aligned.",
-    },
-    {
-      type: "p",
-      text: "Use U moves to maneuver the pair above the target slot without separating the two pieces. U moves rotate the entire top layer and move both pieces together — this is how you aim the pair at the correct slot.",
-    },
     { type: "h2", text: "The Right Slot Insert" },
+    {
+      // Corner UFR: white on U[8], green on F[2], red on R[0]
+      // Edge UF:    red on U[7],   green on F[1]
+      // Green center F[4], red center R[4] shown for orientation context.
+      // All other stickers grey.
+
+      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "f2l-diagram",
+      label: "Right Slot Pair / Insert",
+      stickerColors: {
+        U: [
+          null,
+          "#B90000",
+          null,
+          null,
+          "#FFD500",
+          null,
+          null,
+          null,
+          "#009B48",
+        ],
+        F: [
+          null,
+          null,
+          "#B90000",
+          "#B90000",
+          "#B90000",
+          null,
+          "#B90000",
+          "#B90000",
+          null,
+        ],
+        R: [
+          "#ffffff",
+          null,
+          null,
+          null,
+          "#009B48",
+          "#009B48",
+          null,
+          "#009B48",
+          "#009B48",
+        ],
+      },
+    },
     {
       type: "algo",
       name: "Right Slot Insert",
       moves: "R U R'",
-      note: "Inserts the pair into the front-right slot. Corner should be above the slot (UFR) with white facing the front (F face). The edge is to the right (UR). R brings the corner down, U repositions the edge, R' finishes the insert.",
+      note: "This is the most basic insert in F2L. For the case shown in the diagram above, (R) pairs the corner and edge piece together, and (U R') inserts the pair into the correct slot.",
     },
     { type: "h2", text: "The Left Slot Insert" },
     {
       type: "algo",
       name: "Left Slot Insert",
       moves: "L' U' L",
-      note: "Mirror of the right insert. Inserts a pair into the front-left slot. Corner at UFL with white facing the front. L' brings the corner down, U' repositions the edge, L completes the insert.",
+      note: "This is just a mirror of the right slot insert. This time, the corner piece would be at front left top corner position with the white sticker facing to the left.",
     },
     { type: "h2", text: "Rotating to Your Advantage" },
     {

@@ -83,7 +83,7 @@ export const STAGES: Record<number, StageData> = {
     lessons: [
       { number: "5.1", title: "What is F2L?" },
       { number: "5.2", title: "Pairs and Slots" },
-      { number: "5.3", title: "Basic Insertions (Easy Cases)" },
+      { number: "5.3", title: "Basic Insertions" },
       { number: "5.4", title: "Pairing on Top" },
       { number: "5.5", title: "Dealing with Pieces in the Wrong Slot" },
       { number: "5.6", title: "Tricky Cases" },
@@ -99,7 +99,10 @@ export const STAGES: Record<number, StageData> = {
     lessons: [
       { number: "6.1", title: "What is OLL?" },
       { number: "6.2", title: "Step 1: Edge Orientation (Yellow Cross)" },
-      { number: "6.3", title: "Step 2: Corner Orientation (Complete Yellow Face)" },
+      {
+        number: "6.3",
+        title: "Step 2: Corner Orientation (Complete Yellow Face)",
+      },
       { number: "6.4", title: "OLL Recognition Practice" },
       { number: "6.5", title: "Putting OLL Together" },
     ],
