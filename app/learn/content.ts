@@ -1484,7 +1484,7 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
 
       // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
       type: "f2l-diagram",
-      label: "Correct Slot",
+      label: "Correct Slot (After Insertion)",
       stickerColors: {
         U: [null, null, null, null, "#FFD500", null, null, null, null],
         F: [
@@ -1543,16 +1543,12 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
   ],
 
   "5.3": [
-    { type: "h2", text: "The Easiest F2L Cases" },
+    { type: "h2", text: "Corner and edge piece stuck together incorrectly" },
     {
       type: "p",
-      text: "The simplest F2L situation is when the pair is already 'connected' — the corner and edge are sitting next to each other in the U layer (top layer) with their shared colors facing the same direction. When this happens, you can insert the pair directly with just a few moves.",
+      text: "When you're learning F2L, you will come across 'Awkward Cases' all the time. In the example below, the corner and edge piece are connected incorrectly. Your goal here is to seperate them while keeping both pieces in the top layer. ",
     },
-    {
-      type: "p",
-      text: "For these basic cases, assume the pair belongs in the front-right slot. Hold the cube so the front-right slot is the one you're inserting into. The front center and right center show you where the pair needs to go.",
-    },
-    { type: "h2", text: "The Right Slot Insert" },
+
     {
       // Corner UFR: white on U[8], green on F[2], red on R[0]
       // Edge UF:    red on U[7],   green on F[1]
@@ -1561,23 +1557,23 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
 
       // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
       type: "f2l-diagram",
-      label: "Right Slot Pair / Insert",
+      label: "Corner / Edge pieces connected incorrectly",
       stickerColors: {
         U: [
           null,
-          "#B90000",
+          null,
           null,
           null,
           "#FFD500",
           null,
           null,
-          null,
-          "#009B48",
+          "#B90000",
+          "#B90000",
         ],
         F: [
           null,
-          null,
-          "#B90000",
+          "#009B48",
+          "#FFFFFF",
           "#B90000",
           "#B90000",
           null,
@@ -1586,7 +1582,7 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
           null,
         ],
         R: [
-          "#ffffff",
+          "#009B48",
           null,
           null,
           null,
@@ -1598,36 +1594,229 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
         ],
       },
     },
+
     {
-      type: "algo",
-      name: "Right Slot Insert",
-      moves: "R U R'",
-      note: "This is the most basic insert in F2L. For the case shown in the diagram above, (R) pairs the corner and edge piece together, and (U R') inserts the pair into the correct slot.",
+      type: "p",
+      text: "In the case/diagram above, you'll notice the corner piece is on the right side. If that happens, you can seperate them with a simple algorithm.",
     },
-    { type: "h2", text: "The Left Slot Insert" },
+
     {
       type: "algo",
-      name: "Left Slot Insert",
-      moves: "L' U' L",
+      name: "Seperate corner & edge piece",
+      moves: "U' R U' R'",
+      note: "Run this algorithm to seperate the two pieces and keep them in the top layer.",
+    },
+    { type: "h2", text: "If the corner piece is on the left" },
+    {
+      type: "algo",
+      name: "Seperate Corner & Edge Piece",
+      moves: "y U L' U L",
       note: "This is just a mirror of the right slot insert. This time, the corner piece would be at front left top corner position with the white sticker facing to the left.",
     },
-    { type: "h2", text: "Rotating to Your Advantage" },
+    { type: "h2", text: "White sticker facing up" },
     {
       type: "p",
-      text: "Every F2L slot can be worked as the 'front-right' slot by rotating the whole cube with y moves. If a pair belongs in the back-left slot, do a y2 rotation so that slot is now at the front-right, then insert normally. This lets you always use the same two algorithms regardless of which slot you're working on.",
+      text: "When solving the First 2 Layers (F2L) you sometimes notice the white sticker of the corner piece facing upwards. You will actually see this happen when you run those algorithms above. ",
     },
+
+    {
+      type: "p",
+      text: "This is a scenario that is actually pretty easy to deal with. Just start with lining up the edge with the correct center and then move the edge away. ",
+    },
+
+    {
+      type: "f2l-diagram-row",
+      diagrams: [
+        {
+          label: "White Corner Up",
+          size: 140,
+          stickerColors: {
+            U: [
+              null,
+              null,
+              null,
+              "#B90000",
+              "#FFD500",
+              null,
+              null,
+              null,
+              "#FFFFFF",
+            ],
+            F: [
+              null,
+              null,
+              "#009B48",
+              "#B90000",
+              "#B90000",
+              null,
+              "#B90000",
+              "#B90000",
+              null,
+            ],
+            R: [
+              "#B90000",
+              null,
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              null,
+              "#009B48",
+              "#009B48",
+            ],
+          },
+        },
+        {
+          label: "Line up edge",
+          size: 140,
+          stickerColors: {
+            U: [
+              "#FFFFFF",
+              null,
+              null,
+              null,
+              "#FFD500",
+              "#B90000",
+              null,
+              null,
+              null,
+            ],
+            R: [
+              null,
+              "#009B48",
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              null,
+              "#009B48",
+              "#009B48",
+            ],
+            F: [
+              null,
+              null,
+              null,
+              "#B90000",
+              "#B90000",
+              null,
+              "#B90000",
+              "#B90000",
+              null,
+            ],
+          },
+        },
+        {
+          label: "Move edge away",
+          size: 140,
+          stickerColors: {
+            U: ["#FFFFFF", null, null, null, "#FFD500", null, null, null, null],
+            R: [
+              null,
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              null,
+            ],
+            F: [
+              null,
+              null,
+              null,
+              "#B90000",
+              "#B90000",
+              "#FFFFFF",
+              "#B90000",
+              "#B90000",
+              "#FFFFFF",
+            ],
+          },
+        },
+      ],
+    },
+
+    // White corner up pt2
+
+    {
+      type: "f2l-diagram-row",
+      diagrams: [
+        {
+          label: "Move corner",
+          size: 140,
+          stickerColors: {
+            U: [null, null, "#FFFFFF", null, "#FFD500", null, null, null, null],
+            R: [
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              null,
+            ],
+            F: [
+              null,
+              null,
+              null,
+              "#B90000",
+              "#B90000",
+              "#FFFFFF",
+              "#B90000",
+              "#B90000",
+              "#FFFFFF",
+            ],
+          },
+        },
+
+        {
+          label: "Move edge to top",
+          size: 140,
+          stickerColors: {
+            U: [
+              null,
+              null,
+              null,
+              null,
+              "#FFD500",
+              "#B90000",
+              null,
+              null,
+              "#B90000",
+            ],
+            R: [
+              "#009B48",
+              "#009B48",
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              null,
+              "#009B48",
+              "#009B48",
+            ],
+            F: [
+              null,
+              null,
+              "#FFFFFF",
+              "#B90000",
+              "#B90000",
+              null,
+              "#B90000",
+              "#B90000",
+              null,
+            ],
+          },
+        },
+      ],
+    },
+
     {
       type: "tip",
-      text: "When first learning, rotate the cube freely to bring whatever slot you're working on to the front-right. Speed comes later — correct solving comes first. Eventually you'll learn to insert into any slot without rotating.",
-    },
-    { type: "h2", text: "What if the Pair Is Already in a Slot (Wrong One)?" },
-    {
-      type: "p",
-      text: "If the corner and edge are both sitting in an F2L slot but it's the wrong slot, or the pieces are in the right slot but incorrectly oriented — don't use these insert algorithms yet. That situation is covered in Lesson 5.5.",
-    },
-    {
-      type: "warn",
-      text: "A common mistake: inserting a pair into the correct slot but with the wrong orientation. Always check that the non-white colors of the corner match the adjacent centers BEFORE inserting. One second of checking avoids having to undo and redo.",
+      text: "Just remember, you're new to F2L. Do NOT worry about going super fast or memorizing a bunch of algorithms. Just go slow, pay attention to how the pieces move and where they go. Eventually, you will begin to notice cases 'automatically' and just know what to do with your fingers.",
     },
   ],
 

@@ -171,7 +171,7 @@ function renderBlock(block: Block, stageColor: string) {
       return (
         <div
           key={block.diagrams.map((d) => d.label).join("-")}
-          className="flex justify-center items-center gap-14 py-4 rounded"
+          className={`flex justify-center items-center py-4 px-6 rounded ${block.diagrams.length > 2 ? "gap-4" : "gap-14"}`}
           style={{
             backgroundColor: "#080810",
             border: `1px solid ${stageColor}18`,
@@ -181,8 +181,8 @@ function renderBlock(block: Block, stageColor: string) {
             <React.Fragment key={i}>
               {i > 0 && (
                 <svg
-                  width="56"
-                  height="36"
+                  width={block.diagrams.length > 2 ? "36" : "56"}
+                  height={block.diagrams.length > 2 ? "24" : "36"}
                   viewBox="0 0 10 7"
                   style={{ imageRendering: "pixelated", flexShrink: 0 }}
                 >
