@@ -83,12 +83,92 @@ export default async function Learn() {
 
   return (
     <>
+      {/* ── Coming Soon overlay ── */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 100,
+        backgroundColor: "rgba(13,13,20,0.92)",
+        backdropFilter: "blur(6px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "24px",
+      }}>
+        <div style={{
+          display: "flex", flexDirection: "column", alignItems: "center",
+          gap: 24, maxWidth: 400, width: "100%", textAlign: "center",
+        }}>
+          {/* Pixel lock icon */}
+          <div style={{
+            display: "inline-grid",
+            gridTemplateColumns: "repeat(5, 8px)",
+            gap: 2,
+          }}>
+            {(() => {
+              const colors = ["#C41E3A","#0051A2","#009B48","#FF5800","#FFD500","#C41E3A","#FF5800","#009B48","#0051A2","#FFD500","#C41E3A","#009B48","#FF5800","#0051A2","#FFD500","#C41E3A","#FF5800","#009B48","#0051A2","#FFD500","#C41E3A","#009B48"];
+              const pattern = [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,1,0,1,1, 1,1,1,1,1, 1,1,1,1,1];
+              let ci = 0;
+              return pattern.map((on, i) => {
+                const color = on ? colors[ci++ % colors.length] : null;
+                const delay = color ? `${((i * 0.41 + ci * 0.27) % 3).toFixed(2)}s` : "0s";
+                return (
+                  <div key={i} style={{
+                    width: 8, height: 8,
+                    backgroundColor: color ?? "transparent",
+                    boxShadow: color ? `0 0 4px ${color}55` : "none",
+                    animation: color ? `pixelFlash 5s ${delay} ease-in-out infinite` : "none",
+                  }} />
+                );
+              });
+            })()}
+          </div>
+
+          {/* Message */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <span style={{
+              fontFamily: "var(--font-heading), monospace",
+              fontSize: 9, letterSpacing: "0.35em", color: "#FFD500",
+            }}>
+              COMING SOON
+            </span>
+            <h2 style={{
+              fontFamily: "var(--font-heading), monospace",
+              fontSize: "clamp(14px, 2.5vw, 20px)",
+              color: "#ededed", margin: 0, lineHeight: 1.4,
+            }}>
+              CURRICULUM IN PROGRESS
+            </h2>
+            <p style={{
+              fontFamily: "var(--font-sans), Arial, sans-serif",
+              fontSize: 14, color: "#52526a", lineHeight: 1.75, margin: 0,
+            }}>
+              The learn section is still being built. Check back soon — the full
+              43-lesson curriculum is on its way.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: "100%", height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
+
+          {/* Link */}
+          <a href="/" style={{
+            fontFamily: "var(--font-heading), monospace",
+            fontSize: 10, letterSpacing: "0.15em",
+            color: "#0d0d14", textDecoration: "none",
+            backgroundColor: "#FFD500",
+            padding: "10px 20px",
+            boxShadow: "0 4px 0px #a38a00",
+            display: "inline-block",
+          }}>
+            GO HOME
+          </a>
+        </div>
+      </div>
+
       <style>{`
         @keyframes activeCardGlow {
           0%, 100% { box-shadow: 0 0 0 1px var(--ac), 0 0 10px var(--ag), inset 0 0 12px var(--ai); }
           50%       { box-shadow: 0 0 0 1px var(--ac), 0 0 22px var(--ag), inset 0 0 22px var(--ai); }
         }
         @keyframes blinkCursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+        @keyframes pixelFlash { 0%, 80%, 100% { filter: brightness(1); } 88% { filter: brightness(2.8); } }
         .stage-active-card { animation: activeCardGlow 3s ease-in-out infinite; }
         .blink-cursor { animation: blinkCursor 1s step-end infinite; }
         .learn-card:not(.locked-card):hover { filter: brightness(1.06); }
