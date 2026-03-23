@@ -11,9 +11,9 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type Tab = "oll-pll" | "full-oll" | "full-pll";
-type S = "Y" | "G";
+export type S = "Y" | "G";
 
-interface DiagramProps {
+export interface DiagramProps {
   top: [S, S, S, S, S, S, S, S, S];
   back: [S, S, S];
   front: [S, S, S];
@@ -21,7 +21,7 @@ interface DiagramProps {
   right: [S, S, S];
 }
 
-interface OLLCase {
+export interface OLLCase {
   name: string;
   diagram: DiagramProps;
   alg: string;
@@ -94,7 +94,7 @@ export function CaseDiagram({ top, back, front, left, right, compact }: DiagramP
 
 // ── OLL Case Data (2-Look) ────────────────────────────────────────────────────
 
-const EDGE_ORI: OLLCase[] = [
+export const EDGE_ORI: OLLCase[] = [
   {
     name: "Dot Shape",
     diagram: {
@@ -130,7 +130,7 @@ const EDGE_ORI: OLLCase[] = [
   },
 ];
 
-const CORNER_ORI: OLLCase[] = [
+export const CORNER_ORI: OLLCase[] = [
   {
     name: "Antisune",
     diagram: {
@@ -252,7 +252,7 @@ function Section({ title, cases, cols = "auto" }: { title: string; cases: OLLCas
 
 // ── PLL Types & Colors ────────────────────────────────────────────────────────
 
-type PColor = "Y" | "R" | "G" | "O" | "B";
+export type PColor = "Y" | "R" | "G" | "O" | "B";
 
 const PLL_COLORS: Record<PColor, string> = {
   Y: "#FFD500",
@@ -262,7 +262,7 @@ const PLL_COLORS: Record<PColor, string> = {
   B: "#0051A2",
 };
 
-interface PLLDiagramProps {
+export interface PLLDiagramProps {
   top: [PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor];
   back: [PColor, PColor, PColor];
   front: [PColor, PColor, PColor];
@@ -270,7 +270,7 @@ interface PLLDiagramProps {
   right: [PColor, PColor, PColor];
 }
 
-interface PLLCase {
+export interface PLLCase {
   name: string;
   diagram: PLLDiagramProps;
   alg: string;
@@ -329,7 +329,7 @@ const TOP_ALL_Y: PLLDiagramProps["top"] = [
   "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y",
 ];
 
-const CORNER_PERM: PLLCase[] = [
+export const CORNER_PERM: PLLCase[] = [
   {
     name: "T-Perm",
     diagram: {
@@ -354,7 +354,7 @@ const CORNER_PERM: PLLCase[] = [
   },
 ];
 
-const EDGE_PERM: PLLCase[] = [
+export const EDGE_PERM: PLLCase[] = [
   {
     name: "Ua-Perm",
     diagram: {

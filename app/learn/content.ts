@@ -1249,315 +1249,275 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
   // ─────────────────────────────────────────────────────────
 
   "5.1": [
-    { type: "h2", text: "The Inefficiency of the Beginner Method" },
+    // TODO: fill in content for 5.1 — What is F2L?
     {
-      type: "p",
-      text: "In the beginner method, after the white cross you solve white corners, then flip the cube and insert middle-layer edges as a completely separate step. That's two steps, two separate hunts for pieces, and around 25–40 extra moves. F2L eliminates this inefficiency entirely.",
+      type: "h2",
+      text: "F2L (First 2 Layers) is where you solve the corners and edge pieces (bottom & middle layer) simultaneously",
     },
     {
       type: "p",
-      text: "The key insight: every white corner and its matching middle-layer edge belong together. They're destined for the same location in the finished cube. So instead of solving them separately, you pair them up first — then insert both at once.",
+      text: "Throughout this stage, you will learn the core concepts/basics of solving F2L (First 2 Layers). F2L is part of the CFOP method. After solving the white cross, instead of solving the first and second layer seperately like you did in the beginner method, you solve them both at the same time. This will make your solve time substantially faster.",
     },
-    { type: "h2", text: "What is a pair?" },
+
     {
       type: "p",
-      text: "A pair is one white corner piece + one matching edge piece. They match because they share two colors. For example: the white-red-green corner pairs with the red-green edge. Together, these two pieces fill one F2L slot.",
+      text: "The primary goal is to simply insert a pair into its correct slot. Each pair is made of:",
     },
     {
       type: "list",
       items: [
-        "White-red-green corner + red-green edge → front-right slot (if front = red, right = green)",
-        "White-orange-green corner + orange-green edge → front-left slot (if front = green, left = orange)",
-        "White-red-blue corner + red-blue edge → back-right slot",
-        "White-orange-blue corner + orange-blue edge → back-left slot",
+        "A corner piece (3 colors — White + 2 colors)",
+        "An edge piece (2 colors — no white)",
       ],
-    },
-
-    {
-      // Corner UFR: white on U[8], green on F[2], red on R[0]
-      // Edge UF:    red on U[7],   green on F[1]
-      // Green center F[4], red center R[4] shown for orientation context.
-      // All other stickers grey.
-
-      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
-      type: "f2l-diagram",
-      label: "Solved Pair Before Insertion",
-      stickerColors: {
-        U: [
-          null,
-          null,
-          null,
-          null,
-          "#FFD500",
-          "#B90000",
-          null,
-          null,
-          "#B90000",
-        ],
-        F: [
-          null,
-          null,
-          "#FFFFFF",
-          "#B90000",
-          "#B90000",
-          null,
-          "#B90000",
-          "#B90000",
-          null,
-        ],
-        R: [
-          "#009B48",
-          "#009B48",
-          null,
-          null,
-          "#009B48",
-          "#009B48",
-          null,
-          "#009B48",
-          "#009B48",
-        ],
-      },
-    },
-
-    {
-      type: "h2",
-      text: "Here we have a solved pair. Now it is just a matter of inserting it.",
-    },
-
-    {
-      type: "algo",
-      name: "Right Slot Insert",
-      moves: "U (R U' R')",
-      note: "This algorithm is very simple. Here is the sequence: Move pair out of the way (U) > Bring up slot the pair needs to go in (R) > Bring the pair into the slot (U') > Insert the slot into its proper position (R')",
-    },
-
-    { type: "h2", text: "What a Slot Is" },
-    {
-      type: "p",
-      text: "A slot is the space where a pair lives in the finished cube — the corner of the first (white) layer and the edge directly above it in the second (middle) layer. There are 4 slots, one at each corner of the cube: front-right, front-left, back-right, and back-left.",
-    },
-    {
-      type: "p",
-      text: "When a pair is correctly inserted into its slot, the corner sits at the bottom of the slot with white facing down, and the edge sits in the middle layer with its two colors matching the two adjacent centers. Two pieces solved together in one operation.",
-    },
-
-    {
-      // Corner UFR: white on U[8], green on F[2], red on R[0]
-      // Edge UF:    red on U[7],   green on F[1]
-      // Green center F[4], red center R[4] shown for orientation context.
-      // All other stickers grey.
-
-      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
-      type: "f2l-diagram",
-      label: "Solved Pair After Insertion (In Correct Slot)",
-      stickerColors: {
-        U: [null, null, null, null, "#FFD500", null, null, null, null],
-        F: [
-          null,
-          null,
-          null,
-          "#B90000",
-          "#B90000",
-          "#B90000",
-          "#B90000",
-          "#B90000",
-          "#B90000",
-        ],
-        R: [
-          null,
-          null,
-          null,
-          "#009B48",
-          "#009B48",
-          "#009B48",
-          "#009B48",
-          "#009B48",
-          "#009B48",
-        ],
-      },
-    },
-
-    { type: "h2", text: "How F2L Compares to the Beginner Method" },
-    {
-      type: "table",
-      headers: ["Metric", "Beginner Method", "F2L"],
-      rows: [
-        ["Steps", "2 (corners, then edges)", "1 (pairs)"],
-        ["Average moves", "25–45", "10–20"],
-        [
-          "Thinking required",
-          "Procedural — run algorithms",
-          "Intuitive — understand positions",
-        ],
-        ["Ceiling", "~45 seconds", "Sub-10 seconds (advanced)"],
-      ],
-    },
-    { type: "h2", text: "The Catch" },
-    {
-      type: "p",
-      text: "F2L is more efficient but harder to learn. It requires you to track two pieces simultaneously, think spatially, and develop intuition rather than just memorize algorithms. Most people find it awkward for the first few weeks before it clicks. That discomfort is completely normal — and temporary.",
     },
     {
       type: "tip",
-      text: "F2L is the heart of CFOP. Top solvers spend years refining it. You don't need to be perfect — you just need to be functional. A slow, correct F2L beats a fast, broken one every time.",
+      text: "A corner and its matching edge are 'partners'. Your job is to pair them up directly next to eachother and drop them into their correct slot.",
+    },
+    {
+      type: "f2l-diagram-row",
+      diagrams: [
+        {
+          label: "Unsolved Pair",
+          size: 120,
+          stickerColors: {
+            U: [
+              null,
+              null,
+              null,
+              null,
+              "#FFD500",
+              null,
+              null,
+              "#009B48",
+              "#B90000",
+            ],
+            F: [
+              null,
+              "#B90000",
+              "#FFFFFF",
+              null,
+              "#B90000",
+              null,
+              null,
+              null,
+              null,
+            ],
+            R: ["#009B48", null, null, null, "#009B48", null, null, null, null],
+          },
+        },
+        {
+          label: "Solved Pair",
+          size: 120,
+          stickerColors: {
+            U: [
+              null,
+              null,
+              null,
+              null,
+              "#FFD500",
+              "#B90000",
+              null,
+              null,
+              "#B90000",
+            ],
+            F: [
+              null,
+              null,
+              "#FFFFFF",
+              "#B90000",
+              "#B90000",
+              null,
+              "#B90000",
+              "#B90000",
+              null,
+            ],
+            R: [
+              "#009B48",
+              "#009B48",
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              null,
+              "#009B48",
+              "#009B48",
+            ],
+          },
+        },
+        {
+          label: "Correct slot",
+          size: 120,
+          stickerColors: {
+            U: [null, null, null, null, "#FFD500", null, null, null, null],
+            F: [
+              null,
+              null,
+              null,
+              "#B90000",
+              "#B90000",
+              "#B90000",
+              "#B90000",
+              "#B90000",
+              "#B90000",
+            ],
+            R: [
+              null,
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+              "#009B48",
+            ],
+          },
+        },
+      ],
+    },
+    {
+      type: "p",
+      text: "In the first visual diagram, you'll notice the corner and edge next to each other. This is just one case out of many you will sometimes see. Starting out, it is better to have the 2 pieces seperated from each other (On the top layer) and solve them from there.",
+    },
+    {
+      type: "warn",
+      text: "Throughout this stage, we will use Green & Red as the main example. Nothing changes if you're dealing with different colors. You'll have to solve them all anyway!",
+    },
+    {
+      type: "p",
+      text: "Alright, take a deep breath. Chances are, you're super confused right now but don't worry, that's normal. Learning F2L on the first go is very unlikely. Read this section a few times over if you have to. Even refer to other sources out there! Throughout learning F2L, repetition is your best friend.",
+    },
+    {
+      type: "warn",
+      text: "The biggest mistake you can make while learning F2L is trying to memorize algorithms before understanding the 'logic'. F2L is intuitive. This means once you see why a move works, you will start to figure out cases without memorizing anything. So just watch the pieces move and you will start to recognize patterns.",
+    },
+    {
+      type: "p",
+      text: "The next lesson will go more in depth on how to actually find a pair.",
     },
   ],
 
   "5.2": [
-    { type: "h2", text: "Finding a F2L pair" },
+    // TODO: fill in content for 5.2 — Pairs and Slots
+    { type: "h2", text: "How to find a pair and prepare it" },
     {
       type: "p",
-      text: "Before you can insert a pair, you need to find it. The very first thing to look for is if both pieces are in the top layer.",
+      text: "Since you're new to F2L, just pick a pair you want to solve first. Lets say you pick Green and Red.",
     },
     {
       type: "list",
       items: [
-        "Find any white corner piece — it has exactly 3 colors: white plus two others (through out this lesson, we will use red and green as an example)",
-        "Note the two non-white colors (red and green)",
-        "Find the edge piece with those exact same two colors (the red-green edge)",
-        "That corner and that edge are a pair",
+        "Find the corner piece. White, Red and Green",
+        "Now find the edge. Red and Green",
       ],
     },
-
+    { type: "p", text: "Those two are a pair. Simple right?" },
+    {
+      type: "warn",
+      text: "If the corner and edge piece are both in the top layer already, perfect, you can work with that directly. However, they can also be in a slot (wrong position/orientation) if this happens, you have to get the piece into the top layer without breaking the cross.",
+    },
     {
       type: "tip",
-      text: "The pair itself most likely will not be grouped together perfectly. Most the time, the corner and edge piece will be seperated. Just make sure they are both in the top layer for now.",
+      text: "When trying to get one piece or both pieces in the top layer, you have to do this without breaking the cross. Break the cross temporarily to get the piece(s) on top. This usually looks like (R U R'). (R) breaks the cross and brings up the F2L piece. (U) moves the F2L piece out of the way. (R') puts the cross edge back in place.",
     },
-
+    { type: "p", text: "Now to simplify it:" },
     {
-      type: "h2",
-      text: "What if the edge piece is on top but a corner is in the bottom layer?",
-    },
-    {
-      type: "p",
-      text: "This is a scenario you will come across a lot. When it happens, simply bring the corner piece up with (R U' R')",
-    },
-
-    {
-      type: "f2l-diagram-row",
-      diagrams: [
-        {
-          // Corner UFR: white on U[8], green on F[2], red on R[0]
-          // Edge UF:    red on U[7],   green on F[1]
-          // Green center F[4], red center R[4] shown for orientation context.
-          // All other stickers grey.
-
-          // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
-          label: "Corner on bottom",
-          stickerColors: {
-            U: [null, "#B90000", null, null, "#FFD500", null, null, null, null],
-            F: [null, null, null, null, "#B90000", null, null, null, "#B90000"],
-            R: [null, null, null, null, "#009B48", null, "#009B48", null, null],
-          },
-        },
-        {
-          label: "After (R U' R')",
-          stickerColors: {
-            U: [
-              null,
-              "#B90000",
-              null,
-              null,
-              "#FFD500",
-              null,
-              null,
-              null,
-              "#009B48",
-            ],
-            F: [null, null, "#B90000", null, "#B90000", null, null, null, null],
-            R: ["#FFFFFF", null, null, null, "#009B48", null, null, null, null],
-          },
-        },
+      type: "list",
+      items: [
+        "Find the corner (3 colors)",
+        "Find its edge 'partner' (2 colors)",
+        "Get them both in the top layer (If not already there)",
       ],
     },
-
     {
-      type: "p",
-      text: "To identify which slot a pair belongs in: look at the two non-white colors of the pair. The slot is the one between those two color centers. A white-red-green pair goes in the slot between the red center and the green center.",
+      type: "tip",
+      text: "Do NOT worry about going fast here. Before you touch anything, spend a good few seconds looking at the cube just trying to identify the correct pieces.",
     },
-
     {
-      // Corner UFR: white on U[8], green on F[2], red on R[0]
-      // Edge UF:    red on U[7],   green on F[1]
-      // Green center F[4], red center R[4] shown for orientation context.
-      // All other stickers grey.
-
-      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "h2",
+      text: "At this point, you may have something like this. Whether you already had a pair in the top layer after solving the cross, or had to put the pieces in the top layer yourself.",
+    },
+    {
       type: "f2l-diagram",
-      label: "Correct Slot (After Insertion)",
+      label: "",
+      size: 160,
       stickerColors: {
-        U: [null, null, null, null, "#FFD500", null, null, null, null],
+        U: [
+          null,
+          null,
+          null,
+          "#009B48",
+          "#FFD500",
+          null,
+          null,
+          null,
+          "#B90000",
+        ],
         F: [
           null,
           null,
+          "#FFFFFF",
           null,
           "#B90000",
+          null,
+          null,
           "#B90000",
-          "#B90000",
-          "#B90000",
-          "#B90000",
-          "#B90000",
+          null,
         ],
         R: [
+          "#009B48",
           null,
           null,
           null,
           "#009B48",
+          null,
+          null,
           "#009B48",
-          "#009B48",
-          "#009B48",
-          "#009B48",
-          "#009B48",
+          null,
         ],
       },
     },
-
     {
       type: "warn",
-      text: "These are very simplified examples. While these cases are of course possible, you will bump in to MANY different cases which will be covered later on.",
-    },
-
-    { type: "h2", text: "Using the U Layer as Your Workspace" },
-    {
-      type: "p",
-      text: "The top layer (U layer) is your workspace in F2L. You bring both pieces of a pair up to the top layer, manipulate them there to connect them.",
-    },
-    {
-      type: "tip",
-      text: "Always work on one pair at a time. Pick a pair, get both pieces to the top layer, solve the slot, then move to the next pair. Do not try to solve two pairs at once when learning.",
-    },
-    { type: "h2", text: "Which Pair to Solve First?" },
-    {
-      type: "p",
-      text: "It usually doesn't matter. However, you'll naturally develop preferences. Many solvers start with the easiest-looking pair (fewest moves to set up) and save harder pairs for last. When starting out, just pick any pair and work through all four.",
-    },
-    {
-      type: "warn",
-      text: "Be careful with back slots. It's easy to accidentally disturb a solved front slot while inserting a back pair. You will often need to rotate the whole cube (y rotation) to bring a back slot to the front so you can work on it. This is normal.",
-    },
-    { type: "h2", text: "A Practice Exercise" },
-    {
-      type: "p",
-      text: "Scramble a cube. Solve the white cross. Now find all 4 pairs — don't move anything yet, just identify each corner, its matching edge, and which slot they belong in. This piece recognition is the foundation of F2L speed.",
+      text: "You may have a different case from the one in the example above. If you do, don't worry. The goal here is to make sure the corner and edge piece/pair are in the top layer.",
     },
   ],
 
   "5.3": [
-    { type: "h2", text: "Corner and edge piece stuck together incorrectly" },
+    // TODO: fill in content for 5.3 — Basic Insertions (Easy Cases)
     {
       type: "p",
-      text: "When you're learning F2L, you will come across 'Awkward Cases' all the time. In the example below, the corner and edge piece are connected incorrectly. Your goal here is to seperate them while keeping both pieces in the top layer. ",
+      text: "Once you have both pieces on the top, now is the time to insert the pair into the correct slot",
     },
-
     {
-      // Corner UFR: white on U[8], green on F[2], red on R[0]
-      // Edge UF:    red on U[7],   green on F[1]
-      // Green center F[4], red center R[4] shown for orientation context.
-      // All other stickers grey.
-
-      // colors: #B90000 (red), #ffffff (white), #FFD500 (yellow), #009B48 (green)
+      type: "tip",
+      text: "The correct slot is just the bottom corner and edge between the two center pieces. If you are working with red and green, that means the red and green F2L pair needs to go in the slot between the red and green center.",
+    },
+    {
+      type: "warn",
+      text: "This is where things start to get a little more complicated. Again, repetition is key here. The fastest speedcubers today were beginners too at some point!",
+    },
+    {
+      type: "p",
+      text: "Before we start with some basic inserts, there are a few things you're gonna want to look out for:",
+    },
+    {
+      type: "list",
+      items: [
+        "#1 Are the pieces on top but connected incorrectly?",
+        "#2 Is the white sticker facing upwards?",
+        "#3 Are the top colors (Corner and Edge piece) the same color?",
+      ],
+    },
+    {
+      type: "p",
+      text: "Below are some visual diagrams that correlate with the checklist above (in order)",
+    },
+    {
       type: "f2l-diagram",
-      label: "Corner / Edge pieces connected incorrectly",
+      label: "Connected Incorrectly",
+      size: 160,
       stickerColors: {
         U: [
           null,
@@ -1574,10 +1534,10 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
           null,
           "#009B48",
           "#FFFFFF",
-          "#B90000",
-          "#B90000",
           null,
           "#B90000",
+          null,
+          null,
           "#B90000",
           null,
         ],
@@ -1587,88 +1547,27 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
           null,
           null,
           "#009B48",
-          "#009B48",
+          null,
           null,
           "#009B48",
-          "#009B48",
+          null,
         ],
       },
     },
-
     {
-      type: "p",
-      text: "In the case/diagram above, you'll notice the corner piece is on the right side. If that happens, you can seperate them with a simple algorithm.",
+      type: "list",
+      items: [
+        "Is the edge piece to the left or right of the corner? (In this case it is to the left)",
+        "If it's to the right, seperate the pieces with (U' R U' R')",
+        "If it's to the left, seperate the pieces with (y U L' U L)",
+      ],
     },
-
-    {
-      type: "algo",
-      name: "Seperate corner & edge piece",
-      moves: "U' R U' R'",
-      note: "Run this algorithm to seperate the two pieces and keep them in the top layer.",
-    },
-    { type: "h2", text: "If the corner piece is on the left" },
-    {
-      type: "algo",
-      name: "Seperate Corner & Edge Piece",
-      moves: "y U L' U L",
-      note: "This is just a mirror of the right slot insert. This time, the corner piece would be at front left top corner position with the white sticker facing to the left.",
-    },
-    { type: "h2", text: "White sticker facing up" },
-    {
-      type: "p",
-      text: "When solving the First 2 Layers (F2L) you sometimes notice the white sticker of the corner piece facing upwards. You will actually see this happen when you run those algorithms above. ",
-    },
-
-    {
-      type: "p",
-      text: "This is a scenario that is actually pretty easy to deal with. Just start with lining up the edge with the correct center and then move the edge away. ",
-    },
-
     {
       type: "f2l-diagram-row",
       diagrams: [
         {
-          label: "White Corner Up",
-          size: 140,
-          stickerColors: {
-            U: [
-              null,
-              null,
-              null,
-              "#B90000",
-              "#FFD500",
-              null,
-              null,
-              null,
-              "#FFFFFF",
-            ],
-            F: [
-              null,
-              null,
-              "#009B48",
-              "#B90000",
-              "#B90000",
-              null,
-              "#B90000",
-              "#B90000",
-              null,
-            ],
-            R: [
-              "#B90000",
-              null,
-              null,
-              null,
-              "#009B48",
-              "#009B48",
-              null,
-              "#009B48",
-              "#009B48",
-            ],
-          },
-        },
-        {
-          label: "Line up edge",
-          size: 140,
+          label: "Align Edge",
+          size: 120,
           stickerColors: {
             U: [
               "#FFFFFF",
@@ -1681,415 +1580,116 @@ export const LESSON_CONTENT: Record<string, Block[]> = {
               null,
               null,
             ],
+            F: [null, null, null, null, "#B90000", null, null, "#B90000", null],
             R: [
               null,
               "#009B48",
               null,
               null,
               "#009B48",
+              null,
+              null,
               "#009B48",
-              null,
-              "#009B48",
-              "#009B48",
-            ],
-            F: [
-              null,
-              null,
-              null,
-              "#B90000",
-              "#B90000",
-              null,
-              "#B90000",
-              "#B90000",
               null,
             ],
           },
         },
         {
-          label: "Move edge away",
-          size: 140,
+          label: "Move Edge Away",
+          size: 120,
           stickerColors: {
             U: ["#FFFFFF", null, null, null, "#FFD500", null, null, null, null],
-            R: [
-              null,
-              null,
-              null,
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              null,
-            ],
             F: [
               null,
               null,
               null,
-              "#B90000",
+              null,
               "#B90000",
               "#FFFFFF",
-              "#B90000",
+              null,
               "#B90000",
               "#FFFFFF",
             ],
+            R: [
+              null,
+              null,
+              null,
+              null,
+              "#009B48",
+              "#009B48",
+              null,
+              "#009B48",
+              null,
+            ],
           },
         },
-      ],
-    },
-
-    // White corner up pt2
-
-    {
-      type: "f2l-diagram-row",
-      diagrams: [
         {
-          label: "Move corner",
-          size: 140,
+          label: "Corner over edge",
+          size: 120,
           stickerColors: {
             U: [null, null, "#FFFFFF", null, "#FFD500", null, null, null, null],
-            R: [
-              null,
-              null,
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              "#009B48",
-              null,
-            ],
             F: [
               null,
               null,
               null,
-              "#B90000",
+              null,
               "#B90000",
               "#FFFFFF",
-              "#B90000",
+              null,
               "#B90000",
               "#FFFFFF",
-            ],
-          },
-        },
-
-        {
-          label: "Move edge to top",
-          size: 140,
-          stickerColors: {
-            U: [
-              null,
-              null,
-              null,
-              null,
-              "#FFD500",
-              "#B90000",
-              null,
-              null,
-              "#B90000",
             ],
             R: [
-              "#009B48",
-              "#009B48",
               null,
               null,
-              "#009B48",
               "#009B48",
               null,
               "#009B48",
               "#009B48",
-            ],
-            F: [
               null,
-              null,
-              "#FFFFFF",
-              "#B90000",
-              "#B90000",
-              null,
-              "#B90000",
-              "#B90000",
+              "#009B48",
               null,
             ],
           },
         },
       ],
     },
-
     {
-      type: "tip",
-      text: "Just remember, you're new to F2L. Do NOT worry about going super fast or memorizing a bunch of algorithms. Just go slow, pay attention to how the pieces move and where they go. Eventually, you will begin to notice cases 'automatically' and just know what to do with your fingers.",
+      type: "list",
+      items: [
+        "Move the EDGE piece so the side color (not the top color) matches up with its center piece. For the case above, a simple U2 would accomplish this",
+        "Move the edge AWAY from the slot it needs to go in",
+        "Move the corner OVER the edge piece you just moved",
+        "Lastly, move the pair back to the top layer",
+      ],
+    },
+    {
+      type: "warn",
+      text: "Moving the edge back to the top will break a cross piece. Make sure you put the cross piece back into place.",
     },
   ],
 
   "5.4": [
-    { type: "h2", text: "When the Pair Isn't Formed Yet" },
-    {
-      type: "p",
-      text: "Most of the time, you won't have a pair thats already connected. You will most likely have both pieces in the top layer but not adjacent/not facing the right direction.",
-    },
-    { type: "h2", text: "Case 1: Corner White Up, Edge Needs Alignment" },
-    {
-      type: "p",
-      text: "The corner is in the top layer with white facing up. The edge is also in the top layer. They aren't adjacent yet. Use U moves to bring the edge directly in front of the corner (at the UF position when the corner is at UFR), matching the edge's non-white color with the corresponding center.",
-    },
-    {
-      type: "algo",
-      name: "White-Up Insert (Right Slot)",
-      moves: "U R U' R'",
-      note: "Corner at UFR with white on top. Edge at UF with the right-center color facing up. U brings the edge above the slot, R starts the insert, U' clears the top layer, R' completes it.",
-    },
-    {
-      type: "algo",
-      name: "White-Up Insert (Left Slot)",
-      moves: "U' L' U L",
-      note: "Mirror case for the front-left slot. Corner at UFL with white on top, edge at UF with the left-center color facing up.",
-    },
-    { type: "h2", text: "Case 2: Corner White Facing a Side, Edge on Top" },
-    {
-      type: "p",
-      text: "The corner is in the top layer with white facing one of the side faces (front or right). The edge is also in the top layer. In this case, you can often use the setup → insert approach: bring the edge adjacent to the corner with one U move so they 'face' each other (their shared colors align), then run the insert.",
-    },
-    {
-      type: "p",
-      text: "The key recognition: two pieces are 'ready to connect' when their shared colors are pointing toward each other or both facing the same side. Once you see this, a single setup move connects them, and you can insert immediately.",
-    },
-    {
-      type: "algo",
-      name: "White-Side Right Insert",
-      moves: "R U' R'",
-      note: "Corner at UFR with white facing right (R face). Edge is at UR with matching colors aligned. R U' R' drives them both into the front-right slot together.",
-    },
-    {
-      type: "algo",
-      name: "White-Side Left Insert",
-      moves: "L' U L",
-      note: "Mirror of the above for the front-left slot. Corner at UFL with white facing left (L face). Edge at UL.",
-    },
-    { type: "h2", text: "The General Approach" },
-    {
-      type: "p",
-      text: "Rather than memorizing a separate algorithm for every possible case, the better approach is to develop a mental model for when pieces are 'ready.' Ask yourself two questions:",
-    },
-    {
-      type: "list",
-      items: [
-        "Are both pieces in the U layer? If not, get them there first (covered in Lesson 5.5).",
-        "Are the pieces positioned so a simple setup move connects them? If yes, do the setup and insert.",
-        "If no — use U moves to reposition until a pairing opportunity appears.",
-      ],
-    },
-    {
-      type: "tip",
-      text: "Practice connecting pairs WITHOUT inserting them. Pick a scrambled cube, get a pair to the top layer, practice moving them around the U layer until they pair up — then stop. This trains your eye to see pairing opportunities before committing to an insert.",
-    },
-    { type: "h2", text: "Avoiding Breaking Solved Slots" },
-    {
-      type: "p",
-      text: "When you do setup moves (like R or F), you temporarily disturb the F2L slot on that side. The paired insert algorithms (R U R', L' U' L, etc.) are designed to restore the slot after inserting the new pair. As long as you complete the algorithm, the already-solved pairs stay intact.",
-    },
-    {
-      type: "warn",
-      text: "Do not stop an F2L algorithm halfway through. If you start R U R', you must finish it. Stopping mid-sequence leaves previously solved pairs displaced, which is harder to fix than starting over.",
-    },
+    // TODO: fill in content for 5.4 — Pairing on Top
+    { type: "h2", text: "PLACEHOLDER" },
+    { type: "p", text: "TODO: write 5.4 content here." },
   ],
 
   "5.5": [
-    { type: "h2", text: "When a Piece Is Already in a Slot" },
-    {
-      type: "p",
-      text: "This is one of the most common situations in F2L: one or both pieces of a pair are already sitting in an F2L slot, but either they're in the wrong slot, or they're in the right slot but oriented incorrectly. You can't just leave them there — you need to extract them, bring them to the top layer, and re-insert them correctly.",
-    },
-    {
-      type: "warn",
-      text: "Never force a piece out of a slot by doing random moves. You will almost certainly displace an already-solved pair and create more work. Always use controlled extraction moves.",
-    },
-    { type: "h2", text: "Extracting a Corner from a Slot" },
-    {
-      type: "p",
-      text: "To get a corner out of a slot (say the front-right slot), you need to bring it back up to the U layer. The cleanest way is to use the slot's 'trigger' move in reverse. For the front-right slot:",
-    },
-    {
-      type: "algo",
-      name: "Extract Corner from Right Slot",
-      moves: "R U R'",
-      note: "This lifts the DFR corner up to the UFR position in the U layer. It also brings the FR edge up to the UR position. Now both pieces are in the top layer and you can work on them.",
-    },
-    {
-      type: "p",
-      text: "Notice that R U R' both extracts the wrong piece AND sets up the slot for a new pair. This is intentional — you're replacing the incorrectly placed piece while simultaneously positioning it back in the top layer for re-solving.",
-    },
-    { type: "h2", text: "Extracting an Edge from a Slot" },
-    {
-      type: "p",
-      text: "Sometimes the edge is stuck in a middle-layer slot (correctly or incorrectly placed) while the corner is in the top layer or elsewhere. To get the edge back to the top layer:",
-    },
-    {
-      type: "algo",
-      name: "Extract Edge from Right Middle Slot",
-      moves: "U R U' R'",
-      note: "Brings the FR edge back up to the U layer. The corner currently at UFR will be temporarily displaced and return to a U layer position after R' — so both pieces end up in the U layer after this sequence.",
-    },
-    { type: "h2", text: "The General Rule: Extract, Then Solve" },
-    {
-      type: "p",
-      text: "Whenever you encounter a piece stuck in a slot, the process is always the same:",
-    },
-    {
-      type: "list",
-      items: [
-        "1. Identify which slot the piece is stuck in",
-        "2. Rotate the cube (y move) so that slot is at the front-right",
-        "3. Use an extraction move (like R U R') to bring the piece(s) back to the top layer",
-        "4. Now treat it as a normal pairing situation from Lesson 5.3 or 5.4",
-      ],
-    },
-    { type: "h2", text: "The Dreaded 'Already There But Wrong' Case" },
-    {
-      type: "p",
-      text: "Sometimes a piece is in the correct slot but oriented backwards — white is on the front face instead of the bottom, for example. This looks like the slot is solved but it isn't. Resist the urge to 'fix it with a couple moves.' The controlled approach is always better: extract with R U R', bring to top layer, re-pair, re-insert correctly.",
-    },
-    {
-      type: "tip",
-      text: "If you're finding that you constantly have to extract pieces from slots, you may be inserting pairs without fully checking their orientation. Before inserting any pair, verify: white faces down (toward D), and each side color of the corner matches the adjacent center.",
-    },
+    // TODO: fill in content for 5.5 — Dealing with Pieces in the Wrong Slot
+    { type: "h2", text: "PLACEHOLDER" },
+    { type: "p", text: "TODO: write 5.5 content here." },
   ],
 
   "5.6": [
-    { type: "h2", text: "The Harder Situations" },
-    {
-      type: "p",
-      text: "Once you've practiced the basics, you'll start encountering cases that don't fit cleanly into 'pair them up and insert.' These are the tricky cases — mostly involving edges that are flipped (inserted backwards into the middle layer) or corners with white facing down into the slot from the top layer. This lesson covers how to think through them.",
-    },
-    {
-      type: "p",
-      text: "The good news: the solution to every tricky F2L case follows the same mental process. There are no 'mystery' cases. Once you understand the logic, you can work out any situation you encounter.",
-    },
-    { type: "h2", text: "Flipped Edge in the Middle Layer" },
-    {
-      type: "p",
-      text: "This is one of the most common tricky cases. The edge piece is sitting in the correct middle-layer slot, but it's flipped — its colors are reversed relative to the adjacent centers. For example, in the front-right middle slot, the green color faces front and the red color faces right, when it should be the opposite.",
-    },
-    {
-      type: "p",
-      text: "You cannot fix this with D or U moves alone. You must extract the edge, bring it to the top layer, and re-insert it with the correct orientation. Use the standard extraction move for that slot (R U R' for the front-right), then re-pair and re-insert.",
-    },
-    {
-      type: "algo",
-      name: "Flip and Re-insert (Front-Right Slot)",
-      moves: "R U' R' U R U R'",
-      note: "Extracts the flipped edge and corner from the front-right slot, flips the edge to the correct orientation in the top layer, and re-inserts the pair. This is one efficient sequence for this specific case, but you can also just extract manually and re-pair.",
-    },
-    { type: "h2", text: "Corner with White Facing Down (Into the Slot)" },
-    {
-      type: "p",
-      text: "The corner is at a top-layer position (say UFR) with white facing down — pointing into the slot it would fill. This looks like it should be easy to insert, but if you just do R, the white face ends up on the front or right face of the corner slot instead of the bottom. The piece is misoriented.",
-    },
-    {
-      type: "p",
-      text: "The fix: use a U move to move the corner AWAY from the slot, then use a setup move to bring both pieces (corner + its paired edge) to a position where the standard insert works. Usually this means doing U R U' R' U2 R U R' or a similar sequence to flip the corner into the correct orientation before inserting.",
-    },
-    {
-      type: "algo",
-      name: "White-Down Corner Fix (Right Slot)",
-      moves: "R U2 R' U' R U R'",
-      note: "For when the corner is at UFR with white facing down (D direction). This sequence repositions the corner into a standard insertable orientation. The pair's edge should be in the U layer before running this.",
-    },
-    { type: "h2", text: "The Universal Problem-Solving Method" },
-    {
-      type: "p",
-      text: "For ANY tricky F2L case, apply this thinking process:",
-    },
-    {
-      type: "list",
-      items: [
-        "Step 1 — Get BOTH pieces into the U layer. If either one is in a middle-layer slot, extract it first.",
-        "Step 2 — Look at the corner's white sticker. Which face is it on? Up, front, or right?",
-        "Step 3 — Use U moves to move the pieces around the top layer until you reach a position where a standard insert (R U R', L' U' L, or a variant) cleanly inserts the pair.",
-        "Step 4 — If you can't reach a clean insert position after 4 U moves, try a setup move (R, F', etc.) to change the corner's orientation, then try again.",
-      ],
-    },
-    {
-      type: "p",
-      text: "This process means you never need to panic about an unusual case. Every position reachable in F2L can be solved by getting both pieces to the top, repositioning, and inserting. The number of moves varies, but the logic is always the same.",
-    },
-    { type: "h2", text: "Efficiency Over Perfection" },
-    {
-      type: "p",
-      text: "At this stage, don't obsess over solving every pair in the minimum possible moves. Solving correctly matters far more than solving quickly. A clean, logical F2L that takes 12 moves per pair beats a frantic, mistake-prone attempt that takes 20. Build understanding first. Speed follows understanding.",
-    },
-    {
-      type: "tip",
-      text: "Keep a cube with you and just practice recognizing cases. When you encounter a tricky position, pause before moving. Ask: where is the white sticker? Where is the edge? What's the fastest path to get both to the top layer? Training this recognition is what actually makes F2L fast.",
-    },
+    // TODO: fill in content for 5.6 — Tricky Cases
+    { type: "h2", text: "PLACEHOLDER" },
+    { type: "p", text: "TODO: write 5.6 content here." },
   ],
 
   "5.7": [
-    { type: "h2", text: "From Technique to Intuition" },
-    {
-      type: "p",
-      text: "You've now learned the full F2L framework: pairs and slots, basic inserts, pairing on top, extractions, and tricky cases. The next phase isn't learning more algorithms — it's converting what you know into genuine intuition through repetition.",
-    },
-    {
-      type: "p",
-      text: "Intuitive F2L means you stop consciously thinking 'which algorithm do I run' and instead see the position and know instinctively what to do. This transition takes time and deliberate practice. It doesn't happen by accident.",
-    },
-    { type: "h2", text: "The Practice Routine" },
-    {
-      type: "p",
-      text: "Do full solves with your focus entirely on F2L quality, not total time. Use the Playground timer but don't chase a fast total solve — chase a clean F2L. After each solve, ask:",
-    },
-    {
-      type: "list",
-      items: [
-        "Did I solve every pair correctly on the first attempt, or did I have to backtrack?",
-        "Did I extract pieces efficiently, or did I do unnecessary moves?",
-        "Did I use the U layer as my workspace, or did I rotate the whole cube too often?",
-        "For each pair: did I 'see' the solution before I started moving, or did I figure it out on the fly?",
-      ],
-    },
-    { type: "h2", text: "Tracking Your Progress" },
-    {
-      type: "table",
-      headers: ["Stage of learning", "What it looks like", "What to do"],
-      rows: [
-        [
-          "Beginner",
-          "Lots of pauses, backtracking, cube rotations",
-          "Focus on correct extraction and insertion — moves don't matter yet",
-        ],
-        [
-          "Developing",
-          "Fewer pauses, occasional backtrack, some lookahead",
-          "Start counting moves per pair — aim for under 10 per pair",
-        ],
-        [
-          "Functional",
-          "Smooth solves, rare mistakes, consistent process",
-          "Begin reducing cube rotations — keep the cube in one orientation per pair",
-        ],
-        [
-          "Intuitive",
-          "No pauses, pair recognition before you start, flowing solve",
-          "Start planning the next pair while inserting the current one (lookahead)",
-        ],
-      ],
-    },
-    { type: "h2", text: "Lookahead: The Key to Real F2L Speed" },
-    {
-      type: "p",
-      text: "Lookahead is the ability to track where your next pair is while your hands are busy inserting the current one. This is what separates a 30-second solver from a 15-second solver. It's a skill developed purely through repetition — you cannot force it. Do lots of solves, focus on smooth execution, and the lookahead will gradually emerge.",
-    },
-    {
-      type: "tip",
-      text: "One of the best F2L drills: solve pairs one at a time with no time pressure. After solving the cross, work on pair 1 until it's in the slot. Stop. Find pair 2. Solve it. Stop. This builds clean, deliberate recognition habits that transfer directly to full-speed solving.",
-    },
-    { type: "h2", text: "Stage 5 Complete" },
-    {
-      type: "p",
-      text: "F2L is the hardest stage in this curriculum, and completing it means you now have the most important skill in CFOP. Stage 6 covers 2-look OLL — orienting the last layer using about 9 algorithms. After Stage 5, OLL will feel manageable. The hardest part is behind you.",
-    },
-    {
-      type: "p",
-      text: "Before moving on, aim for a full F2L completion (all 4 pairs inserted correctly) at least 10 times in a row without backtracking or undoing misinsertions. That consistency is the signal that your F2L foundation is solid enough to build OLL and PLL on top of it.",
-    },
+    // TODO: fill in content for 5.7 — F2L Practice & Building Intuition
+    { type: "h2", text: "PLACEHOLDER" },
+    { type: "p", text: "TODO: write 5.7 content here." },
   ],
 };

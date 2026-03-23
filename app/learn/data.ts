@@ -83,8 +83,8 @@ export const STAGES: Record<number, StageData> = {
     lessons: [
       { number: "5.1", title: "What is F2L?" },
       { number: "5.2", title: "Find and Prepare an F2L pair" },
-      { number: "5.3", title: "Awkward Cases" },
-      { number: "5.4", title: "Pairing on Top" },
+      { number: "5.3", title: "Basics of Inserting" },
+      { number: "5.4", title: "Basics of Inserting a pair" },
       { number: "5.5", title: "Dealing with Pieces in the Wrong Slot" },
       { number: "5.6", title: "Tricky Cases" },
       { number: "5.7", title: "F2L Practice & Building Intuition" },

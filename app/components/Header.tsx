@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/learn", label: "Learn" },
   { href: "/playground", label: "Playground" },
   { href: "/algorithms", label: "Algorithms" },
+  { href: "/memory-trainer", label: "Trainer" },
   { href: "/profile", label: "Profile" },
 ];
 

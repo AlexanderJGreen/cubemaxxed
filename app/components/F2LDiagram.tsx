@@ -77,7 +77,7 @@ export default function F2LDiagram({
   return (
     <div className="flex flex-col items-center gap-3">
       {label && (
-        <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
+        <span className="font-heading text-[8px] text-zinc-500 tracking-wide whitespace-nowrap">
           {label.toUpperCase()}
         </span>
       )}
