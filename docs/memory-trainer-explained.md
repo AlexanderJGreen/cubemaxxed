@@ -355,3 +355,51 @@ combined state. This avoids flickering.
 | `isCorrect` | `boolean \| null` | Result of the last check | New round starts |
 | `timeLeft` | `number` | Seconds left in the countdown | New round starts + timer resets |
 | `xpStatus` | `"idle" \| "pending" \| "awarded" \| "no_auth"` | Tracks async XP award state | New round starts |
+
+---
+
+## Case Recognition mode
+
+### How it works
+
+Case Recognition is the inverse of Flash & Recall. Instead of seeing a diagram and typing the algorithm, the user **reads an algorithm** and must **identify the correct diagram** from four options displayed as compact CSS grids.
+
+**Round flow:**
+
+1. `crBeginRound()` picks a random unseen case as the correct answer.
+2. `pickWrongOptions()` generates 3 distractor diagrams — always from the **same kind** (OLL wrong options are always other OLL cases; PLL wrong options are always other PLL cases). They are never mixed.
+3. All four options are shuffled with `shuffleArray()` so the correct answer appears in a random position each time.
+4. The four options render as clickable `OptionCard` components showing only the compact diagram — no names are revealed until after the user picks.
+5. Clicking an option immediately calls `crHandleSelect()`: the phase transitions to `"result"`, the grid re-renders with colored feedback (green correct, red wrong, dimmed unselected), and case names appear under each highlighted card.
+6. XP is awarded exactly the same way as Flash & Recall: `awardMemoryXP(10)` is called on a correct pick, `crXpStatus` tracks the async state.
+
+### New state added and why
+
+| State | Type | Why it exists |
+|---|---|---|
+| `mode` | `"flash" \| "recognition"` | Shared top-level toggle. Determines which game card is rendered. Switching mode exits the active session but preserves each mode's cycle progress independently. |
+| `crPhase` | `"idle" \| "choosing" \| "result"` | Case Recognition has no timer so it doesn't need a `"showing"` phase — the algorithm stays visible the whole time. Three phases are sufficient. |
+| `crCurrentCase` | `TrainerCase \| null` | The correct answer for the current round — used to verify the user's pick and to show the algorithm text. |
+| `crOptions` | `TrainerCase[]` | The shuffled array of 4 options (1 correct + 3 wrong) rendered as clickable diagram cards. Stored in state so the layout doesn't re-shuffle on re-render. |
+| `crSeen` | `string[]` | Mirrors `seen` from Flash & Recall — tracks which cases have been the correct answer this cycle so nothing repeats. Separate from `seen` so each mode has its own independent cycle. |
+| `crSelected` | `string \| null` | The name of the option the user clicked. Stored so the result screen can compute which card to color green vs red vs dim. |
+| `crIsCorrect` | `boolean \| null` | Whether the selected option was the correct case. Drives the verdict banner and XP award, same as `isCorrect` in Flash & Recall. |
+| `crXpStatus` | `XpStatus` | Async state for the XP server call — identical purpose to `xpStatus` in Flash & Recall. |
+
+### How wrong answer generation works
+
+```ts
+function pickWrongOptions(correct: TrainerCase, pool: TrainerCase[]): TrainerCase[] {
+  const sameKind = pool.filter((c) => c.kind === correct.kind && c.name !== correct.name);
+  return [...sameKind].sort(() => Math.random() - 0.5).slice(0, 3);
+}
+```
+
+1. **Filter by kind** — `c.kind === correct.kind` ensures OLL cases only produce OLL distractors and PLL cases only produce PLL distractors. This is important: OLL and PLL diagrams look structurally different (OLL uses yellow/grey stickers, PLL uses full face colors), so mixing kinds would make the task trivially easy.
+2. **Exclude the correct answer** — `c.name !== correct.name` prevents the correct case from appearing twice.
+3. **Shuffle and take 3** — `sort(() => Math.random() - 0.5)` is a simple Fisher-Yates approximation sufficient for a small array. `.slice(0, 3)` takes the first 3 from the shuffled list.
+4. **The full pool is used** — distractors are drawn from all cases of that kind, not just unseen ones. This means the same case can appear as a distractor multiple times across rounds, which is intentional — the point of distractors is to be plausible, not to be unique.
+
+The case counts guarantee at least 5 same-kind wrong options are always available (10 OLL cases, 6 PLL cases), so `.slice(0, 3)` never runs short.
+
+After picking, the correct case and 3 wrong cases are combined and shuffled with `shuffleArray()` before being stored in `crOptions`. This randomizes which cell in the 2×2 grid each diagram occupies, so the correct answer isn't always in the same position.
