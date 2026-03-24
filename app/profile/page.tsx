@@ -132,7 +132,7 @@ export default async function Profile() {
     year: "numeric", month: "long", day: "numeric",
   });
 
-  const displayName = user.email?.split("@")[0] ?? "Cuber";
+  const displayName = user.user_metadata?.username ?? user.email?.split("@")[0] ?? "Cuber";
   const unlockedCount = ACHIEVEMENTS.filter((a) => unlockedIds.has(a.id)).length;
 
   const STATS = [

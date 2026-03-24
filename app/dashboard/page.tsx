@@ -119,7 +119,7 @@ export default async function Dashboard() {
       ? 100
       : Math.min(100, Math.round((xpInTier / xpNeeded) * 100));
 
-  const displayName = user.email?.split("@")[0] ?? "Cuber";
+  const displayName = user.user_metadata?.username ?? user.email?.split("@")[0] ?? "Cuber";
 
   const QUICK_STATS = [
     { label: "TOTAL SOLVES", value: totalSolves.toString(), sub: "all time" },

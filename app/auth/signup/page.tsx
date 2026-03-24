@@ -5,12 +5,30 @@ import { signup } from "@/app/auth/actions";
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   ) : (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
       <line x1="1" y1="1" x2="23" y2="23" />
@@ -44,6 +62,25 @@ export default function SignupPage({
         </p>
 
         <form className="space-y-4">
+          <div>
+            <label className="font-sans mb-1 block text-xs text-zinc-400">
+              Username
+            </label>
+            <input
+              name="username"
+              type="text"
+              required
+              minLength={3}
+              maxLength={24}
+              pattern="[a-zA-Z0-9_]+"
+              className="font-sans w-full rounded border border-zinc-700 bg-[#12121f] px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#FFD500] focus:ring-1 focus:ring-[#FFD500]"
+              placeholder="speedcuber99"
+            />
+            <p className="font-sans mt-1 text-xs text-zinc-600">
+              Letters, numbers, and underscores only
+            </p>
+          </div>
+
           <div>
             <label className="font-sans mb-1 block text-xs text-zinc-400">
               Email
@@ -121,7 +158,7 @@ export default function SignupPage({
           <button
             formAction={signup}
             disabled={mismatch}
-            className="font-heading mt-2 w-full rounded bg-[#FFD500] px-4 py-3 text-xs text-black transition hover:bg-yellow-400 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="font-heading mt-2 w-full rounded bg-[#FFD500] px-4 py-3 text-xs text-black transition hover:bg-yellow-400 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             CREATE ACCOUNT
           </button>
