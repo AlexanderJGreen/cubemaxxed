@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { OLL_CASES, PLL_CASES } from "../algorithms/data";
 import { formatTime } from "@/lib/rank";
+import { saveSolve } from "./actions";
+import { generateScramble } from "@/lib/scramble";
 
 type Tab = "timer" | "trainer" | "free";
 
@@ -46,8 +48,6 @@ export default function Playground() {
   );
 }
 
-const SAMPLE_SCRAMBLE = "R U R' F' L2 D B2 U' R2 F L' U2 B' R D2 F2 L B U' R'";
-
 type Solve = {
   id: number;
   time: number; // ms
@@ -66,11 +66,12 @@ function Timer() {
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [solves, setSolves] = useState<Solve[]>([]);
+  const [currentScramble, setCurrentScramble] = useState(() => generateScramble());
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
   const tickRef = useRef<FrameRequestCallback>(() => {});
   // Track which scramble was active when the timer started
-  const activeScrambleRef = useRef(SAMPLE_SCRAMBLE);
+  const activeScrambleRef = useRef(currentScramble);
 
   // Define tick inside an effect — never written during render
   useEffect(() => {
@@ -86,10 +87,10 @@ function Timer() {
     // Always start fresh from zero
     setElapsed(0);
     startTimeRef.current = Date.now();
-    activeScrambleRef.current = SAMPLE_SCRAMBLE;
+    activeScrambleRef.current = currentScramble;
     setRunning(true);
     rafRef.current = requestAnimationFrame(tickRef.current);
-  }, []);
+  }, [currentScramble]);
 
   const stop = useCallback(() => {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
@@ -98,14 +99,13 @@ function Timer() {
     setElapsed(finalTime);
     setRunning(false);
     if (finalTime > 0) {
+      const scramble = activeScrambleRef.current;
       setSolves((prev) => [
         ...prev,
-        {
-          id: prev.length + 1,
-          time: finalTime,
-          scramble: activeScrambleRef.current,
-        },
+        { id: prev.length + 1, time: finalTime, scramble },
       ]);
+      saveSolve(finalTime, scramble);
+      setCurrentScramble(generateScramble());
     }
   }, []);
 
@@ -149,7 +149,7 @@ function Timer() {
             Scramble
           </p>
           <p className="font-mono text-zinc-200 text-lg tracking-wide">
-            {SAMPLE_SCRAMBLE}
+            {currentScramble}
           </p>
         </div>
 

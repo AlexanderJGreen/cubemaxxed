@@ -21,7 +21,9 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:registry.npmjs.org)",
       "WebFetch(domain:libraries.io)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name *.sql)",
+      "Bash(npm run:*)"
     ]
   }
 }

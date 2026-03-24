@@ -505,7 +505,7 @@ export default function MemoryTrainer() {
     setPhase("result");
     if (correct) {
       setXpStatus("pending");
-      const res = await awardMemoryXP(XP_PER_CORRECT);
+      const res = await awardMemoryXP(XP_PER_CORRECT, currentCase.name);
       setXpStatus("error" in res ? "no_auth" : "awarded");
     }
   }
@@ -548,7 +548,7 @@ export default function MemoryTrainer() {
     setCrPhase("result");
     if (correct) {
       setCrXpStatus("pending");
-      const res = await awardMemoryXP(XP_PER_CORRECT);
+      const res = await awardMemoryXP(XP_PER_CORRECT, crCurrentCase.name);
       setCrXpStatus("error" in res ? "no_auth" : "awarded");
     }
   }
@@ -607,7 +607,7 @@ export default function MemoryTrainer() {
       setSbSeen((prev) => [...prev, thisCase.name]);
       setSbPhase("result");
       setSbXpStatus("pending");
-      const res = await awardMemoryXP(XP_PER_CORRECT);
+      const res = await awardMemoryXP(XP_PER_CORRECT, thisCase.name);
       setSbXpStatus("error" in res ? "no_auth" : "awarded");
     }
   }
