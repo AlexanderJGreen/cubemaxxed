@@ -10,7 +10,6 @@ const navLinks = [
   { href: "/playground", label: "Playground" },
   { href: "/algorithms", label: "Algorithms" },
   { href: "/memory-trainer", label: "Trainer" },
-  { href: "/profile", label: "Profile" },
 ];
 
 // WCA-standard Rubik's cube face colors
@@ -78,7 +77,18 @@ export default function Header({
             );
           })}
         </nav>
-        {authButton}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/profile"
+            className={`font-sans text-[15px] font-medium transition-colors duration-300 ${
+              pathname === "/profile" ? "font-bold" : "text-zinc-400 hover:text-zinc-100"
+            }`}
+            style={pathname === "/profile" ? { color: activeColor } : undefined}
+          >
+            Profile
+          </Link>
+          {authButton}
+        </div>
       </div>
 
       {/* Cube-color accent bar */}
