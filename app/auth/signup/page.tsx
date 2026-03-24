@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { signup } from "@/app/auth/actions";
 
@@ -37,7 +37,7 @@ function EyeIcon({ open }: { open: boolean }) {
   );
 }
 
-export default function SignupPage() {
+function SignupForm() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -178,5 +178,13 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }
