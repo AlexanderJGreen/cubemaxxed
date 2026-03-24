@@ -9,10 +9,10 @@ export default async function AuthButton() {
 
   if (user) {
     return (
-      <form>
+      <form className="flex items-center">
         <button
           formAction={signout}
-          className="font-sans rounded border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200"
+          className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300 cursor-pointer"
         >
           Sign out
         </button>

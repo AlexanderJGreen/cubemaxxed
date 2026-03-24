@@ -46,7 +46,6 @@ export default function Header({
     setMenuOpen(false);
   }
 
-  // Close menu on resize to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
     window.addEventListener("resize", onResize);
@@ -54,14 +53,20 @@ export default function Header({
   }, []);
 
   return (
-    <header className="relative bg-black">
+    <header className="relative bg-[#0d0d14] border-b border-white/[0.04]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         {/* Site name */}
         <Link
           href="/"
-          className="font-heading text-base leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80 shrink-0"
+          className="flex items-center gap-2.5 font-heading text-base leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80 shrink-0"
           style={{ textShadow: "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A, 3px 3px 0 #C41E3A" }}
         >
+          {/* Pixel cube icon */}
+          <div className="grid grid-cols-3 gap-[2px] p-[2px] bg-[#1a1a26] shrink-0">
+            {["#C41E3A","#FFD500","#0051A2","#FF5800","#009B48","#ffffff","#FFD500","#C41E3A","#0051A2"].map((color, i) => (
+              <div key={i} style={{ width: 5, height: 5, backgroundColor: color }} />
+            ))}
+          </div>
           CubeMaxxed
         </Link>
 
