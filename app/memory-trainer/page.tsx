@@ -34,9 +34,11 @@ type TrainerCase =
 
 type Phase   = "idle" | "showing" | "recall" | "result";
 type CRPhase = "idle" | "choosing" | "result";
+type SBPhase = "idle" | "building" | "result";
 type XpStatus = "idle" | "pending" | "awarded" | "no_auth";
 type Filter  = "both" | "oll" | "pll";
-type Mode    = "flash" | "recognition";
+type Mode    = "flash" | "recognition" | "sequence";
+type MoveToken = { id: number; move: string; used: boolean };
 
 // ── Case pool ─────────────────────────────────────────────────────────────────
 
@@ -246,6 +248,7 @@ function ModeSwitcher({ mode, onModeChange }: { mode: Mode; onModeChange: (m: Mo
         [
           { id: "flash"       as Mode, label: "FLASH & RECALL"   },
           { id: "recognition" as Mode, label: "CASE RECOGNITION" },
+          { id: "sequence"    as Mode, label: "SEQUENCE BUILDER" },
         ]
       ).map((opt) => (
         <button
@@ -410,11 +413,21 @@ export default function MemoryTrainer() {
   const [crIsCorrect, setCrIsCorrect] = useState<boolean | null>(null);
   const [crXpStatus, setCrXpStatus] = useState<XpStatus>("idle");
 
+  // ── Sequence Builder state ────────────────────────────────────────────────
+  const [sbPhase, setSbPhase] = useState<SBPhase>("idle");
+  const [sbCurrentCase, setSbCurrentCase] = useState<TrainerCase | null>(null);
+  const [sbMoveTokens, setSbMoveTokens] = useState<MoveToken[]>([]);
+  const [sbBuilt, setSbBuilt] = useState<string[]>([]);
+  const [sbSeen, setSbSeen] = useState<string[]>([]);
+  const [sbIsCorrect, setSbIsCorrect] = useState<boolean | null>(null);
+  const [sbXpStatus, setSbXpStatus] = useState<XpStatus>("idle");
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const pool = getPool(filter);
   const isCycleDone   = seen.length === pool.length;
   const crIsCycleDone = crSeen.length === pool.length;
+  const sbIsCycleDone = sbSeen.length === pool.length;
 
   // Phase accent colors
   const phaseColor =
@@ -437,6 +450,16 @@ export default function MemoryTrainer() {
   const crPhaseBgTint =
     crPhase === "choosing" ? "rgba(74,144,217,0.025)" :
     crPhase === "result"   ? (crIsCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
+    "transparent";
+
+  const sbPhaseColor =
+    sbPhase === "building" ? "#009B48" :
+    sbPhase === "result"   ? (sbIsCorrect ? "#009B48" : "#C41E3A") :
+    "#FFD500";
+
+  const sbPhaseBgTint =
+    sbPhase === "building" ? "rgba(0,155,72,0.025)" :
+    sbPhase === "result"   ? (sbIsCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
     "transparent";
 
   // ── FR Timer ──────────────────────────────────────────────────────────────
@@ -541,6 +564,65 @@ export default function MemoryTrainer() {
     setCrXpStatus("idle");
   }
 
+  // ── SB Game actions ───────────────────────────────────────────────────────
+
+  function sbBeginRound(seenList: string[], activPool = pool) {
+    const next = pickRandom(activPool, seenList);
+    if (!next) return;
+    const algTokens = next.alg.trim().split(/\s+/);
+    const tokens: MoveToken[] = algTokens.map((move, i) => ({ id: i, move, used: false }));
+    setSbCurrentCase(next);
+    setSbMoveTokens([...tokens].sort(() => Math.random() - 0.5));
+    setSbBuilt([]);
+    setSbIsCorrect(null);
+    setSbXpStatus("idle");
+    setSbPhase("building");
+  }
+
+  function sbHandleStart() {
+    if (sbIsCycleDone) { setSbSeen([]); sbBeginRound([], pool); }
+    else { sbBeginRound(sbSeen, pool); }
+  }
+
+  async function sbHandleClick(token: MoveToken) {
+    if (!sbCurrentCase || sbPhase !== "building" || token.used) return;
+    const thisCase = sbCurrentCase;
+    const algTokens = thisCase.alg.trim().split(/\s+/);
+    const expectedMove = algTokens[sbBuilt.length];
+
+    setSbMoveTokens((prev) => prev.map((t) => t.id === token.id ? { ...t, used: true } : t));
+
+    if (token.move !== expectedMove) {
+      setSbIsCorrect(false);
+      setSbSeen((prev) => [...prev, thisCase.name]);
+      setSbPhase("result");
+      return;
+    }
+
+    const newBuilt = [...sbBuilt, token.move];
+    setSbBuilt(newBuilt);
+
+    if (newBuilt.length === algTokens.length) {
+      setSbIsCorrect(true);
+      setSbSeen((prev) => [...prev, thisCase.name]);
+      setSbPhase("result");
+      setSbXpStatus("pending");
+      const res = await awardMemoryXP(XP_PER_CORRECT);
+      setSbXpStatus("error" in res ? "no_auth" : "awarded");
+    }
+  }
+
+  function sbHandleNext() { sbBeginRound(sbSeen, pool); }
+
+  function sbHandleExit() {
+    setSbPhase("idle");
+    setSbCurrentCase(null);
+    setSbMoveTokens([]);
+    setSbBuilt([]);
+    setSbIsCorrect(null);
+    setSbXpStatus("idle");
+  }
+
   // ── Filter change (shared — resets both modes to idle) ────────────────────
 
   function handleFilterChange(f: Filter) {
@@ -550,32 +632,29 @@ export default function MemoryTrainer() {
     setPhase("idle");
     setCrSeen([]);
     setCrPhase("idle");
+    setSbSeen([]);
+    setSbPhase("idle");
   }
 
   // ── Mode change (exit active session, keep cycle progress) ────────────────
 
   function handleModeChange(m: Mode) {
+    if (m === mode) return;
     setMode(m);
-    if (m === "recognition") {
-      setPhase("idle");
-      setCurrentCase(null);
-      setInput("");
-      setIsCorrect(null);
-      setXpStatus("idle");
+    // Reset whichever mode we're leaving
+    if (mode === "flash") {
+      setPhase("idle"); setCurrentCase(null); setInput(""); setIsCorrect(null); setXpStatus("idle");
+    } else if (mode === "recognition") {
+      setCrPhase("idle"); setCrCurrentCase(null); setCrOptions([]); setCrSelected(null); setCrIsCorrect(null); setCrXpStatus("idle");
     } else {
-      setCrPhase("idle");
-      setCrCurrentCase(null);
-      setCrOptions([]);
-      setCrSelected(null);
-      setCrIsCorrect(null);
-      setCrXpStatus("idle");
+      setSbPhase("idle"); setSbCurrentCase(null); setSbMoveTokens([]); setSbBuilt([]); setSbIsCorrect(null); setSbXpStatus("idle");
     }
   }
 
   // ── Progress bar values for the active mode ───────────────────────────────
-  const activeDoneCount    = mode === "flash" ? seen.length : crSeen.length;
-  const activePhaseNotIdle = mode === "flash" ? phase !== "idle" : crPhase !== "idle";
-  const activePhaseColor   = mode === "flash" ? phaseColor : crPhaseColor;
+  const activeDoneCount    = mode === "flash" ? seen.length : mode === "recognition" ? crSeen.length : sbSeen.length;
+  const activePhaseNotIdle = mode === "flash" ? phase !== "idle" : mode === "recognition" ? crPhase !== "idle" : sbPhase !== "idle";
+  const activePhaseColor   = mode === "flash" ? phaseColor : mode === "recognition" ? crPhaseColor : sbPhaseColor;
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -602,7 +681,7 @@ export default function MemoryTrainer() {
             className="self-start font-heading text-[9px] leading-none px-3 py-2 tracking-widest"
             style={{ color: "#FF5800", border: "1px solid rgba(255,88,0,0.35)" }}
           >
-            ◈ {mode === "flash" ? "FLASH & RECALL" : "CASE RECOGNITION"}
+            ◈ {mode === "flash" ? "FLASH & RECALL" : mode === "recognition" ? "CASE RECOGNITION" : "SEQUENCE BUILDER"}
           </span>
 
           <h1
@@ -615,7 +694,9 @@ export default function MemoryTrainer() {
           <p className="font-sans text-zinc-400 text-sm leading-relaxed">
             {mode === "flash"
               ? `See the algorithm for ${SHOW_SECONDS} seconds, then type it from memory.`
-              : "Read the algorithm, then pick the matching diagram from four options."}
+              : mode === "recognition"
+              ? "Read the algorithm, then pick the matching diagram from four options."
+              : "See the case diagram, then click the moves in the correct order to build the algorithm."}
           </p>
         </div>
 
@@ -939,6 +1020,277 @@ export default function MemoryTrainer() {
               ) : (
                 <button
                   onClick={frHandleNext}
+                  className="w-full font-heading text-[11px] leading-none py-4 cursor-pointer transition-all active:translate-y-[2px]"
+                  style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                >
+                  NEXT CASE →
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          SEQUENCE BUILDER GAME CARD
+      ══════════════════════════════════════════════════════════════════════ */}
+      {mode === "sequence" && (
+        <div
+          className="overflow-hidden"
+          style={{
+            minHeight: 460,
+            backgroundColor: "#0a0a11",
+            backgroundImage: sbPhaseBgTint !== "transparent"
+              ? `linear-gradient(${sbPhaseBgTint}, ${sbPhaseBgTint})`
+              : undefined,
+            border: `1px solid ${sbPhaseColor}25`,
+            borderTop: `3px solid ${sbPhaseColor}`,
+          }}
+        >
+
+          {/* ── SB IDLE ── */}
+          {sbPhase === "idle" && (
+            <IdlePanel
+              pool={pool}
+              isCycleDone={sbIsCycleDone}
+              filter={filter}
+              activeFilterColor={activeFilterColor}
+              onFilterChange={handleFilterChange}
+              onStart={sbHandleStart}
+              howItWorksSteps={[
+                "A case diagram appears — study it",
+                "All the algorithm moves appear as buttons in scrambled order",
+                "Click each move in the correct sequence to build the algorithm",
+                `Complete the full sequence correctly to earn +${XP_PER_CORRECT} XP`,
+              ]}
+              rightLabel="CLICK TO BUILD"
+            />
+          )}
+
+          {/* ── SB BUILDING ── */}
+          {sbPhase === "building" && sbCurrentCase && (() => {
+            const algTokens = sbCurrentCase.alg.trim().split(/\s+/);
+            return (
+              <div className="flex flex-col items-center gap-6 p-8">
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-heading text-[9px] tracking-widest" style={{ color: "#009B48" }}>
+                    ▶ BUILD THE SEQUENCE
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <KindBadge kind={sbCurrentCase.kind} />
+                    <button
+                      onClick={sbHandleExit}
+                      className="font-heading text-[9px] text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer tracking-widest"
+                    >
+                      ✕ EXIT
+                    </button>
+                  </div>
+                </div>
+
+                <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(13px, 2vw, 18px)" }}>
+                  {sbCurrentCase.name}
+                </h2>
+
+                <DiagramBox c={sbCurrentCase} />
+
+                {/* Running sequence display */}
+                <div
+                  className="w-full flex flex-col gap-2 p-4"
+                  style={{
+                    backgroundColor: "#080810",
+                    border: "1px solid rgba(0,155,72,0.2)",
+                    minHeight: 64,
+                  }}
+                >
+                  <span className="font-heading text-[9px] tracking-widest" style={{ color: "#009B48" }}>
+                    YOUR SEQUENCE — {sbBuilt.length} / {algTokens.length}
+                  </span>
+                  <div className="flex flex-wrap gap-2 min-h-[28px] items-center">
+                    {sbBuilt.length === 0 ? (
+                      <span className="font-heading text-[9px] text-zinc-700">click a move below to start...</span>
+                    ) : (
+                      sbBuilt.map((move, i) => (
+                        <span
+                          key={i}
+                          className="font-heading text-sm leading-none px-2 py-1.5"
+                          style={{
+                            color: "#009B48",
+                            backgroundColor: "rgba(0,155,72,0.1)",
+                            border: "1px solid rgba(0,155,72,0.35)",
+                          }}
+                        >
+                          {move}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Scrambled move buttons */}
+                <div className="w-full flex flex-col gap-3">
+                  <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                    AVAILABLE MOVES
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {sbMoveTokens.map((token) => (
+                      <button
+                        key={token.id}
+                        onClick={() => sbHandleClick(token)}
+                        disabled={token.used}
+                        className="font-heading text-sm leading-none px-3 py-2.5 transition-all duration-150"
+                        style={{
+                          backgroundColor: token.used ? "rgba(255,255,255,0.02)" : "#0e0e1a",
+                          border: token.used
+                            ? "1px solid rgba(255,255,255,0.05)"
+                            : "1px solid rgba(255,255,255,0.18)",
+                          color: token.used ? "rgba(255,255,255,0.15)" : "#ffffff",
+                          cursor: token.used ? "default" : "pointer",
+                          boxShadow: token.used ? "none" : "0 2px 0px rgba(0,0,0,0.6)",
+                          transform: "translateY(0)",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!token.used) (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,155,72,0.6)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!token.used) (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.18)";
+                        }}
+                      >
+                        {token.move}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ── SB RESULT ── */}
+          {sbPhase === "result" && sbCurrentCase && sbIsCorrect !== null && (
+            <div className="flex flex-col items-center gap-6 p-8">
+              <div className="flex justify-end w-full">
+                <button
+                  onClick={sbHandleExit}
+                  className="font-heading text-[9px] text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer tracking-widest"
+                >
+                  ✕ EXIT
+                </button>
+              </div>
+
+              {/* Verdict banner */}
+              <div
+                className="w-full flex items-center justify-between px-4 py-3"
+                style={{
+                  backgroundColor: sbIsCorrect ? "rgba(0,155,72,0.1)" : "rgba(196,30,58,0.1)",
+                  border: `1px solid ${sbIsCorrect ? "rgba(0,155,72,0.35)" : "rgba(196,30,58,0.35)"}`,
+                  boxShadow: `0 0 20px ${sbIsCorrect ? "rgba(0,155,72,0.08)" : "rgba(196,30,58,0.08)"}`,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="font-heading text-xl leading-none"
+                    style={{ color: sbIsCorrect ? "#009B48" : "#C41E3A" }}
+                  >
+                    {sbIsCorrect ? "✓" : "✗"}
+                  </span>
+                  <span
+                    className="font-heading text-[11px] tracking-widest leading-none"
+                    style={{ color: sbIsCorrect ? "#009B48" : "#C41E3A" }}
+                  >
+                    {sbIsCorrect ? "CORRECT" : "WRONG MOVE"}
+                  </span>
+                </div>
+                {sbIsCorrect && (
+                  <span
+                    className="font-heading text-[9px] leading-none px-2 py-1.5"
+                    style={{
+                      color: "#FFD500",
+                      border: "1px solid rgba(255,213,0,0.35)",
+                      backgroundColor: "rgba(255,213,0,0.06)",
+                    }}
+                  >
+                    {sbXpStatus === "awarded"   ? `+${XP_PER_CORRECT} XP`
+                     : sbXpStatus === "no_auth" ? "SIGN IN TO EARN XP"
+                     : sbXpStatus === "pending" ? "AWARDING..."
+                     : ""}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(13px, 2vw, 18px)" }}>
+                {sbCurrentCase.name}
+              </h2>
+
+              <DiagramBox c={sbCurrentCase} />
+
+              {/* Sequence recap */}
+              <div
+                className="w-full flex flex-col gap-3 p-4"
+                style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                {!sbIsCorrect && (
+                  <div className="flex flex-col gap-1">
+                    <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                      YOUR SEQUENCE
+                    </span>
+                    <div className="flex flex-wrap gap-2 items-center min-h-[28px]">
+                      {sbBuilt.map((move, i) => (
+                        <span
+                          key={i}
+                          className="font-heading text-sm leading-none px-2 py-1.5"
+                          style={{
+                            color: "#C41E3A",
+                            backgroundColor: "rgba(196,30,58,0.08)",
+                            border: "1px solid rgba(196,30,58,0.3)",
+                          }}
+                        >
+                          {move}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div
+                  className="flex flex-col gap-1"
+                  style={!sbIsCorrect ? { borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 12 } : {}}
+                >
+                  <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                    CORRECT ALGORITHM
+                  </span>
+                  <p className="font-mono text-sm text-[#FFD700] tracking-wide leading-relaxed">
+                    {sbCurrentCase.alg}
+                  </p>
+                </div>
+              </div>
+
+              {/* Next action */}
+              {sbIsCycleDone ? (
+                <div className="w-full flex flex-col gap-4">
+                  <div
+                    className="w-full flex flex-col items-center gap-2 py-4 px-6 text-center"
+                    style={{
+                      backgroundColor: "rgba(255,213,0,0.05)",
+                      border: "1px solid rgba(255,213,0,0.2)",
+                    }}
+                  >
+                    <span
+                      className="font-heading text-[11px] text-[#FFD500] tracking-widest"
+                      style={{ textShadow: "0 0 12px rgba(255,213,0,0.4)" }}
+                    >
+                      ★ CYCLE COMPLETE
+                    </span>
+                    <p className="font-sans text-zinc-500 text-xs">All {pool.length} cases done.</p>
+                  </div>
+                  <button
+                    onClick={() => { setSbSeen([]); setSbPhase("idle"); }}
+                    className="w-full font-heading text-[11px] leading-none py-4 cursor-pointer transition-all active:translate-y-[2px]"
+                    style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                  >
+                    START NEW CYCLE
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={sbHandleNext}
                   className="w-full font-heading text-[11px] leading-none py-4 cursor-pointer transition-all active:translate-y-[2px]"
                   style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
                 >

@@ -377,7 +377,7 @@ Case Recognition is the inverse of Flash & Recall. Instead of seeing a diagram a
 
 | State | Type | Why it exists |
 |---|---|---|
-| `mode` | `"flash" \| "recognition"` | Shared top-level toggle. Determines which game card is rendered. Switching mode exits the active session but preserves each mode's cycle progress independently. |
+| `mode` | `"flash" \| "recognition" \| "sequence"` | Shared top-level toggle. Determines which game card is rendered. Switching mode exits the active session but preserves each mode's cycle progress independently. |
 | `crPhase` | `"idle" \| "choosing" \| "result"` | Case Recognition has no timer so it doesn't need a `"showing"` phase — the algorithm stays visible the whole time. Three phases are sufficient. |
 | `crCurrentCase` | `TrainerCase \| null` | The correct answer for the current round — used to verify the user's pick and to show the algorithm text. |
 | `crOptions` | `TrainerCase[]` | The shuffled array of 4 options (1 correct + 3 wrong) rendered as clickable diagram cards. Stored in state so the layout doesn't re-shuffle on re-render. |
@@ -403,3 +403,72 @@ function pickWrongOptions(correct: TrainerCase, pool: TrainerCase[]): TrainerCas
 The case counts guarantee at least 5 same-kind wrong options are always available (10 OLL cases, 6 PLL cases), so `.slice(0, 3)` never runs short.
 
 After picking, the correct case and 3 wrong cases are combined and shuffled with `shuffleArray()` before being stored in `crOptions`. This randomizes which cell in the 2×2 grid each diagram occupies, so the correct answer isn't always in the same position.
+
+---
+
+## Sequence Builder mode
+
+### How it works
+
+Sequence Builder combines recognition and recall in an interactive way. The user sees the **case diagram** (not the algorithm) and must reconstruct the correct algorithm by **clicking moves one at a time** in the right order. All the moves from the correct algorithm are displayed as individual buttons in a scrambled layout — the user picks them one by one to build the sequence.
+
+**Round flow:**
+
+1. `sbBeginRound()` picks a random unseen case, splits its algorithm into individual move tokens (e.g. `"R U R' U'"` → `["R", "U", "R'", "U'"]`), assigns each token a unique numeric `id`, and shuffles the resulting `MoveToken[]` array before storing it in `sbMoveTokens`.
+2. The building phase renders the diagram, a running sequence display (starts empty), and the scrambled move buttons.
+3. Each click calls `sbHandleClick(token)`. The function compares `token.move` against `algTokens[sbBuilt.length]` — the expected next move in the correct algorithm.
+4. **Wrong move:** The token is immediately marked `used: true`, `sbIsCorrect` is set to `false`, and `sbPhase` transitions to `"result"`. The correct algorithm is revealed.
+5. **Correct move:** The token is marked `used: true`, the move is appended to `sbBuilt`, and the running sequence display updates. If `sbBuilt.length` now equals the total algorithm length, `sbIsCorrect` becomes `true`, `sbPhase` transitions to `"result"`, and XP is awarded via `awardMemoryXP()`.
+6. XP is awarded identically to the other modes: `awardMemoryXP(10)` is called on success, `sbXpStatus` tracks the async state.
+
+### New state added and why
+
+| State | Type | Why it exists |
+|---|---|---|
+| `sbPhase` | `"idle" \| "building" \| "result"` | Three phases are sufficient — there is no timer or separate memorization step. The diagram is always visible while the user builds. |
+| `sbCurrentCase` | `TrainerCase \| null` | The case being drilled — used to render the diagram and to derive the correct algorithm token sequence. |
+| `sbMoveTokens` | `MoveToken[]` | The shuffled array of clickable move buttons. Each token carries `{ id: number; move: string; used: boolean }`. Stored in state so the button layout doesn't re-shuffle on every re-render, and so individual tokens can be marked as used reactively. |
+| `sbBuilt` | `string[]` | The sequence of moves the user has clicked so far. Rendered as a growing pill list above the buttons. Also used to determine which position in the algorithm is expected next: `algTokens[sbBuilt.length]`. |
+| `sbSeen` | `string[]` | Tracks which cases have been answered this cycle so nothing repeats. Independent from `seen` (Flash & Recall) and `crSeen` (Case Recognition), so each mode keeps its own cycle progress. |
+| `sbIsCorrect` | `boolean \| null` | Whether the user completed the sequence correctly. `null` while the round is in progress; `true` on full correct completion; `false` the moment a wrong move is clicked. |
+| `sbXpStatus` | `XpStatus` | Async state for the XP server call — identical purpose to `xpStatus` in Flash & Recall and `crXpStatus` in Case Recognition. |
+
+### How duplicate moves are handled
+
+Algorithms regularly contain the same move notation more than once (e.g. `R U R' U'` has two moves starting with R). Naive string-based deduplication would make it impossible to click the second occurrence.
+
+The solution is the **`MoveToken` type**:
+
+```ts
+type MoveToken = { id: number; move: string; used: boolean };
+```
+
+When `sbBeginRound()` parses the algorithm, it maps over the token array by **index**, not by value:
+
+```ts
+const algTokens = next.alg.trim().split(/\s+/);
+const tokens: MoveToken[] = algTokens.map((move, i) => ({ id: i, move, used: false }));
+```
+
+This means `R U R' U'` produces four distinct tokens: `{id:0, move:"R"}`, `{id:1, move:"U"}`, `{id:2, move:"R'"}`, `{id:3, move:"U'"}`. If the algorithm were `R U R U`, it would still produce four distinct tokens: `{id:0, move:"R"}`, `{id:1, move:"U"}`, `{id:2, move:"R"}`, `{id:3, move:"U"}`. The two `R` buttons are separate objects with different IDs.
+
+When a button is clicked, `sbHandleClick` marks that specific token used by ID:
+
+```ts
+setSbMoveTokens((prev) => prev.map((t) => t.id === token.id ? { ...t, used: true } : t));
+```
+
+This greys out exactly the button that was clicked without affecting any other button with the same move label. The second `R` button remains fully clickable until it too is selected.
+
+### How click validation works
+
+Validation is strictly **positional**: at any point, the only correct next move is `algTokens[sbBuilt.length]`.
+
+```ts
+const expectedMove = algTokens[sbBuilt.length];
+if (token.move !== expectedMove) {
+  // Wrong — immediately fail the round
+}
+```
+
+The user cannot "skip ahead" or rearrange — they must build the sequence left-to-right in order. Any deviation from the correct next move immediately ends the round and reveals the full algorithm. This is intentional: the game tests whether the user has the sequence memorized precisely, not just whether they can recognize individual moves.

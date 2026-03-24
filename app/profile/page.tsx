@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
+import { RankBadge } from "@/app/components/RankBadge";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
@@ -156,14 +157,10 @@ export default async function Profile() {
       >
         <div className="flex-shrink-0 flex flex-col items-center gap-4">
           <div className="w-24 h-24 flex items-center justify-center">
-            <div
-              style={{
-                width: 64, height: 64,
-                transform: "rotate(45deg)",
-                backgroundColor: rank.bg,
-                border: `3px solid ${rank.color}`,
-                boxShadow: `0 0 32px ${rank.glow}, 0 0 64px ${rank.glow.replace("0.4", "0.15")}, inset 0 0 12px rgba(255,255,255,0.04)`,
-              }}
+            <RankBadge
+              name={rank.rank}
+              color={rank.color}
+              glow={rank.rank === "GRANDMASTER" ? rank.glow : undefined}
             />
           </div>
           <div className="flex gap-[6px]">
