@@ -6,12 +6,11 @@ import { formatTime } from "@/lib/rank";
 import { saveSolve } from "./actions";
 import { generateScramble } from "@/lib/scramble";
 
-type Tab = "timer" | "trainer" | "free";
+type Tab = "timer" | "trainer";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "timer", label: "Timer" },
   { id: "trainer", label: "Algorithm Trainer" },
-  { id: "free", label: "Free Practice" },
 ];
 
 export default function Playground() {
@@ -43,7 +42,6 @@ export default function Playground() {
       {/* Tab content */}
       {activeTab === "timer" && <Timer />}
       {activeTab === "trainer" && <AlgorithmTrainer />}
-      {activeTab === "free" && <FreePracticePlaceholder />}
     </div>
   );
 }
@@ -475,14 +473,3 @@ function AlgorithmTrainer() {
   );
 }
 
-function FreePracticePlaceholder() {
-  return (
-    <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] p-12 text-center">
-      <div className="text-4xl mb-4">🎮</div>
-      <h2 className="font-heading text-xs text-zinc-300 mb-3">Free Practice</h2>
-      <p className="text-zinc-500 text-sm">
-        Interactive 3D cube. No scoring, no XP — just turn and experiment.
-      </p>
-    </div>
-  );
-}

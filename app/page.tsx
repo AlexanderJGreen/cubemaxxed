@@ -8,6 +8,7 @@ const FEATURES = [
     title: "STRUCTURED CURRICULUM",
     desc: "43 lessons across 7 stages take you from never touching a cube to completing a full CFOP solve.",
     symbol: "▤",
+    comingSoon: true,
   },
   {
     color: "#FFD500",
@@ -83,7 +84,6 @@ const RANKS = [
   },
 ];
 
-
 // Scrambled cube face — all 6 colors present, deliberately mixed
 const STICKERS = [
   "#FF5800",
@@ -109,11 +109,34 @@ const FLOATERS = [
   { color: "#009B48", size: 8, left: "44%", delay: "6s", duration: "15s" },
 ];
 
-const STATS = [
-  { value: "43", label: "Lessons" },
-  { value: "7", label: "Stages" },
-  { value: "24", label: "Ranks" },
+
+const LOCK_PIXELS = [
+  [0,0,1,1,1,0,0],
+  [0,1,0,0,0,1,0],
+  [0,1,0,0,0,1,0],
+  [1,1,1,1,1,1,1],
+  [1,1,0,0,0,1,1],
+  [1,1,0,1,0,1,1],
+  [1,1,0,0,0,1,1],
+  [1,1,1,1,1,1,1],
 ];
+
+function PixelLock() {
+  return (
+    <div style={{ display: "inline-grid", gridTemplateColumns: "repeat(7, 5px)", gap: "1px" }}>
+      {LOCK_PIXELS.flat().map((on, i) => (
+        <div
+          key={i}
+          style={{
+            width: 5,
+            height: 5,
+            backgroundColor: on ? "rgba(161,161,170,0.7)" : "transparent",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -179,7 +202,7 @@ export default function Home() {
                   className="leading-snug text-zinc-300"
                   style={{ fontSize: "clamp(13px, 2.2vw, 20px)" }}
                 >
-                  LEARN TO SPEEDCUBE
+                  START SPEEDCUBING
                 </span>
                 <span
                   className="leading-none"
@@ -195,16 +218,16 @@ export default function Home() {
 
               {/* Subtitle */}
               <p className="font-sans text-lg text-zinc-400 max-w-md leading-relaxed">
-                Structured lessons, real XP, daily streaks, and ranks that
-                actually mean something. Built for total beginners. Addicting
-                enough to keep you going.
+                Real XP, daily streaks, and ranks that actually mean something.
+                Perfect for all levels. Addicting enough to keep you going.
+                Beginner to CFOP curriculum coming soon!
               </p>
             </div>
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mt-2">
               <Link
-                href="/learn"
+                href="/playground"
                 className="font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px]"
                 style={{
                   boxShadow:
@@ -218,19 +241,9 @@ export default function Home() {
               </span>
             </div>
 
-            {/* Stats row */}
-            <div className="flex items-center gap-8 pt-2 border-t border-white/5">
-              {STATS.map(({ value, label }) => (
-                <div key={label} className="flex flex-col gap-1.5">
-                  <span className="font-heading text-sm text-white">
-                    {value}
-                  </span>
-                  <span className="font-sans text-xs text-zinc-600 uppercase tracking-widest">
-                    {label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {/* Divider line */}
+            <div className="pt-2 border-t border-white/5" />
+
           </div>
 
           {/* Right column — pixel cube */}
@@ -276,12 +289,21 @@ export default function Home() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FEATURES.map(({ color, label, title, symbol, desc }) => (
+          {FEATURES.map(({ color, label, title, symbol, desc, comingSoon }) => (
             <div
               key={title}
-              className="flex flex-col gap-5 p-6 bg-[#0f0f1a] transition-colors duration-200 hover:bg-[#13131f] group"
+              className="relative flex flex-col gap-5 p-6 bg-[#0f0f1a] transition-colors duration-200 hover:bg-[#13131f] group"
               style={{ border: "1px solid rgba(255,255,255,0.05)" }}
             >
+              {comingSoon && (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10"
+                  style={{ backgroundColor: "rgba(13,13,20,0.82)", backdropFilter: "blur(1px)" }}
+                >
+                  <PixelLock />
+                  <span className="font-heading text-[9px] text-zinc-500 tracking-widest">COMING SOON</span>
+                </div>
+              )}
               {/* Top accent bar */}
               <div className="h-[3px] w-8" style={{ backgroundColor: color }} />
 
@@ -351,7 +373,7 @@ export default function Home() {
                 }}
               />
 
-              {RANKS.map((rank, i) => {
+              {RANKS.map((rank) => {
                 return (
                   <div
                     key={rank.name}
@@ -362,7 +384,9 @@ export default function Home() {
                       <RankBadge
                         name={rank.name}
                         color={rank.color}
-                        glow={rank.name === "GRANDMASTER" ? rank.glow : undefined}
+                        glow={
+                          rank.name === "GRANDMASTER" ? rank.glow : undefined
+                        }
                       />
                     </div>
 
