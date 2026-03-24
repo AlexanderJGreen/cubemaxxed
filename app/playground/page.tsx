@@ -50,12 +50,18 @@ type Solve = {
   id: number;
   time: number; // ms
   scramble: string;
+  confirmed: boolean;
 };
 
+type Pending = {
+  time: number;
+  scramble: string;
+};
 
 function calcAverage(solves: Solve[], n: number): string {
-  if (solves.length < n) return "—";
-  const last = solves.slice(-n);
+  const confirmed = solves.filter((s) => s.confirmed);
+  if (confirmed.length < n) return "—";
+  const last = confirmed.slice(-n);
   const avg = last.reduce((sum, s) => sum + s.time, 0) / n;
   return formatTime(avg);
 }
@@ -63,15 +69,14 @@ function calcAverage(solves: Solve[], n: number): string {
 function Timer() {
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [solves, setSolves] = useState<Solve[]>([]);
+  const [pending, setPending] = useState<Pending | null>(null);
+  const [history, setHistory] = useState<Solve[]>([]);
   const [currentScramble, setCurrentScramble] = useState(() => generateScramble());
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
   const tickRef = useRef<FrameRequestCallback>(() => {});
-  // Track which scramble was active when the timer started
   const activeScrambleRef = useRef(currentScramble);
 
-  // Define tick inside an effect — never written during render
   useEffect(() => {
     tickRef.current = () => {
       if (startTimeRef.current !== null) {
@@ -82,13 +87,13 @@ function Timer() {
   }, []);
 
   const start = useCallback(() => {
-    // Always start fresh from zero
+    if (pending) return;
     setElapsed(0);
     startTimeRef.current = Date.now();
     activeScrambleRef.current = currentScramble;
     setRunning(true);
     rafRef.current = requestAnimationFrame(tickRef.current);
-  }, [currentScramble]);
+  }, [currentScramble, pending]);
 
   const stop = useCallback(() => {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
@@ -97,25 +102,36 @@ function Timer() {
     setElapsed(finalTime);
     setRunning(false);
     if (finalTime > 0) {
-      const scramble = activeScrambleRef.current;
-      setSolves((prev) => [
-        ...prev,
-        { id: prev.length + 1, time: finalTime, scramble },
-      ]);
-      saveSolve(finalTime, scramble);
-      setCurrentScramble(generateScramble());
+      setPending({ time: finalTime, scramble: activeScrambleRef.current });
     }
   }, []);
 
-  const toggle = useCallback(() => {
-    if (running) {
-      stop();
-    } else {
-      start();
-    }
-  }, [running, start, stop]);
+  const confirm = useCallback(() => {
+    if (!pending) return;
+    setHistory((prev) => [
+      ...prev,
+      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true },
+    ]);
+    saveSolve(pending.time, pending.scramble);
+    setPending(null);
+    setCurrentScramble(generateScramble());
+  }, [pending]);
 
-  // Spacebar handler
+  const discard = useCallback(() => {
+    if (!pending) return;
+    setHistory((prev) => [
+      ...prev,
+      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: false },
+    ]);
+    setPending(null);
+    setCurrentScramble(generateScramble());
+  }, [pending]);
+
+  const toggle = useCallback(() => {
+    if (pending) return;
+    if (running) stop(); else start();
+  }, [running, start, stop, pending]);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.code === "Space" && e.target === document.body) {
@@ -127,15 +143,13 @@ function Timer() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [toggle]);
 
-  // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
+    return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
   }, []);
 
-  const ao5 = calcAverage(solves, 5);
-  const ao12 = calcAverage(solves, 12);
+  const confirmedSolves = history.filter((s) => s.confirmed);
+  const ao5 = calcAverage(history, 5);
+  const ao12 = calcAverage(history, 12);
 
   return (
     <div className="space-y-4">
@@ -143,81 +157,88 @@ function Timer() {
       <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
         {/* Scramble */}
         <div className="border-b border-zinc-800 px-8 py-5 text-center">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
-            Scramble
-          </p>
-          <p className="font-mono text-zinc-200 text-lg tracking-wide">
-            {currentScramble}
-          </p>
+          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Scramble</p>
+          <p className="font-mono text-zinc-200 text-lg tracking-wide">{currentScramble}</p>
         </div>
 
-        {/* Timer display — click to start/stop */}
+        {/* Timer display */}
         <button
           onClick={toggle}
-          className="w-full py-10 sm:py-20 flex flex-col items-center gap-6 focus:outline-none cursor-pointer group"
+          disabled={!!pending}
+          className="w-full py-10 sm:py-20 flex flex-col items-center gap-6 focus:outline-none cursor-pointer group disabled:cursor-default"
         >
           <span
             className={`font-mono text-5xl sm:text-8xl font-bold tabular-nums transition-colors ${
-              running
-                ? "text-[#FFD500]"
-                : elapsed > 0
-                  ? "text-white"
-                  : "text-zinc-600"
+              running ? "text-[#FFD500]" : elapsed > 0 ? "text-white" : "text-zinc-600"
             }`}
           >
             {formatTime(elapsed)}
           </span>
-
-          <span className="text-zinc-600 text-sm group-hover:text-zinc-400 transition-colors">
-            {running
-              ? "click or press space to stop"
-              : "click or press space to start"}
-          </span>
+          {!pending && (
+            <span className="text-zinc-600 text-sm group-hover:text-zinc-400 transition-colors">
+              {running ? "click or press space to stop" : "click or press space to start"}
+            </span>
+          )}
         </button>
+
+        {/* Confirm / Discard */}
+        {pending && (
+          <div className="border-t border-zinc-800 px-8 py-5 flex items-center justify-center gap-4">
+            <button
+              onClick={confirm}
+              className="flex-1 sm:flex-none px-8 py-3 bg-[#FFD500] text-black font-heading text-[11px] tracking-widest transition hover:brightness-110 active:scale-95 cursor-pointer"
+            >
+              CONFIRM SOLVE
+            </button>
+            <button
+              onClick={discard}
+              className="flex-1 sm:flex-none px-8 py-3 border border-zinc-700 text-zinc-400 font-heading text-[11px] tracking-widest transition hover:border-zinc-500 hover:text-zinc-200 active:scale-95 cursor-pointer"
+            >
+              DISCARD
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Session stats */}
-      {solves.length > 0 && (
-        <>
-          <div className="grid grid-cols-3 gap-3">
-            <StatCard label="Solves" value={String(solves.length)} />
-            <StatCard label="ao5" value={ao5} />
-            <StatCard label="ao12" value={ao12} />
-          </div>
+      {/* Session stats — only confirmed solves */}
+      {confirmedSolves.length > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          <StatCard label="Solves" value={String(confirmedSolves.length)} />
+          <StatCard label="ao5" value={ao5} />
+          <StatCard label="ao12" value={ao12} />
+        </div>
+      )}
 
-          {/* Solve history */}
-          <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
-            <div className="border-b border-zinc-800 px-6 py-3 flex items-center justify-between">
-              <p className="text-xs text-zinc-500 uppercase tracking-widest">
-                Session History
-              </p>
-              <button
-                onClick={() => setSolves([])}
-                className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
-              >
-                Clear
-              </button>
-            </div>
-            <div className="divide-y divide-zinc-800/60">
-              {[...solves].reverse().map((solve) => (
-                <div
-                  key={solve.id}
-                  className="px-6 py-3 flex items-center gap-4"
-                >
-                  <span className="text-xs text-zinc-600 w-6 text-right shrink-0">
-                    {solve.id}
-                  </span>
-                  <span className="font-mono text-white text-sm w-20 shrink-0">
-                    {formatTime(solve.time)}
-                  </span>
-                  <span className="font-mono text-zinc-600 text-xs truncate">
-                    {solve.scramble}
-                  </span>
-                </div>
-              ))}
-            </div>
+      {/* Solve history — all attempts */}
+      {history.length > 0 && (
+        <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
+          <div className="border-b border-zinc-800 px-6 py-3 flex items-center justify-between">
+            <p className="text-xs text-zinc-500 uppercase tracking-widest">Session History</p>
+            <button
+              onClick={() => setHistory([])}
+              className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
+            >
+              Clear
+            </button>
           </div>
-        </>
+          <div className="divide-y divide-zinc-800/60">
+            {[...history].reverse().map((solve) => (
+              <div
+                key={solve.id}
+                className={`px-6 py-3 flex items-center gap-4 ${!solve.confirmed ? "opacity-40" : ""}`}
+              >
+                <span className="text-xs text-zinc-600 w-6 text-right shrink-0">{solve.id}</span>
+                <span className={`font-mono text-sm w-20 shrink-0 ${solve.confirmed ? "text-white" : "text-zinc-500 line-through"}`}>
+                  {formatTime(solve.time)}
+                </span>
+                <span className="font-mono text-zinc-600 text-xs truncate">{solve.scramble}</span>
+                {!solve.confirmed && (
+                  <span className="font-heading text-[8px] text-zinc-700 tracking-widest shrink-0">DISCARDED</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
