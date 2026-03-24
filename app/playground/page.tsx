@@ -25,12 +25,12 @@ export default function Playground() {
       </p>
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1 w-fit mb-8">
+      <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1 w-full sm:w-fit mb-8">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-2 rounded-md text-sm cursor-pointer transition-colors ${
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-md text-sm cursor-pointer transition-colors ${
               activeTab === tab.id ? "font-bold text-white" : "font-medium text-zinc-400 hover:text-zinc-100"
             }`}
           >
@@ -154,10 +154,10 @@ function Timer() {
         {/* Timer display — click to start/stop */}
         <button
           onClick={toggle}
-          className="w-full py-20 flex flex-col items-center gap-6 focus:outline-none cursor-pointer group"
+          className="w-full py-10 sm:py-20 flex flex-col items-center gap-6 focus:outline-none cursor-pointer group"
         >
           <span
-            className={`font-mono text-8xl font-bold tabular-nums transition-colors ${
+            className={`font-mono text-5xl sm:text-8xl font-bold tabular-nums transition-colors ${
               running
                 ? "text-[#FFD500]"
                 : elapsed > 0
@@ -352,7 +352,7 @@ function AlgorithmTrainer() {
   return (
     <div className="space-y-4">
       {/* Tab selector + search */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
           {TRAINER_TABS.map((t) => (
             <button

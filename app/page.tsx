@@ -184,7 +184,7 @@ export default function Home() {
         ))}
 
         {/* Main content */}
-        <div className="relative z-20 mx-auto max-w-6xl w-full px-6 py-20 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+        <div className="relative z-20 mx-auto max-w-6xl w-full px-6 py-10 sm:py-20 flex flex-col lg:flex-row items-center gap-10 lg:gap-24">
           {/* Left column — text */}
           <div className="flex-1 flex flex-col gap-6">
             {/* Eyebrow badge */}
@@ -217,7 +217,7 @@ export default function Home() {
               </div>
 
               {/* Subtitle */}
-              <p className="font-sans text-lg text-zinc-400 max-w-md leading-relaxed">
+              <p className="font-sans text-base sm:text-lg text-zinc-400 max-w-md leading-relaxed">
                 Real XP, daily streaks, and ranks that actually mean something.
                 Perfect for all levels. Addicting enough to keep you going.
                 Beginner to CFOP curriculum coming soon!
@@ -255,9 +255,8 @@ export default function Home() {
               {STICKERS.map((color, i) => (
                 <div
                   key={i}
+                  className="w-[52px] h-[52px] sm:w-[76px] sm:h-[76px]"
                   style={{
-                    width: 76,
-                    height: 76,
                     backgroundColor: color,
                     boxShadow:
                       "inset -3px -3px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.12)",
