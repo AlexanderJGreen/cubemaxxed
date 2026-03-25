@@ -148,7 +148,7 @@ export default async function Learn() {
           <div style={{ width: "100%", height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
 
           {/* Link */}
-          <a href="/" style={{
+          <Link href="/" style={{
             fontFamily: "var(--font-heading), monospace",
             fontSize: 10, letterSpacing: "0.15em",
             color: "#0d0d14", textDecoration: "none",
@@ -158,7 +158,7 @@ export default async function Learn() {
             display: "inline-block",
           }}>
             GO HOME
-          </a>
+          </Link>
         </div>
       </div>
 
