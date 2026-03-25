@@ -72,15 +72,15 @@ const RANKS = [
   },
   {
     name: "MASTER",
-    color: "#C41E3A",
-    bg: "#150408",
-    glow: "rgba(196,30,58,0.4)",
+    color: "#a855f7",
+    bg: "#0e0818",
+    glow: "rgba(168,85,247,0.4)",
   },
   {
     name: "GRANDMASTER",
-    color: "#ff9100",
-    bg: "#170900",
-    glow: "rgba(255,145,0,0.4)",
+    color: "#C41E3A",
+    bg: "#150408",
+    glow: "rgba(196,30,58,0.4)",
   },
 ];
 

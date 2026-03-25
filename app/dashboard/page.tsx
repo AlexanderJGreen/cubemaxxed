@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
+import { RankBadge } from "@/app/components/RankBadge";
 
 const FIRE_GRID = [
   [0, 0, 0, 1, 0, 0, 0],
@@ -154,16 +155,7 @@ export default async function Dashboard() {
           style={{ border: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
-            <div
-              style={{
-                width: 38,
-                height: 38,
-                transform: "rotate(45deg)",
-                backgroundColor: rank.bg,
-                border: `2px solid ${rank.color}`,
-                boxShadow: `0 0 20px ${rank.glow}, inset 0 0 8px rgba(255,255,255,0.04)`,
-              }}
-            />
+            <RankBadge name={rank.rank} color={rank.color} glow={rank.glow} />
           </div>
           <div className="flex flex-col gap-2 min-w-0">
             <span className="font-heading text-white text-[11px] leading-none truncate">

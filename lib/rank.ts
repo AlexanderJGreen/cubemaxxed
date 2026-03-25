@@ -25,12 +25,12 @@ export const RANK_TIERS: RankTier[] = [
   { rank: "DIAMOND",     tier: "I",   start: 15000,  end: 18333,  color: "#b9f2ff", bg: "#071215", glow: "rgba(185,242,255,0.4)"  },
   { rank: "DIAMOND",     tier: "II",  start: 18333,  end: 21666,  color: "#b9f2ff", bg: "#071215", glow: "rgba(185,242,255,0.4)"  },
   { rank: "DIAMOND",     tier: "III", start: 21666,  end: 25000,  color: "#b9f2ff", bg: "#071215", glow: "rgba(185,242,255,0.4)"  },
-  { rank: "MASTER",      tier: "I",   start: 25000,  end: 30000,  color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
-  { rank: "MASTER",      tier: "II",  start: 30000,  end: 35000,  color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
-  { rank: "MASTER",      tier: "III", start: 35000,  end: 40000,  color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
-  { rank: "GRANDMASTER", tier: "I",   start: 40000,  end: 50000,  color: "#ff9100", bg: "#170900", glow: "rgba(255,145,0,0.4)"    },
-  { rank: "GRANDMASTER", tier: "II",  start: 50000,  end: 60000,  color: "#ff9100", bg: "#170900", glow: "rgba(255,145,0,0.4)"    },
-  { rank: "GRANDMASTER", tier: "III", start: 60000,  end: 999999, color: "#ff9100", bg: "#170900", glow: "rgba(255,145,0,0.4)"    },
+  { rank: "MASTER",      tier: "I",   start: 25000,  end: 30000,  color: "#a855f7", bg: "#0e0818", glow: "rgba(168,85,247,0.4)"   },
+  { rank: "MASTER",      tier: "II",  start: 30000,  end: 35000,  color: "#a855f7", bg: "#0e0818", glow: "rgba(168,85,247,0.4)"   },
+  { rank: "MASTER",      tier: "III", start: 35000,  end: 40000,  color: "#a855f7", bg: "#0e0818", glow: "rgba(168,85,247,0.4)"   },
+  { rank: "GRANDMASTER", tier: "I",   start: 40000,  end: 50000,  color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
+  { rank: "GRANDMASTER", tier: "II",  start: 50000,  end: 60000,  color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
+  { rank: "GRANDMASTER", tier: "III", start: 60000,  end: 999999, color: "#C41E3A", bg: "#150408", glow: "rgba(196,30,58,0.4)"    },
 ];
 
 export function getRankInfo(xp: number): RankTier & { nextLabel: string } {
