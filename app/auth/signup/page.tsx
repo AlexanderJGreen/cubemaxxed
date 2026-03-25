@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { signup } from "@/app/auth/actions";
+import { signup, checkUsernameAvailable } from "@/app/auth/actions";
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -45,8 +45,45 @@ function SignupForm() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [username, setUsername] = useState("");
+  const [usernameTouched, setUsernameTouched] = useState(false);
+  const [usernameTaken, setUsernameTaken] = useState(false);
+  const [usernameChecking, setUsernameChecking] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mismatch = confirm.length > 0 && password !== confirm;
+
+  const usernameFormatError = !username
+    ? null
+    : /[^a-zA-Z0-9_]/.test(username)
+    ? "Only letters, numbers, and underscores are allowed"
+    : username.length < 3
+    ? "Username must be at least 3 characters"
+    : username.length > 24
+    ? "Username must be 24 characters or fewer"
+    : null;
+
+  const usernameError = usernameFormatError ?? (usernameTaken ? "That username is already taken" : null);
+  const usernameInvalid = usernameTouched && !!usernameError;
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setUsernameTaken(false);
+
+    if (!username || usernameFormatError) return;
+
+    setUsernameChecking(true);
+    debounceRef.current = setTimeout(async () => {
+      const available = await checkUsernameAvailable(username);
+      setUsernameTaken(!available);
+      setUsernameChecking(false);
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
 
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4">
@@ -70,15 +107,27 @@ function SignupForm() {
               name="username"
               type="text"
               required
-              minLength={3}
-              maxLength={24}
-              pattern="[a-zA-Z0-9_]+"
-              className="font-sans w-full rounded border border-zinc-700 bg-[#12121f] px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#FFD500] focus:ring-1 focus:ring-[#FFD500]"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onBlur={() => setUsernameTouched(true)}
+              className={`font-sans w-full rounded border bg-[#12121f] px-4 py-3 text-sm text-zinc-100 outline-none transition focus:ring-1 ${
+                usernameInvalid
+                  ? "border-red-700 focus:border-red-500 focus:ring-red-500"
+                  : "border-zinc-700 focus:border-[#FFD500] focus:ring-[#FFD500]"
+              }`}
               placeholder="speedcuber99"
             />
-            <p className="font-sans mt-1 text-xs text-zinc-600">
-              Letters, numbers, and underscores only
-            </p>
+            {usernameInvalid ? (
+              <p className="font-sans mt-1 text-xs text-red-500">{usernameError}</p>
+            ) : usernameChecking ? (
+              <p className="font-sans mt-1 text-xs text-zinc-500">Checking availability...</p>
+            ) : username && !usernameFormatError && !usernameTaken ? (
+              <p className="font-sans mt-1 text-xs text-green-500">Username is available</p>
+            ) : (
+              <p className="font-sans mt-1 text-xs text-zinc-600">
+                3–24 characters. Letters, numbers, and underscores only.
+              </p>
+            )}
           </div>
 
           <div>
@@ -163,7 +212,7 @@ function SignupForm() {
 
           <button
             formAction={signup}
-            disabled={mismatch}
+            disabled={mismatch || !!usernameInvalid || usernameChecking || usernameTaken}
             className="font-heading mt-2 w-full rounded bg-[#FFD500] px-4 py-3 text-xs text-black transition hover:bg-yellow-400 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             CREATE ACCOUNT

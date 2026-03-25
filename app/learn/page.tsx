@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "./data";
 
-type Status = "completed" | "active" | "locked";
+type Status = "completed" | "active" | "locked" | "coming_soon";
 
 function LockPixels() {
   const rows = [
@@ -69,8 +69,11 @@ export default async function Learn() {
       ? prevStage.lessons.every((l) => completedLessonIds.has(l.number))
       : true; // Stage 1 always unlocked
 
+    const isCfop = stage.number >= 4;
+
     let status: Status;
-    if (doneLessons === totalLessons && totalLessons > 0) status = "completed";
+    if (isCfop) status = "coming_soon";
+    else if (doneLessons === totalLessons && totalLessons > 0) status = "completed";
     else if (prevComplete) status = "active";
     else status = "locked";
 
@@ -83,85 +86,6 @@ export default async function Learn() {
 
   return (
     <>
-      {/* ── Coming Soon overlay ── */}
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 100,
-        backgroundColor: "rgba(13,13,20,0.92)",
-        backdropFilter: "blur(6px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "24px",
-      }}>
-        <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center",
-          gap: 24, maxWidth: 400, width: "100%", textAlign: "center",
-        }}>
-          {/* Pixel lock icon */}
-          <div style={{
-            display: "inline-grid",
-            gridTemplateColumns: "repeat(5, 8px)",
-            gap: 2,
-          }}>
-            {(() => {
-              const colors = ["#C41E3A","#0051A2","#009B48","#FF5800","#FFD500","#C41E3A","#FF5800","#009B48","#0051A2","#FFD500","#C41E3A","#009B48","#FF5800","#0051A2","#FFD500","#C41E3A","#FF5800","#009B48","#0051A2","#FFD500","#C41E3A","#009B48"];
-              const pattern = [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,1,0,1,1, 1,1,1,1,1, 1,1,1,1,1];
-              let ci = 0;
-              return pattern.map((on, i) => {
-                const color = on ? colors[ci++ % colors.length] : null;
-                const delay = color ? `${((i * 0.41 + ci * 0.27) % 3).toFixed(2)}s` : "0s";
-                return (
-                  <div key={i} style={{
-                    width: 8, height: 8,
-                    backgroundColor: color ?? "transparent",
-                    boxShadow: color ? `0 0 4px ${color}55` : "none",
-                    animation: color ? `pixelFlash 5s ${delay} ease-in-out infinite` : "none",
-                  }} />
-                );
-              });
-            })()}
-          </div>
-
-          {/* Message */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <span style={{
-              fontFamily: "var(--font-heading), monospace",
-              fontSize: 9, letterSpacing: "0.35em", color: "#FFD500",
-            }}>
-              COMING SOON
-            </span>
-            <h2 style={{
-              fontFamily: "var(--font-heading), monospace",
-              fontSize: "clamp(14px, 2.5vw, 20px)",
-              color: "#ededed", margin: 0, lineHeight: 1.4,
-            }}>
-              CURRICULUM IN PROGRESS
-            </h2>
-            <p style={{
-              fontFamily: "var(--font-sans), Arial, sans-serif",
-              fontSize: 14, color: "#52526a", lineHeight: 1.75, margin: 0,
-            }}>
-              The learn section is still being built. Check back soon — the full
-              43-lesson curriculum is on its way.
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div style={{ width: "100%", height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
-
-          {/* Link */}
-          <Link href="/" style={{
-            fontFamily: "var(--font-heading), monospace",
-            fontSize: 10, letterSpacing: "0.15em",
-            color: "#0d0d14", textDecoration: "none",
-            backgroundColor: "#FFD500",
-            padding: "10px 20px",
-            boxShadow: "0 4px 0px #a38a00",
-            display: "inline-block",
-          }}>
-            GO HOME
-          </Link>
-        </div>
-      </div>
-
       <style>{`
         @keyframes activeCardGlow {
           0%, 100% { box-shadow: 0 0 0 1px var(--ac), 0 0 10px var(--ag), inset 0 0 12px var(--ai); }
@@ -208,6 +132,8 @@ export default async function Learn() {
             const locked = stage.status === "locked";
             const active = stage.status === "active";
             const completed = stage.status === "completed";
+            const comingSoon = stage.status === "coming_soon";
+            const dimmed = locked || comingSoon;
 
             // Status-driven card color: green = done, yellow = in progress
             const cardColor = completed ? "#009B48" : active ? "#FFD500" : stage.color;
@@ -227,30 +153,35 @@ export default async function Learn() {
             return (
               <div key={stage.number}>
                 <Link
-                  href={locked ? "#" : lessonHref}
-                  style={{ display: "block", textDecoration: "none", pointerEvents: locked ? "none" : "auto" }}
+                  href={dimmed ? "#" : lessonHref}
+                  style={{ display: "block", textDecoration: "none", pointerEvents: dimmed ? "none" : "auto" }}
                 >
                   <div
-                    className={`learn-card ${active ? "stage-active-card" : ""} ${locked ? "locked-card" : ""}`}
+                    className={`learn-card ${active ? "stage-active-card" : ""} ${dimmed ? "locked-card" : ""}`}
                     style={{
                       position: "relative", overflow: "hidden",
                       backgroundColor: active ? `${cardColor}08` : completed ? `${cardColor}04` : "#080810",
-                      border: `1px solid ${locked ? "rgba(255,255,255,0.04)" : completed ? `${cardColor}22` : `${cardColor}55`}`,
-                      borderLeft: `6px solid ${locked ? "rgba(255,255,255,0.07)" : cardColor}`,
-                      opacity: locked ? 0.44 : 1,
+                      border: `1px solid ${dimmed ? "rgba(255,255,255,0.04)" : completed ? `${cardColor}22` : `${cardColor}55`}`,
+                      borderLeft: `6px solid ${dimmed ? "rgba(255,255,255,0.07)" : cardColor}`,
+                      opacity: dimmed ? 0.44 : 1,
                       padding: "22px 26px 22px 20px",
                       transition: "filter 0.2s",
                       ...activeVars,
                     }}
                   >
-                    {locked && (
+                    {dimmed && (
                       <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(45deg, transparent, transparent 9px, rgba(255,255,255,0.013) 9px, rgba(255,255,255,0.013) 10px)", pointerEvents: "none" }} />
+                    )}
+                    {comingSoon && (
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                        <LockPixels />
+                      </div>
                     )}
 
                     <div style={{ position: "relative", zIndex: 1 }}>
                       {/* Row 1: Stage label + status */}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10, gap: 12 }}>
-                        <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 9, color: locked ? "#1e1e2a" : cardColor, letterSpacing: "0.2em" }}>
+                        <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 9, color: dimmed ? "#1e1e2a" : cardColor, letterSpacing: "0.2em" }}>
                           STAGE {String(stage.number).padStart(2, "0")}
                         </span>
                         {completed && (
@@ -264,16 +195,21 @@ export default async function Learn() {
                           </div>
                         )}
                         {locked && <LockPixels />}
+                        {comingSoon && (
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#2e2e42", border: "1px solid rgba(255,255,255,0.06)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
+                            COMING SOON
+                          </div>
+                        )}
                       </div>
 
                       {/* Row 2: Title */}
-                      <h2 style={{ fontFamily: "var(--font-heading), monospace", fontSize: 13, color: locked ? "#1a1a26" : active ? "#f2f2f2" : "#909099", margin: "0 0 10px 0", lineHeight: 1.55, display: "flex", alignItems: "center", gap: 8 }}>
+                      <h2 style={{ fontFamily: "var(--font-heading), monospace", fontSize: 13, color: dimmed ? "#1a1a26" : active ? "#f2f2f2" : "#909099", margin: "0 0 10px 0", lineHeight: 1.55, display: "flex", alignItems: "center", gap: 8 }}>
                         {stage.title}
                         {active && <span className="blink-cursor" style={{ color: cardColor }}>_</span>}
                       </h2>
 
                       {/* Row 3: Goal */}
-                      <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 14, color: locked ? "#161620" : "#424258", lineHeight: 1.75, margin: "0 0 16px 0", maxWidth: "82%" }}>
+                      <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 14, color: dimmed ? "#161620" : "#424258", lineHeight: 1.75, margin: "0 0 16px 0", maxWidth: "82%" }}>
                         {stage.goal}
                       </p>
 
@@ -292,8 +228,8 @@ export default async function Learn() {
                       {/* Row 4: Pips + XP */}
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                         <LessonPips total={stage.totalLessons} done={stage.doneLessons} color={cardColor} />
-                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: locked ? "#161620" : "#2e2e42", flexShrink: 0 }}>
-                          <span style={{ color: locked ? "#161620" : `${cardColor}bb` }}>+{totalXP.toLocaleString()}</span> XP
+                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: dimmed ? "#161620" : "#2e2e42", flexShrink: 0 }}>
+                          <span style={{ color: dimmed ? "#161620" : `${cardColor}bb` }}>+{totalXP.toLocaleString()}</span> XP
                         </div>
                       </div>
                     </div>
