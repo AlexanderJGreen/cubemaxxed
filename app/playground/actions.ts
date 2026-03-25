@@ -20,6 +20,7 @@ const PRACTICE_MILESTONES: Record<number, string> = {
 export async function saveSolve(
   time_ms: number,
   scramble: string,
+  localDate?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -34,7 +35,7 @@ export async function saveSolve(
 
   // Award 5 XP
   await supabase.rpc("increment_xp", { user_id: user.id, amount: 5 });
-  await updateStreak(supabase, user.id);
+  await updateStreak(supabase, user.id, localDate);
 
   // --- Achievement checks ---
   const achievements: string[] = [];

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "./data";
 import { updateStreak } from "@/lib/streak";
 
-export async function completeLesson(lessonId: string, stageNum: number, xpReward: number) {
+export async function completeLesson(lessonId: string, stageNum: number, xpReward: number, localDate?: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -25,7 +25,7 @@ export async function completeLesson(lessonId: string, stageNum: number, xpRewar
   } else {
     // Award XP
     await supabase.rpc("increment_xp", { user_id: user.id, amount: xpReward });
-    await updateStreak(supabase, user.id);
+    await updateStreak(supabase, user.id, localDate);
 
     // Check and unlock achievements
     const { count: lessonCount } = await supabase

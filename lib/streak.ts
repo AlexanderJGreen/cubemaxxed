@@ -9,6 +9,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export async function updateStreak(
   supabase: SupabaseClient,
   userId: string,
+  localDate?: string, // "YYYY-MM-DD" in the user's local timezone
 ): Promise<void> {
   const { data: profile } = await supabase
     .from("profiles")
@@ -18,7 +19,7 @@ export async function updateStreak(
 
   if (!profile) return;
 
-  const todayUTC = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const todayUTC = localDate ?? new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
   const lastDate: string | null = profile.last_xp_date;
 
   // Already recorded XP today — nothing to change
