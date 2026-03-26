@@ -19,7 +19,14 @@ import { awardMemoryXP } from "./actions";
 const SHOW_SECONDS = 5;
 const XP_PER_CORRECT = 10;
 
-const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
+const CUBE_COLORS = [
+  "#C41E3A",
+  "#0051A2",
+  "#009B48",
+  "#FF5800",
+  "#FFD500",
+  "#ffffff",
+];
 
 function randomCubeColor(exclude?: string) {
   const options = CUBE_COLORS.filter((c) => c !== exclude);
@@ -32,18 +39,18 @@ type TrainerCase =
   | { kind: "oll"; name: string; diagram: DiagramProps; alg: string }
   | { kind: "pll"; name: string; diagram: PLLDiagramProps; alg: string };
 
-type Phase   = "idle" | "showing" | "recall" | "result";
+type Phase = "idle" | "showing" | "recall" | "result";
 type CRPhase = "idle" | "choosing" | "result";
 type SBPhase = "idle" | "building" | "result";
 type SRPhase = "idle" | "playing" | "result";
 type XpStatus = "idle" | "pending" | "awarded" | "no_auth";
-type Filter  = "both" | "oll" | "pll";
-type Mode    = "flash" | "recognition" | "sequence" | "speed";
+type Filter = "both" | "oll" | "pll";
+type Mode = "flash" | "recognition" | "sequence" | "speed";
 type MoveToken = { id: number; move: string; used: boolean };
 
-const SR_XP_FAST    = 15; // < 3s
-const SR_XP_MID     = 8;  // < 6s
-const SR_XP_SLOW    = 3;  // >= 6s
+const SR_XP_FAST = 15; // < 3s
+const SR_XP_MID = 8; // < 6s
+const SR_XP_SLOW = 3; // >= 6s
 
 function srXpForTime(ms: number): number {
   if (ms < 3000) return SR_XP_FAST;
@@ -79,8 +86,13 @@ function pickRandom(pool: TrainerCase[], seen: string[]): TrainerCase | null {
 }
 
 // Picks 3 wrong options from the same kind as `correct`. Never mixes OLL/PLL.
-function pickWrongOptions(correct: TrainerCase, pool: TrainerCase[]): TrainerCase[] {
-  const sameKind = pool.filter((c) => c.kind === correct.kind && c.name !== correct.name);
+function pickWrongOptions(
+  correct: TrainerCase,
+  pool: TrainerCase[],
+): TrainerCase[] {
+  const sameKind = pool.filter(
+    (c) => c.kind === correct.kind && c.name !== correct.name,
+  );
   return [...sameKind].sort(() => Math.random() - 0.5).slice(0, 3);
 }
 
@@ -98,7 +110,9 @@ function KindBadge({ kind }: { kind: "oll" | "pll" }) {
       style={{
         color: isOll ? "#FFD500" : "#4a90d9",
         border: `1px solid ${isOll ? "rgba(255,213,0,0.4)" : "rgba(74,144,217,0.4)"}`,
-        backgroundColor: isOll ? "rgba(255,213,0,0.08)" : "rgba(74,144,217,0.08)",
+        backgroundColor: isOll
+          ? "rgba(255,213,0,0.08)"
+          : "rgba(74,144,217,0.08)",
       }}
     >
       {kind.toUpperCase()}
@@ -141,27 +155,38 @@ function OptionCard({
   disabled: boolean;
 }) {
   const borderColor =
-    state === "correct" ? "#009B48" :
-    state === "wrong"   ? "#C41E3A" :
-    state === "missed"  ? "rgba(0,155,72,0.5)" :
-    state === "dim"     ? "rgba(255,255,255,0.04)" :
-    "rgba(255,255,255,0.08)";
+    state === "correct"
+      ? "#009B48"
+      : state === "wrong"
+        ? "#C41E3A"
+        : state === "missed"
+          ? "rgba(0,155,72,0.5)"
+          : state === "dim"
+            ? "rgba(255,255,255,0.04)"
+            : "rgba(255,255,255,0.08)";
 
   const bgColor =
-    state === "correct" ? "rgba(0,155,72,0.08)" :
-    state === "wrong"   ? "rgba(196,30,58,0.08)" :
-    state === "missed"  ? "rgba(0,155,72,0.04)" :
-    "#0a0a11";
+    state === "correct"
+      ? "rgba(0,155,72,0.08)"
+      : state === "wrong"
+        ? "rgba(196,30,58,0.08)"
+        : state === "missed"
+          ? "rgba(0,155,72,0.04)"
+          : "#0a0a11";
 
   const shadow =
-    state === "correct" ? "0 0 20px rgba(0,155,72,0.2)" :
-    state === "wrong"   ? "0 0 20px rgba(196,30,58,0.15)" :
-    "none";
+    state === "correct"
+      ? "0 0 20px rgba(0,155,72,0.2)"
+      : state === "wrong"
+        ? "0 0 20px rgba(196,30,58,0.15)"
+        : "none";
 
   const labelColor =
-    state === "correct" ? "#009B48" :
-    state === "missed"  ? "rgba(0,155,72,0.7)" :
-    "#C41E3A";
+    state === "correct"
+      ? "#009B48"
+      : state === "missed"
+        ? "rgba(0,155,72,0.7)"
+        : "#C41E3A";
 
   return (
     <button
@@ -186,9 +211,11 @@ function OptionCard({
           className="font-heading text-[9px] leading-none tracking-widest"
           style={{ color: labelColor }}
         >
-          {state === "correct" ? `✓ ${c.name}` :
-           state === "missed"  ? `✓ ${c.name}` :
-           `✗ ${c.name}`}
+          {state === "correct"
+            ? `✓ ${c.name}`
+            : state === "missed"
+              ? `✓ ${c.name}`
+              : `✗ ${c.name}`}
         </span>
       )}
     </button>
@@ -222,8 +249,8 @@ function FilterToggle({
       {(
         [
           { id: "both", label: "OLL + PLL" },
-          { id: "oll",  label: "OLL Only"  },
-          { id: "pll",  label: "PLL Only"  },
+          { id: "oll", label: "OLL Only" },
+          { id: "pll", label: "PLL Only" },
         ] as { id: Filter; label: string }[]
       ).map((opt) => (
         <button
@@ -234,7 +261,9 @@ function FilterToggle({
           <span className="font-bold invisible text-[9px]">{opt.label}</span>
           <span
             className={`absolute inset-0 flex items-center justify-center font-heading text-[9px] leading-none transition-colors duration-300 ${
-              filter === opt.id ? "font-bold" : "text-zinc-500 hover:text-zinc-300"
+              filter === opt.id
+                ? "font-bold"
+                : "text-zinc-500 hover:text-zinc-300"
             }`}
             style={filter === opt.id ? { color: activeFilterColor } : undefined}
           >
@@ -246,14 +275,50 @@ function FilterToggle({
   );
 }
 
-const MODE_META: { id: Mode; label: string; icon: string; color: string; desc: string }[] = [
-  { id: "flash",       label: "FLASH & RECALL",    icon: "◷", color: "#FF5800", desc: "Memorize, then type it" },
-  { id: "recognition", label: "CASE RECOGNITION",  icon: "◈", color: "#4a90d9", desc: "Algorithm → diagram" },
-  { id: "sequence",    label: "SEQUENCE BUILDER",  icon: "▤", color: "#009B48", desc: "Click moves in order" },
-  { id: "speed",       label: "SPEED RECOGNITION", icon: "⚡", color: "#FFD500", desc: "Diagram → name fast" },
+const MODE_META: {
+  id: Mode;
+  label: string;
+  icon: string;
+  color: string;
+  desc: string;
+}[] = [
+  {
+    id: "flash",
+    label: "FLASH & RECALL",
+    icon: "◷",
+    color: "#FF5800",
+    desc: "Memorize, then type it",
+  },
+  {
+    id: "recognition",
+    label: "CASE RECOGNITION",
+    icon: "◈",
+    color: "#4a90d9",
+    desc: "Algorithm → diagram",
+  },
+  {
+    id: "sequence",
+    label: "SEQUENCE BUILDER",
+    icon: "▤",
+    color: "#009B48",
+    desc: "Click moves in order",
+  },
+  {
+    id: "speed",
+    label: "SPEED RECOGNITION",
+    icon: "⚡",
+    color: "#FFD500",
+    desc: "Diagram → name fast",
+  },
 ];
 
-function ModeSwitcher({ mode, onModeChange }: { mode: Mode; onModeChange: (m: Mode) => void }) {
+function ModeSwitcher({
+  mode,
+  onModeChange,
+}: {
+  mode: Mode;
+  onModeChange: (m: Mode) => void;
+}) {
   return (
     <div className="grid grid-cols-2 gap-2">
       {MODE_META.map((opt) => {
@@ -272,14 +337,18 @@ function ModeSwitcher({ mode, onModeChange }: { mode: Mode; onModeChange: (m: Mo
             <div className="flex items-center justify-between">
               <span
                 className="font-heading leading-none"
-                style={{ fontSize: 13, color: active ? opt.color : "rgba(255,255,255,0.25)" }}
+                style={{
+                  fontSize: 13,
+                  color: active ? opt.color : "rgba(255,255,255,0.25)",
+                }}
               >
                 {opt.icon}
               </span>
               {active && (
                 <span
                   style={{
-                    width: 6, height: 6,
+                    width: 6,
+                    height: 6,
                     backgroundColor: opt.color,
                     boxShadow: `0 0 8px ${opt.color}`,
                   }}
@@ -294,7 +363,11 @@ function ModeSwitcher({ mode, onModeChange }: { mode: Mode; onModeChange: (m: Mo
             </span>
             <span
               className="font-sans text-xs leading-snug"
-              style={{ color: active ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.18)" }}
+              style={{
+                color: active
+                  ? "rgba(255,255,255,0.45)"
+                  : "rgba(255,255,255,0.18)",
+              }}
             >
               {opt.desc}
             </span>
@@ -344,7 +417,8 @@ function IdlePanel({
               CYCLE COMPLETE
             </span>
             <p className="font-sans text-zinc-400 text-sm max-w-xs leading-relaxed">
-              You&apos;ve drilled all {pool.length} cases. Change the set below or start a new cycle.
+              You&apos;ve drilled all {pool.length} cases. Change the set below
+              or start a new cycle.
             </p>
           </div>
           <FilterToggle
@@ -356,7 +430,11 @@ function IdlePanel({
           <button
             onClick={onStart}
             className="font-heading text-[11px] leading-none px-12 py-5 cursor-pointer transition-all active:translate-y-[2px]"
-            style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+            style={{
+              backgroundColor: "#FFD500",
+              color: "#0d0d14",
+              boxShadow: "0 4px 0px #a38a00",
+            }}
           >
             START NEW CYCLE
           </button>
@@ -377,7 +455,10 @@ function IdlePanel({
 
             <div
               className="w-full flex flex-col gap-4 p-6"
-              style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+              style={{
+                backgroundColor: "#080810",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
             >
               <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
                 HOW IT WORKS
@@ -386,7 +467,10 @@ function IdlePanel({
                 <div key={line} className="flex items-start gap-4">
                   <div
                     className="flex-shrink-0 font-heading text-[8px] leading-none mt-[2px] w-4 h-4 flex items-center justify-center"
-                    style={{ backgroundColor: STEP_COLORS[i], color: "#0d0d14" }}
+                    style={{
+                      backgroundColor: STEP_COLORS[i],
+                      color: "#0d0d14",
+                    }}
                   >
                     {i + 1}
                   </div>
@@ -411,7 +495,11 @@ function IdlePanel({
           <button
             onClick={onStart}
             className="font-heading text-[11px] leading-none px-12 py-5 cursor-pointer transition-all active:translate-y-[2px]"
-            style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+            style={{
+              backgroundColor: "#FFD500",
+              color: "#0d0d14",
+              boxShadow: "0 4px 0px #a38a00",
+            }}
           >
             START TRAINING
           </button>
@@ -427,7 +515,9 @@ export default function MemoryTrainer() {
   // ── Shared state ──────────────────────────────────────────────────────────
   const [mode, setMode] = useState<Mode>("flash");
   const [filter, setFilter] = useState<Filter>("both");
-  const [activeFilterColor, setActiveFilterColor] = useState(() => randomCubeColor());
+  const [activeFilterColor, setActiveFilterColor] = useState(() =>
+    randomCubeColor(),
+  );
 
   // ── Flash & Recall state ──────────────────────────────────────────────────
   const [phase, setPhase] = useState<Phase>("idle");
@@ -471,63 +561,101 @@ export default function MemoryTrainer() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const pool = getPool(filter);
-  const isCycleDone   = seen.length === pool.length;
+  const isCycleDone = seen.length === pool.length;
   const crIsCycleDone = crSeen.length === pool.length;
   const sbIsCycleDone = sbSeen.length === pool.length;
   const srIsCycleDone = srSeen.length === pool.length;
-  const srSessionAvgMs = srSessionTimes.length > 0
-    ? srSessionTimes.reduce((a, b) => a + b, 0) / srSessionTimes.length
-    : null;
+  const srSessionAvgMs =
+    srSessionTimes.length > 0
+      ? srSessionTimes.reduce((a, b) => a + b, 0) / srSessionTimes.length
+      : null;
 
   // Phase accent colors
   const phaseColor =
-    phase === "showing" ? "#FF5800" :
-    phase === "recall"  ? "#4a90d9" :
-    phase === "result"  ? (isCorrect ? "#009B48" : "#C41E3A") :
-    "#FFD500";
+    phase === "showing"
+      ? "#FF5800"
+      : phase === "recall"
+        ? "#4a90d9"
+        : phase === "result"
+          ? isCorrect
+            ? "#009B48"
+            : "#C41E3A"
+          : "#FFD500";
 
   const phaseBgTint =
-    phase === "showing" ? "rgba(255,88,0,0.025)" :
-    phase === "recall"  ? "rgba(74,144,217,0.03)" :
-    phase === "result"  ? (isCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
-    "transparent";
+    phase === "showing"
+      ? "rgba(255,88,0,0.025)"
+      : phase === "recall"
+        ? "rgba(74,144,217,0.03)"
+        : phase === "result"
+          ? isCorrect
+            ? "rgba(0,155,72,0.03)"
+            : "rgba(196,30,58,0.03)"
+          : "transparent";
 
   const crPhaseColor =
-    crPhase === "choosing" ? "#4a90d9" :
-    crPhase === "result"   ? (crIsCorrect ? "#009B48" : "#C41E3A") :
-    "#FFD500";
+    crPhase === "choosing"
+      ? "#4a90d9"
+      : crPhase === "result"
+        ? crIsCorrect
+          ? "#009B48"
+          : "#C41E3A"
+        : "#FFD500";
 
   const crPhaseBgTint =
-    crPhase === "choosing" ? "rgba(74,144,217,0.025)" :
-    crPhase === "result"   ? (crIsCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
-    "transparent";
+    crPhase === "choosing"
+      ? "rgba(74,144,217,0.025)"
+      : crPhase === "result"
+        ? crIsCorrect
+          ? "rgba(0,155,72,0.03)"
+          : "rgba(196,30,58,0.03)"
+        : "transparent";
 
   const sbPhaseColor =
-    sbPhase === "building" ? "#009B48" :
-    sbPhase === "result"   ? (sbIsCorrect ? "#009B48" : "#C41E3A") :
-    "#FFD500";
+    sbPhase === "building"
+      ? "#009B48"
+      : sbPhase === "result"
+        ? sbIsCorrect
+          ? "#009B48"
+          : "#C41E3A"
+        : "#FFD500";
 
   const sbPhaseBgTint =
-    sbPhase === "building" ? "rgba(0,155,72,0.025)" :
-    sbPhase === "result"   ? (sbIsCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
-    "transparent";
+    sbPhase === "building"
+      ? "rgba(0,155,72,0.025)"
+      : sbPhase === "result"
+        ? sbIsCorrect
+          ? "rgba(0,155,72,0.03)"
+          : "rgba(196,30,58,0.03)"
+        : "transparent";
 
   const srPhaseColor =
-    srPhase === "playing" ? "#FF5800" :
-    srPhase === "result"  ? (srIsCorrect ? "#009B48" : "#C41E3A") :
-    "#FFD500";
+    srPhase === "playing"
+      ? "#FF5800"
+      : srPhase === "result"
+        ? srIsCorrect
+          ? "#009B48"
+          : "#C41E3A"
+        : "#FFD500";
 
   const srPhaseBgTint =
-    srPhase === "playing" ? "rgba(255,88,0,0.025)" :
-    srPhase === "result"  ? (srIsCorrect ? "rgba(0,155,72,0.03)" : "rgba(196,30,58,0.03)") :
-    "transparent";
+    srPhase === "playing"
+      ? "rgba(255,88,0,0.025)"
+      : srPhase === "result"
+        ? srIsCorrect
+          ? "rgba(0,155,72,0.03)"
+          : "rgba(196,30,58,0.03)"
+        : "transparent";
 
   // ── FR Timer ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (phase !== "showing") return;
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) { setPhase("recall"); return SHOW_SECONDS; }
+        if (prev <= 1) {
+          setPhase("recall");
+          return SHOW_SECONDS;
+        }
         return prev - 1;
       });
     }, 1000);
@@ -553,8 +681,12 @@ export default function MemoryTrainer() {
   }
 
   function frHandleStart() {
-    if (isCycleDone) { setSeen([]); frBeginRound([], pool); }
-    else { frBeginRound(seen, pool); }
+    if (isCycleDone) {
+      setSeen([]);
+      frBeginRound([], pool);
+    } else {
+      frBeginRound(seen, pool);
+    }
   }
 
   async function frHandleSubmit() {
@@ -570,7 +702,9 @@ export default function MemoryTrainer() {
     }
   }
 
-  function frHandleNext() { frBeginRound(seen, pool); }
+  function frHandleNext() {
+    frBeginRound(seen, pool);
+  }
 
   function frHandleExit() {
     setPhase("idle");
@@ -595,8 +729,12 @@ export default function MemoryTrainer() {
   }
 
   function crHandleStart() {
-    if (crIsCycleDone) { setCrSeen([]); crBeginRound([], pool); }
-    else { crBeginRound(crSeen, pool); }
+    if (crIsCycleDone) {
+      setCrSeen([]);
+      crBeginRound([], pool);
+    } else {
+      crBeginRound(crSeen, pool);
+    }
   }
 
   async function crHandleSelect(selected: TrainerCase) {
@@ -613,7 +751,9 @@ export default function MemoryTrainer() {
     }
   }
 
-  function crHandleNext() { crBeginRound(crSeen, pool); }
+  function crHandleNext() {
+    crBeginRound(crSeen, pool);
+  }
 
   function crHandleExit() {
     setCrPhase("idle");
@@ -630,7 +770,11 @@ export default function MemoryTrainer() {
     const next = pickRandom(activPool, seenList);
     if (!next) return;
     const algTokens = next.alg.trim().split(/\s+/);
-    const tokens: MoveToken[] = algTokens.map((move, i) => ({ id: i, move, used: false }));
+    const tokens: MoveToken[] = algTokens.map((move, i) => ({
+      id: i,
+      move,
+      used: false,
+    }));
     setSbCurrentCase(next);
     setSbMoveTokens([...tokens].sort(() => Math.random() - 0.5));
     setSbBuilt([]);
@@ -640,8 +784,12 @@ export default function MemoryTrainer() {
   }
 
   function sbHandleStart() {
-    if (sbIsCycleDone) { setSbSeen([]); sbBeginRound([], pool); }
-    else { sbBeginRound(sbSeen, pool); }
+    if (sbIsCycleDone) {
+      setSbSeen([]);
+      sbBeginRound([], pool);
+    } else {
+      sbBeginRound(sbSeen, pool);
+    }
   }
 
   async function sbHandleClick(token: MoveToken) {
@@ -650,7 +798,9 @@ export default function MemoryTrainer() {
     const algTokens = thisCase.alg.trim().split(/\s+/);
     const expectedMove = algTokens[sbBuilt.length];
 
-    setSbMoveTokens((prev) => prev.map((t) => t.id === token.id ? { ...t, used: true } : t));
+    setSbMoveTokens((prev) =>
+      prev.map((t) => (t.id === token.id ? { ...t, used: true } : t)),
+    );
 
     if (token.move !== expectedMove) {
       setSbIsCorrect(false);
@@ -672,7 +822,9 @@ export default function MemoryTrainer() {
     }
   }
 
-  function sbHandleNext() { sbBeginRound(sbSeen, pool); }
+  function sbHandleNext() {
+    sbBeginRound(sbSeen, pool);
+  }
 
   function sbHandleExit() {
     setSbPhase("idle");
@@ -700,29 +852,38 @@ export default function MemoryTrainer() {
   }
 
   function srHandleStart() {
-    if (srIsCycleDone) { setSrSeen([]); setSrSessionTimes([]); srBeginRound([], pool); }
-    else { srBeginRound(srSeen, pool); }
+    if (srIsCycleDone) {
+      setSrSeen([]);
+      setSrSessionTimes([]);
+      srBeginRound([], pool);
+    } else {
+      srBeginRound(srSeen, pool);
+    }
   }
 
-  async function srHandleSelect(selected: TrainerCase) {
+  function srHandleSelect(selected: TrainerCase, selectedAt: number) {
     if (!srCurrentCase || srPhase !== "playing") return;
-    const reactionMs = Date.now() - srStartTimeRef.current;
-    const correct = selected.name === srCurrentCase.name;
+    const theCase = srCurrentCase;
+    const reactionMs = selectedAt - srStartTimeRef.current;
+    const correct = selected.name === theCase.name;
     setSrSelected(selected.name);
     setSrIsCorrect(correct);
     setSrReactionMs(reactionMs);
-    setSrSeen((prev) => [...prev, srCurrentCase.name]);
+    setSrSeen((prev) => [...prev, theCase.name]);
     setSrSessionTimes((prev) => [...prev, reactionMs]);
     setSrPhase("result");
     if (correct) {
       const xp = srXpForTime(reactionMs);
       setSrXpStatus("pending");
-      const res = await awardMemoryXP(xp, srCurrentCase.name);
-      setSrXpStatus("error" in res ? "no_auth" : "awarded");
+      awardMemoryXP(xp, theCase.name).then((res) => {
+        setSrXpStatus("error" in res ? "no_auth" : "awarded");
+      });
     }
   }
 
-  function srHandleNext() { srBeginRound(srSeen, pool); }
+  function srHandleNext() {
+    srBeginRound(srSeen, pool);
+  }
 
   function srHandleExit() {
     setSrPhase("idle");
@@ -757,20 +918,61 @@ export default function MemoryTrainer() {
     setMode(m);
     // Reset whichever mode we're leaving
     if (mode === "flash") {
-      setPhase("idle"); setCurrentCase(null); setInput(""); setIsCorrect(null); setXpStatus("idle");
+      setPhase("idle");
+      setCurrentCase(null);
+      setInput("");
+      setIsCorrect(null);
+      setXpStatus("idle");
     } else if (mode === "recognition") {
-      setCrPhase("idle"); setCrCurrentCase(null); setCrOptions([]); setCrSelected(null); setCrIsCorrect(null); setCrXpStatus("idle");
+      setCrPhase("idle");
+      setCrCurrentCase(null);
+      setCrOptions([]);
+      setCrSelected(null);
+      setCrIsCorrect(null);
+      setCrXpStatus("idle");
     } else if (mode === "sequence") {
-      setSbPhase("idle"); setSbCurrentCase(null); setSbMoveTokens([]); setSbBuilt([]); setSbIsCorrect(null); setSbXpStatus("idle");
+      setSbPhase("idle");
+      setSbCurrentCase(null);
+      setSbMoveTokens([]);
+      setSbBuilt([]);
+      setSbIsCorrect(null);
+      setSbXpStatus("idle");
     } else {
-      setSrPhase("idle"); setSrCurrentCase(null); setSrOptions([]); setSrSelected(null); setSrIsCorrect(null); setSrXpStatus("idle"); setSrReactionMs(null);
+      setSrPhase("idle");
+      setSrCurrentCase(null);
+      setSrOptions([]);
+      setSrSelected(null);
+      setSrIsCorrect(null);
+      setSrXpStatus("idle");
+      setSrReactionMs(null);
     }
   }
 
   // ── Progress bar values for the active mode ───────────────────────────────
-  const activeDoneCount    = mode === "flash" ? seen.length : mode === "recognition" ? crSeen.length : mode === "sequence" ? sbSeen.length : srSeen.length;
-  const activePhaseNotIdle = mode === "flash" ? phase !== "idle" : mode === "recognition" ? crPhase !== "idle" : mode === "sequence" ? sbPhase !== "idle" : srPhase !== "idle";
-  const activePhaseColor   = mode === "flash" ? phaseColor : mode === "recognition" ? crPhaseColor : mode === "sequence" ? sbPhaseColor : srPhaseColor;
+  const activeDoneCount =
+    mode === "flash"
+      ? seen.length
+      : mode === "recognition"
+        ? crSeen.length
+        : mode === "sequence"
+          ? sbSeen.length
+          : srSeen.length;
+  const activePhaseNotIdle =
+    mode === "flash"
+      ? phase !== "idle"
+      : mode === "recognition"
+        ? crPhase !== "idle"
+        : mode === "sequence"
+          ? sbPhase !== "idle"
+          : srPhase !== "idle";
+  const activePhaseColor =
+    mode === "flash"
+      ? phaseColor
+      : mode === "recognition"
+        ? crPhaseColor
+        : mode === "sequence"
+          ? sbPhaseColor
+          : srPhaseColor;
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -780,11 +982,11 @@ export default function MemoryTrainer() {
     <div
       className="mx-auto max-w-3xl w-full px-6 py-14 flex flex-col gap-8"
       style={{
-        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.022) 1px, transparent 1px)",
+        backgroundImage:
+          "radial-gradient(circle, rgba(255,255,255,0.022) 1px, transparent 1px)",
         backgroundSize: "28px 28px",
       }}
     >
-
       {/* ── Page header ── */}
       <div className="flex flex-col gap-6">
         <Link
@@ -795,10 +997,15 @@ export default function MemoryTrainer() {
         </Link>
 
         <div className="flex flex-col gap-2">
-          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">MEMORY TRAINER</span>
+          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+            MEMORY TRAINER
+          </span>
           <h1
             className="font-heading leading-snug"
-            style={{ fontSize: "clamp(16px, 2.5vw, 24px)", color: activeMeta.color }}
+            style={{
+              fontSize: "clamp(16px, 2.5vw, 24px)",
+              color: activeMeta.color,
+            }}
           >
             {activeMeta.label}
           </h1>
@@ -823,11 +1030,17 @@ export default function MemoryTrainer() {
             <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
               CYCLE PROGRESS
             </span>
-            <span className="font-heading text-[10px]" style={{ color: activePhaseColor }}>
+            <span
+              className="font-heading text-[10px]"
+              style={{ color: activePhaseColor }}
+            >
               {activeDoneCount} / {pool.length} CASES
             </span>
           </div>
-          <div className="h-2.5 bg-zinc-800/60 overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.04)" }}>
+          <div
+            className="h-2.5 bg-zinc-800/60 overflow-hidden"
+            style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+          >
             <div
               className="h-full transition-all duration-500"
               style={{
@@ -849,16 +1062,16 @@ export default function MemoryTrainer() {
           style={{
             minHeight: 520,
             backgroundColor: "#0a0a11",
-            backgroundImage: phaseBgTint !== "transparent"
-              ? `linear-gradient(${phaseBgTint}, ${phaseBgTint})`
-              : undefined,
+            backgroundImage:
+              phaseBgTint !== "transparent"
+                ? `linear-gradient(${phaseBgTint}, ${phaseBgTint})`
+                : undefined,
             borderTop: `3px solid #FF5800`,
             borderRight: `1px solid ${phaseColor}25`,
             borderBottom: `1px solid ${phaseColor}25`,
             borderLeft: `1px solid ${phaseColor}25`,
           }}
         >
-
           {/* ── FR IDLE ── */}
           {phase === "idle" && (
             <IdlePanel
@@ -882,7 +1095,10 @@ export default function MemoryTrainer() {
           {phase === "showing" && currentCase && (
             <div className="flex flex-col items-center gap-8 p-10">
               <div className="flex items-center justify-between w-full">
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#FF5800" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#FF5800" }}
+                >
                   ▶ MEMORIZE THIS
                 </span>
                 <div className="flex items-center gap-3">
@@ -896,7 +1112,10 @@ export default function MemoryTrainer() {
                 </div>
               </div>
 
-              <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(14px, 2vw, 20px)" }}>
+              <h2
+                className="font-heading text-white text-center"
+                style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+              >
                 {currentCase.name}
               </h2>
 
@@ -910,7 +1129,10 @@ export default function MemoryTrainer() {
                   boxShadow: "0 0 20px rgba(255,88,0,0.06)",
                 }}
               >
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#FF5800" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#FF5800" }}
+                >
                   ALGORITHM
                 </span>
                 <p
@@ -951,7 +1173,10 @@ export default function MemoryTrainer() {
           {phase === "recall" && currentCase && (
             <div className="flex flex-col items-center gap-8 p-10">
               <div className="flex items-center justify-between w-full">
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#4a90d9" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#4a90d9" }}
+                >
                   ✦ TYPE FROM MEMORY
                 </span>
                 <div className="flex items-center gap-3">
@@ -965,14 +1190,20 @@ export default function MemoryTrainer() {
                 </div>
               </div>
 
-              <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(14px, 2vw, 20px)" }}>
+              <h2
+                className="font-heading text-white text-center"
+                style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+              >
                 {currentCase.name}
               </h2>
 
               <DiagramBox c={currentCase} />
 
               <div className="w-full flex flex-col gap-3">
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#4a90d9" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#4a90d9" }}
+                >
                   YOUR ANSWER
                 </span>
                 <input
@@ -980,7 +1211,9 @@ export default function MemoryTrainer() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") frHandleSubmit(); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") frHandleSubmit();
+                  }}
                   placeholder="R U R' U' ..."
                   className="w-full font-mono text-white text-base py-3 px-4 outline-none"
                   style={{
@@ -1026,7 +1259,9 @@ export default function MemoryTrainer() {
               <div
                 className="w-full flex items-center justify-between px-4 py-3"
                 style={{
-                  backgroundColor: isCorrect ? "rgba(0,155,72,0.1)" : "rgba(196,30,58,0.1)",
+                  backgroundColor: isCorrect
+                    ? "rgba(0,155,72,0.1)"
+                    : "rgba(196,30,58,0.1)",
                   border: `1px solid ${isCorrect ? "rgba(0,155,72,0.35)" : "rgba(196,30,58,0.35)"}`,
                   boxShadow: `0 0 20px ${isCorrect ? "rgba(0,155,72,0.08)" : "rgba(196,30,58,0.08)"}`,
                 }}
@@ -1054,15 +1289,21 @@ export default function MemoryTrainer() {
                       backgroundColor: "rgba(255,213,0,0.06)",
                     }}
                   >
-                    {xpStatus === "awarded"   ? `+${XP_PER_CORRECT} XP`
-                     : xpStatus === "no_auth" ? "SIGN IN TO EARN XP"
-                     : xpStatus === "pending" ? "AWARDING..."
-                     : ""}
+                    {xpStatus === "awarded"
+                      ? `+${XP_PER_CORRECT} XP`
+                      : xpStatus === "no_auth"
+                        ? "SIGN IN TO EARN XP"
+                        : xpStatus === "pending"
+                          ? "AWARDING..."
+                          : ""}
                   </span>
                 )}
               </div>
 
-              <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(14px, 2vw, 20px)" }}>
+              <h2
+                className="font-heading text-white text-center"
+                style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+              >
                 {currentCase.name}
               </h2>
 
@@ -1070,7 +1311,10 @@ export default function MemoryTrainer() {
 
               <div
                 className="w-full flex flex-col gap-3 p-4"
-                style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+                style={{
+                  backgroundColor: "#080810",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
               >
                 <div className="flex flex-col gap-1">
                   <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
@@ -1080,7 +1324,11 @@ export default function MemoryTrainer() {
                     className="font-mono text-sm tracking-wide leading-relaxed"
                     style={{ color: isCorrect ? "#009B48" : "#C41E3A" }}
                   >
-                    {input || <span className="text-zinc-600 italic font-sans">empty</span>}
+                    {input || (
+                      <span className="text-zinc-600 italic font-sans">
+                        empty
+                      </span>
+                    )}
                   </p>
                 </div>
                 {!isCorrect && (
@@ -1113,12 +1361,21 @@ export default function MemoryTrainer() {
                     >
                       ★ CYCLE COMPLETE
                     </span>
-                    <p className="font-sans text-zinc-500 text-xs">All {pool.length} cases done.</p>
+                    <p className="font-sans text-zinc-500 text-xs">
+                      All {pool.length} cases done.
+                    </p>
                   </div>
                   <button
-                    onClick={() => { setSeen([]); setPhase("idle"); }}
+                    onClick={() => {
+                      setSeen([]);
+                      setPhase("idle");
+                    }}
                     className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                    style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                    style={{
+                      backgroundColor: "#FFD500",
+                      color: "#0d0d14",
+                      boxShadow: "0 4px 0px #a38a00",
+                    }}
                   >
                     START NEW CYCLE
                   </button>
@@ -1127,7 +1384,11 @@ export default function MemoryTrainer() {
                 <button
                   onClick={frHandleNext}
                   className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                  style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                  style={{
+                    backgroundColor: "#FFD500",
+                    color: "#0d0d14",
+                    boxShadow: "0 4px 0px #a38a00",
+                  }}
                 >
                   NEXT CASE →
                 </button>
@@ -1146,16 +1407,16 @@ export default function MemoryTrainer() {
           style={{
             minHeight: 520,
             backgroundColor: "#0a0a11",
-            backgroundImage: sbPhaseBgTint !== "transparent"
-              ? `linear-gradient(${sbPhaseBgTint}, ${sbPhaseBgTint})`
-              : undefined,
+            backgroundImage:
+              sbPhaseBgTint !== "transparent"
+                ? `linear-gradient(${sbPhaseBgTint}, ${sbPhaseBgTint})`
+                : undefined,
             borderTop: `3px solid #009B48`,
             borderRight: `1px solid ${sbPhaseColor}25`,
             borderBottom: `1px solid ${sbPhaseColor}25`,
             borderLeft: `1px solid ${sbPhaseColor}25`,
           }}
         >
-
           {/* ── SB IDLE ── */}
           {sbPhase === "idle" && (
             <IdlePanel
@@ -1176,101 +1437,126 @@ export default function MemoryTrainer() {
           )}
 
           {/* ── SB BUILDING ── */}
-          {sbPhase === "building" && sbCurrentCase && (() => {
-            const algTokens = sbCurrentCase.alg.trim().split(/\s+/);
-            return (
-              <div className="flex flex-col items-center gap-8 p-10">
-                <div className="flex items-center justify-between w-full">
-                  <span className="font-heading text-[9px] tracking-widest" style={{ color: "#009B48" }}>
-                    ▶ BUILD THE SEQUENCE
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <KindBadge kind={sbCurrentCase.kind} />
-                    <button
-                      onClick={sbHandleExit}
-                      className="font-heading text-[9px] text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer tracking-widest"
+          {sbPhase === "building" &&
+            sbCurrentCase &&
+            (() => {
+              const algTokens = sbCurrentCase.alg.trim().split(/\s+/);
+              return (
+                <div className="flex flex-col items-center gap-8 p-10">
+                  <div className="flex items-center justify-between w-full">
+                    <span
+                      className="font-heading text-[9px] tracking-widest"
+                      style={{ color: "#009B48" }}
                     >
-                      ✕ EXIT
-                    </button>
+                      ▶ BUILD THE SEQUENCE
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <KindBadge kind={sbCurrentCase.kind} />
+                      <button
+                        onClick={sbHandleExit}
+                        className="font-heading text-[9px] text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer tracking-widest"
+                      >
+                        ✕ EXIT
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(14px, 2vw, 20px)" }}>
-                  {sbCurrentCase.name}
-                </h2>
+                  <h2
+                    className="font-heading text-white text-center"
+                    style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+                  >
+                    {sbCurrentCase.name}
+                  </h2>
 
-                <DiagramBox c={sbCurrentCase} />
+                  <DiagramBox c={sbCurrentCase} />
 
-                {/* Running sequence display */}
-                <div
-                  className="w-full flex flex-col gap-2 p-4"
-                  style={{
-                    backgroundColor: "#080810",
-                    border: "1px solid rgba(0,155,72,0.2)",
-                    minHeight: 64,
-                  }}
-                >
-                  <span className="font-heading text-[9px] tracking-widest" style={{ color: "#009B48" }}>
-                    YOUR SEQUENCE — {sbBuilt.length} / {algTokens.length}
-                  </span>
-                  <div className="flex flex-wrap gap-2 min-h-[28px] items-center">
-                    {sbBuilt.length === 0 ? (
-                      <span className="font-heading text-[9px] text-zinc-700">click a move below to start...</span>
-                    ) : (
-                      sbBuilt.map((move, i) => (
-                        <span
-                          key={i}
-                          className="font-heading text-sm leading-none px-2 py-1.5"
+                  {/* Running sequence display */}
+                  <div
+                    className="w-full flex flex-col gap-2 p-4"
+                    style={{
+                      backgroundColor: "#080810",
+                      border: "1px solid rgba(0,155,72,0.2)",
+                      minHeight: 64,
+                    }}
+                  >
+                    <span
+                      className="font-heading text-[9px] tracking-widest"
+                      style={{ color: "#009B48" }}
+                    >
+                      YOUR SEQUENCE — {sbBuilt.length} / {algTokens.length}
+                    </span>
+                    <div className="flex flex-wrap gap-2 min-h-[28px] items-center">
+                      {sbBuilt.length === 0 ? (
+                        <span className="font-heading text-[9px] text-zinc-700">
+                          click a move below to start...
+                        </span>
+                      ) : (
+                        sbBuilt.map((move, i) => (
+                          <span
+                            key={i}
+                            className="font-heading text-sm leading-none px-2 py-1.5"
+                            style={{
+                              color: "#009B48",
+                              backgroundColor: "rgba(0,155,72,0.1)",
+                              border: "1px solid rgba(0,155,72,0.35)",
+                            }}
+                          >
+                            {move}
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Scrambled move buttons */}
+                  <div className="w-full flex flex-col gap-3">
+                    <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                      AVAILABLE MOVES
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {sbMoveTokens.map((token) => (
+                        <button
+                          key={token.id}
+                          onClick={() => sbHandleClick(token)}
+                          disabled={token.used}
+                          className="font-heading text-sm leading-none px-3 py-2.5 transition-all duration-150"
                           style={{
-                            color: "#009B48",
-                            backgroundColor: "rgba(0,155,72,0.1)",
-                            border: "1px solid rgba(0,155,72,0.35)",
+                            backgroundColor: token.used
+                              ? "rgba(255,255,255,0.02)"
+                              : "#0e0e1a",
+                            border: token.used
+                              ? "1px solid rgba(255,255,255,0.05)"
+                              : "1px solid rgba(255,255,255,0.18)",
+                            color: token.used
+                              ? "rgba(255,255,255,0.15)"
+                              : "#ffffff",
+                            cursor: token.used ? "default" : "pointer",
+                            boxShadow: token.used
+                              ? "none"
+                              : "0 2px 0px rgba(0,0,0,0.6)",
+                            transform: "translateY(0)",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!token.used)
+                              (
+                                e.currentTarget as HTMLButtonElement
+                              ).style.borderColor = "rgba(0,155,72,0.6)";
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!token.used)
+                              (
+                                e.currentTarget as HTMLButtonElement
+                              ).style.borderColor = "rgba(255,255,255,0.18)";
                           }}
                         >
-                          {move}
-                        </span>
-                      ))
-                    )}
+                          {token.move}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                {/* Scrambled move buttons */}
-                <div className="w-full flex flex-col gap-3">
-                  <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
-                    AVAILABLE MOVES
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {sbMoveTokens.map((token) => (
-                      <button
-                        key={token.id}
-                        onClick={() => sbHandleClick(token)}
-                        disabled={token.used}
-                        className="font-heading text-sm leading-none px-3 py-2.5 transition-all duration-150"
-                        style={{
-                          backgroundColor: token.used ? "rgba(255,255,255,0.02)" : "#0e0e1a",
-                          border: token.used
-                            ? "1px solid rgba(255,255,255,0.05)"
-                            : "1px solid rgba(255,255,255,0.18)",
-                          color: token.used ? "rgba(255,255,255,0.15)" : "#ffffff",
-                          cursor: token.used ? "default" : "pointer",
-                          boxShadow: token.used ? "none" : "0 2px 0px rgba(0,0,0,0.6)",
-                          transform: "translateY(0)",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!token.used) (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,155,72,0.6)";
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!token.used) (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.18)";
-                        }}
-                      >
-                        {token.move}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
 
           {/* ── SB RESULT ── */}
           {sbPhase === "result" && sbCurrentCase && sbIsCorrect !== null && (
@@ -1288,7 +1574,9 @@ export default function MemoryTrainer() {
               <div
                 className="w-full flex items-center justify-between px-4 py-3"
                 style={{
-                  backgroundColor: sbIsCorrect ? "rgba(0,155,72,0.1)" : "rgba(196,30,58,0.1)",
+                  backgroundColor: sbIsCorrect
+                    ? "rgba(0,155,72,0.1)"
+                    : "rgba(196,30,58,0.1)",
                   border: `1px solid ${sbIsCorrect ? "rgba(0,155,72,0.35)" : "rgba(196,30,58,0.35)"}`,
                   boxShadow: `0 0 20px ${sbIsCorrect ? "rgba(0,155,72,0.08)" : "rgba(196,30,58,0.08)"}`,
                 }}
@@ -1316,15 +1604,21 @@ export default function MemoryTrainer() {
                       backgroundColor: "rgba(255,213,0,0.06)",
                     }}
                   >
-                    {sbXpStatus === "awarded"   ? `+${XP_PER_CORRECT} XP`
-                     : sbXpStatus === "no_auth" ? "SIGN IN TO EARN XP"
-                     : sbXpStatus === "pending" ? "AWARDING..."
-                     : ""}
+                    {sbXpStatus === "awarded"
+                      ? `+${XP_PER_CORRECT} XP`
+                      : sbXpStatus === "no_auth"
+                        ? "SIGN IN TO EARN XP"
+                        : sbXpStatus === "pending"
+                          ? "AWARDING..."
+                          : ""}
                   </span>
                 )}
               </div>
 
-              <h2 className="font-heading text-white text-center" style={{ fontSize: "clamp(14px, 2vw, 20px)" }}>
+              <h2
+                className="font-heading text-white text-center"
+                style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+              >
                 {sbCurrentCase.name}
               </h2>
 
@@ -1333,7 +1627,10 @@ export default function MemoryTrainer() {
               {/* Sequence recap */}
               <div
                 className="w-full flex flex-col gap-3 p-4"
-                style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+                style={{
+                  backgroundColor: "#080810",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
               >
                 {!sbIsCorrect && (
                   <div className="flex flex-col gap-1">
@@ -1359,7 +1656,14 @@ export default function MemoryTrainer() {
                 )}
                 <div
                   className="flex flex-col gap-1"
-                  style={!sbIsCorrect ? { borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 12 } : {}}
+                  style={
+                    !sbIsCorrect
+                      ? {
+                          borderTop: "1px solid rgba(255,255,255,0.05)",
+                          paddingTop: 12,
+                        }
+                      : {}
+                  }
                 >
                   <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
                     CORRECT ALGORITHM
@@ -1386,12 +1690,21 @@ export default function MemoryTrainer() {
                     >
                       ★ CYCLE COMPLETE
                     </span>
-                    <p className="font-sans text-zinc-500 text-xs">All {pool.length} cases done.</p>
+                    <p className="font-sans text-zinc-500 text-xs">
+                      All {pool.length} cases done.
+                    </p>
                   </div>
                   <button
-                    onClick={() => { setSbSeen([]); setSbPhase("idle"); }}
+                    onClick={() => {
+                      setSbSeen([]);
+                      setSbPhase("idle");
+                    }}
                     className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                    style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                    style={{
+                      backgroundColor: "#FFD500",
+                      color: "#0d0d14",
+                      boxShadow: "0 4px 0px #a38a00",
+                    }}
                   >
                     START NEW CYCLE
                   </button>
@@ -1400,7 +1713,11 @@ export default function MemoryTrainer() {
                 <button
                   onClick={sbHandleNext}
                   className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                  style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                  style={{
+                    backgroundColor: "#FFD500",
+                    color: "#0d0d14",
+                    boxShadow: "0 4px 0px #a38a00",
+                  }}
                 >
                   NEXT CASE →
                 </button>
@@ -1419,16 +1736,16 @@ export default function MemoryTrainer() {
           style={{
             minHeight: 520,
             backgroundColor: "#0a0a11",
-            backgroundImage: crPhaseBgTint !== "transparent"
-              ? `linear-gradient(${crPhaseBgTint}, ${crPhaseBgTint})`
-              : undefined,
+            backgroundImage:
+              crPhaseBgTint !== "transparent"
+                ? `linear-gradient(${crPhaseBgTint}, ${crPhaseBgTint})`
+                : undefined,
             borderTop: `3px solid #4a90d9`,
             borderRight: `1px solid ${crPhaseColor}25`,
             borderBottom: `1px solid ${crPhaseColor}25`,
             borderLeft: `1px solid ${crPhaseColor}25`,
           }}
         >
-
           {/* ── CR IDLE ── */}
           {crPhase === "idle" && (
             <IdlePanel
@@ -1452,7 +1769,10 @@ export default function MemoryTrainer() {
           {crPhase === "choosing" && crCurrentCase && (
             <div className="flex flex-col gap-8 p-10">
               <div className="flex items-center justify-between w-full">
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#4a90d9" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#4a90d9" }}
+                >
                   ◈ IDENTIFY THE CASE
                 </span>
                 <div className="flex items-center gap-3">
@@ -1475,7 +1795,10 @@ export default function MemoryTrainer() {
                   boxShadow: "0 0 20px rgba(74,144,217,0.06)",
                 }}
               >
-                <span className="font-heading text-[9px] tracking-widest" style={{ color: "#4a90d9" }}>
+                <span
+                  className="font-heading text-[9px] tracking-widest"
+                  style={{ color: "#4a90d9" }}
+                >
                   ALGORITHM
                 </span>
                 <p
@@ -1521,7 +1844,9 @@ export default function MemoryTrainer() {
               <div
                 className="w-full flex items-center justify-between px-4 py-3"
                 style={{
-                  backgroundColor: crIsCorrect ? "rgba(0,155,72,0.1)" : "rgba(196,30,58,0.1)",
+                  backgroundColor: crIsCorrect
+                    ? "rgba(0,155,72,0.1)"
+                    : "rgba(196,30,58,0.1)",
                   border: `1px solid ${crIsCorrect ? "rgba(0,155,72,0.35)" : "rgba(196,30,58,0.35)"}`,
                   boxShadow: `0 0 20px ${crIsCorrect ? "rgba(0,155,72,0.08)" : "rgba(196,30,58,0.08)"}`,
                 }}
@@ -1549,10 +1874,13 @@ export default function MemoryTrainer() {
                       backgroundColor: "rgba(255,213,0,0.06)",
                     }}
                   >
-                    {crXpStatus === "awarded"   ? `+${XP_PER_CORRECT} XP`
-                     : crXpStatus === "no_auth" ? "SIGN IN TO EARN XP"
-                     : crXpStatus === "pending" ? "AWARDING..."
-                     : ""}
+                    {crXpStatus === "awarded"
+                      ? `+${XP_PER_CORRECT} XP`
+                      : crXpStatus === "no_auth"
+                        ? "SIGN IN TO EARN XP"
+                        : crXpStatus === "pending"
+                          ? "AWARDING..."
+                          : ""}
                   </span>
                 )}
               </div>
@@ -1560,7 +1888,10 @@ export default function MemoryTrainer() {
               {/* Algorithm reminder */}
               <div
                 className="w-full flex flex-col items-center gap-2 p-4"
-                style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+                style={{
+                  backgroundColor: "#080810",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
               >
                 <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
                   ALGORITHM
@@ -1574,12 +1905,15 @@ export default function MemoryTrainer() {
               <div className="grid grid-cols-2 gap-3">
                 {crOptions.map((opt) => {
                   const isTheCorrect = opt.name === crCurrentCase.name;
-                  const wasSelected  = opt.name === crSelected;
+                  const wasSelected = opt.name === crSelected;
                   const state: OptionState =
-                    isTheCorrect && wasSelected  ? "correct" :
-                    !isTheCorrect && wasSelected ? "wrong"   :
-                    isTheCorrect && !wasSelected ? "missed"  :
-                    "dim";
+                    isTheCorrect && wasSelected
+                      ? "correct"
+                      : !isTheCorrect && wasSelected
+                        ? "wrong"
+                        : isTheCorrect && !wasSelected
+                          ? "missed"
+                          : "dim";
                   return (
                     <OptionCard
                       key={opt.name}
@@ -1608,12 +1942,21 @@ export default function MemoryTrainer() {
                     >
                       ★ CYCLE COMPLETE
                     </span>
-                    <p className="font-sans text-zinc-500 text-xs">All {pool.length} cases done.</p>
+                    <p className="font-sans text-zinc-500 text-xs">
+                      All {pool.length} cases done.
+                    </p>
                   </div>
                   <button
-                    onClick={() => { setCrSeen([]); setCrPhase("idle"); }}
+                    onClick={() => {
+                      setCrSeen([]);
+                      setCrPhase("idle");
+                    }}
                     className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                    style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                    style={{
+                      backgroundColor: "#FFD500",
+                      color: "#0d0d14",
+                      boxShadow: "0 4px 0px #a38a00",
+                    }}
                   >
                     START NEW CYCLE
                   </button>
@@ -1622,7 +1965,11 @@ export default function MemoryTrainer() {
                 <button
                   onClick={crHandleNext}
                   className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                  style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                  style={{
+                    backgroundColor: "#FFD500",
+                    color: "#0d0d14",
+                    boxShadow: "0 4px 0px #a38a00",
+                  }}
                 >
                   NEXT CASE →
                 </button>
@@ -1641,16 +1988,16 @@ export default function MemoryTrainer() {
           style={{
             minHeight: 520,
             backgroundColor: "#0a0a11",
-            backgroundImage: srPhaseBgTint !== "transparent"
-              ? `linear-gradient(${srPhaseBgTint}, ${srPhaseBgTint})`
-              : undefined,
+            backgroundImage:
+              srPhaseBgTint !== "transparent"
+                ? `linear-gradient(${srPhaseBgTint}, ${srPhaseBgTint})`
+                : undefined,
             borderTop: `3px solid #FFD500`,
             borderRight: `1px solid ${srPhaseColor}25`,
             borderBottom: `1px solid ${srPhaseColor}25`,
             borderLeft: `1px solid ${srPhaseColor}25`,
           }}
         >
-
           {/* ── SR IDLE ── */}
           {srPhase === "idle" && (
             <IdlePanel
@@ -1675,7 +2022,10 @@ export default function MemoryTrainer() {
             <div className="flex flex-col items-center gap-8 p-10">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-3">
-                  <span className="font-heading text-[9px] tracking-widest" style={{ color: "#FF5800" }}>
+                  <span
+                    className="font-heading text-[9px] tracking-widest"
+                    style={{ color: "#FF5800" }}
+                  >
                     ⚡ SPEED RECOGNITION
                   </span>
                   {srSessionAvgMs !== null && (
@@ -1702,7 +2052,7 @@ export default function MemoryTrainer() {
                 {srOptions.map((opt) => (
                   <button
                     key={opt.name}
-                    onClick={() => srHandleSelect(opt)}
+                    onClick={() => srHandleSelect(opt, Date.now())}
                     className="font-heading text-[10px] leading-none py-5 px-3 tracking-widest transition-all active:translate-y-[1px] cursor-pointer"
                     style={{
                       backgroundColor: "#080810",
@@ -1730,7 +2080,12 @@ export default function MemoryTrainer() {
                     <span
                       className="font-heading text-[9px] leading-none px-2 py-1.5"
                       style={{
-                        color: srReactionMs < 3000 ? "#FFD500" : srReactionMs < 6000 ? "#FF5800" : "#55556a",
+                        color:
+                          srReactionMs < 3000
+                            ? "#FFD500"
+                            : srReactionMs < 6000
+                              ? "#FF5800"
+                              : "#55556a",
                         border: `1px solid ${srReactionMs < 3000 ? "rgba(255,213,0,0.3)" : srReactionMs < 6000 ? "rgba(255,88,0,0.3)" : "rgba(85,85,106,0.3)"}`,
                       }}
                     >
@@ -1746,10 +2101,13 @@ export default function MemoryTrainer() {
                         backgroundColor: "rgba(255,213,0,0.06)",
                       }}
                     >
-                      {srXpStatus === "awarded"   ? `+${srReactionMs !== null ? srXpForTime(srReactionMs) : 0} XP`
-                       : srXpStatus === "no_auth" ? "SIGN IN TO EARN XP"
-                       : srXpStatus === "pending" ? "AWARDING..."
-                       : ""}
+                      {srXpStatus === "awarded"
+                        ? `+${srReactionMs !== null ? srXpForTime(srReactionMs) : 0} XP`
+                        : srXpStatus === "no_auth"
+                          ? "SIGN IN TO EARN XP"
+                          : srXpStatus === "pending"
+                            ? "AWARDING..."
+                            : ""}
                     </span>
                   )}
                 </div>
@@ -1764,15 +2122,23 @@ export default function MemoryTrainer() {
               <div
                 className="w-full flex items-center justify-between px-4 py-3"
                 style={{
-                  backgroundColor: srIsCorrect ? "rgba(0,155,72,0.1)" : "rgba(196,30,58,0.1)",
+                  backgroundColor: srIsCorrect
+                    ? "rgba(0,155,72,0.1)"
+                    : "rgba(196,30,58,0.1)",
                   border: `1px solid ${srIsCorrect ? "rgba(0,155,72,0.35)" : "rgba(196,30,58,0.35)"}`,
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-heading text-xl leading-none" style={{ color: srIsCorrect ? "#009B48" : "#C41E3A" }}>
+                  <span
+                    className="font-heading text-xl leading-none"
+                    style={{ color: srIsCorrect ? "#009B48" : "#C41E3A" }}
+                  >
                     {srIsCorrect ? "✓" : "✗"}
                   </span>
-                  <span className="font-heading text-[12px] tracking-widest leading-none" style={{ color: srIsCorrect ? "#009B48" : "#C41E3A" }}>
+                  <span
+                    className="font-heading text-[12px] tracking-widest leading-none"
+                    style={{ color: srIsCorrect ? "#009B48" : "#C41E3A" }}
+                  >
                     {srIsCorrect ? "CORRECT" : "INCORRECT"}
                   </span>
                 </div>
@@ -1787,19 +2153,33 @@ export default function MemoryTrainer() {
 
               <div
                 className="w-full flex items-center justify-between px-4 py-3"
-                style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+                style={{
+                  backgroundColor: "#080810",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
               >
-                <span className="font-heading text-[9px] text-zinc-600 tracking-widest">CORRECT CASE</span>
-                <span className="font-heading text-[11px] text-white tracking-widest">{srCurrentCase.name}</span>
+                <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                  CORRECT CASE
+                </span>
+                <span className="font-heading text-[11px] text-white tracking-widest">
+                  {srCurrentCase.name}
+                </span>
               </div>
 
               {srSessionAvgMs !== null && (
                 <div
                   className="w-full flex items-center justify-between px-4 py-3"
-                  style={{ backgroundColor: "#080810", border: "1px solid rgba(255,255,255,0.05)" }}
+                  style={{
+                    backgroundColor: "#080810",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                  }}
                 >
-                  <span className="font-heading text-[9px] text-zinc-600 tracking-widest">SESSION AVG REACTION</span>
-                  <span className="font-heading text-[11px] text-white tracking-widest">{(srSessionAvgMs / 1000).toFixed(2)}s</span>
+                  <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+                    SESSION AVG REACTION
+                  </span>
+                  <span className="font-heading text-[11px] text-white tracking-widest">
+                    {(srSessionAvgMs / 1000).toFixed(2)}s
+                  </span>
                 </div>
               )}
 
@@ -1807,17 +2187,33 @@ export default function MemoryTrainer() {
                 <div className="w-full flex flex-col gap-4">
                   <div
                     className="w-full flex flex-col items-center gap-2 py-4 px-6 text-center"
-                    style={{ backgroundColor: "rgba(255,213,0,0.05)", border: "1px solid rgba(255,213,0,0.2)" }}
+                    style={{
+                      backgroundColor: "rgba(255,213,0,0.05)",
+                      border: "1px solid rgba(255,213,0,0.2)",
+                    }}
                   >
-                    <span className="font-heading text-[11px] text-[#FFD500] tracking-widest" style={{ textShadow: "0 0 12px rgba(255,213,0,0.4)" }}>
+                    <span
+                      className="font-heading text-[11px] text-[#FFD500] tracking-widest"
+                      style={{ textShadow: "0 0 12px rgba(255,213,0,0.4)" }}
+                    >
                       ★ CYCLE COMPLETE
                     </span>
-                    <p className="font-sans text-zinc-500 text-xs">All {pool.length} cases done.</p>
+                    <p className="font-sans text-zinc-500 text-xs">
+                      All {pool.length} cases done.
+                    </p>
                   </div>
                   <button
-                    onClick={() => { setSrSeen([]); setSrSessionTimes([]); setSrPhase("idle"); }}
+                    onClick={() => {
+                      setSrSeen([]);
+                      setSrSessionTimes([]);
+                      setSrPhase("idle");
+                    }}
                     className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                    style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                    style={{
+                      backgroundColor: "#FFD500",
+                      color: "#0d0d14",
+                      boxShadow: "0 4px 0px #a38a00",
+                    }}
                   >
                     START NEW CYCLE
                   </button>
@@ -1826,7 +2222,11 @@ export default function MemoryTrainer() {
                 <button
                   onClick={srHandleNext}
                   className="w-full font-heading text-[11px] leading-none py-5 cursor-pointer transition-all active:translate-y-[2px]"
-                  style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "0 4px 0px #a38a00" }}
+                  style={{
+                    backgroundColor: "#FFD500",
+                    color: "#0d0d14",
+                    boxShadow: "0 4px 0px #a38a00",
+                  }}
                 >
                   NEXT CASE →
                 </button>
@@ -1835,7 +2235,6 @@ export default function MemoryTrainer() {
           )}
         </div>
       )}
-
     </div>
   );
 }
