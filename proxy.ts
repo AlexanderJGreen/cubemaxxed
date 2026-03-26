@@ -41,8 +41,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Already logged in → trying to access login/signup → send to dashboard
-  if (user && isAuthRoute) {
+  // Already logged in → trying to access login/signup or home → send to dashboard
+  if (user && (isAuthRoute || pathname === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

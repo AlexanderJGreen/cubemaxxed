@@ -2,7 +2,14 @@ import Link from "next/link";
 import { RankBadge } from "@/app/components/RankBadge";
 import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 
-const FEATURES: { color: string; label: string; title: string; desc: string; icon: PixelIconName; comingSoon?: boolean }[] = [
+const FEATURES: {
+  color: string;
+  label: string;
+  title: string;
+  desc: string;
+  icon: PixelIconName;
+  comingSoon?: boolean;
+}[] = [
   {
     color: "#0051A2",
     label: "LESSONS",
@@ -110,21 +117,26 @@ const FLOATERS = [
   { color: "#009B48", size: 8, left: "44%", delay: "6s", duration: "15s" },
 ];
 
-
 const LOCK_PIXELS = [
-  [0,0,1,1,1,0,0],
-  [0,1,0,0,0,1,0],
-  [0,1,0,0,0,1,0],
-  [1,1,1,1,1,1,1],
-  [1,1,0,0,0,1,1],
-  [1,1,0,1,0,1,1],
-  [1,1,0,0,0,1,1],
-  [1,1,1,1,1,1,1],
+  [0, 0, 1, 1, 1, 0, 0],
+  [0, 1, 0, 0, 0, 1, 0],
+  [0, 1, 0, 0, 0, 1, 0],
+  [1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 0, 0, 0, 1, 1],
+  [1, 1, 0, 1, 0, 1, 1],
+  [1, 1, 0, 0, 0, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1],
 ];
 
 function PixelLock() {
   return (
-    <div style={{ display: "inline-grid", gridTemplateColumns: "repeat(7, 5px)", gap: "1px" }}>
+    <div
+      style={{
+        display: "inline-grid",
+        gridTemplateColumns: "repeat(7, 5px)",
+        gap: "1px",
+      }}
+    >
       {LOCK_PIXELS.flat().map((on, i) => (
         <div
           key={i}
@@ -228,23 +240,25 @@ export default function Home() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mt-2">
               <Link
-                href="/playground"
+                href="/auth/signup"
                 className="font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px]"
                 style={{
                   boxShadow:
                     "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.25)",
                 }}
               >
-                GET STARTED
+                CREATE FREE ACCOUNT
               </Link>
-              <span className="font-sans text-sm text-zinc-600">
-                No account needed to explore
-              </span>
+              <Link
+                href="/algorithms"
+                className="font-sans text-sm text-zinc-500 hover:text-zinc-300 transition-colors duration-200"
+              >
+                Explore first →
+              </Link>
             </div>
 
             {/* Divider line */}
             <div className="pt-2 border-t border-white/5" />
-
           </div>
 
           {/* Right column — pixel cube */}
@@ -298,10 +312,15 @@ export default function Home() {
               {comingSoon && (
                 <div
                   className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10"
-                  style={{ backgroundColor: "rgba(13,13,20,0.82)", backdropFilter: "blur(1px)" }}
+                  style={{
+                    backgroundColor: "rgba(13,13,20,0.82)",
+                    backdropFilter: "blur(1px)",
+                  }}
                 >
                   <PixelLock />
-                  <span className="font-heading text-[9px] text-zinc-500 tracking-widest">COMING SOON</span>
+                  <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
+                    COMING SOON
+                  </span>
                 </div>
               )}
               {/* Top accent bar */}
@@ -420,8 +439,81 @@ export default function Home() {
           {/* Footer note */}
           <p className="font-sans text-xs text-zinc-700 mt-10 flex items-center gap-1.5">
             <PixelIcon name="diamond" size={8} />
-            Each dot represents one sub-tier. Complete all 3 to advance to the next rank.
+            Each dot represents one sub-tier. Complete all 3 to advance to the
+            next rank.
           </p>
+        </div>
+      </section>
+
+      {/* ── Bottom CTA Section ── */}
+      <section className="border-t border-white/[0.04]">
+        <div
+          className="relative overflow-hidden"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,213,0,0.07) 0%, transparent 70%)",
+          }}
+        >
+          {/* Floating pixel squares — mirrored from hero, drift downward */}
+          {FLOATERS.map((f, i) => (
+            <div
+              key={i}
+              className="absolute top-0 pointer-events-none"
+              style={{
+                left: f.left,
+                width: f.size,
+                height: f.size,
+                backgroundColor: f.color,
+                opacity: 0.4,
+                animation: `floatUp ${f.duration} ${f.delay} linear infinite`,
+              }}
+            />
+          ))}
+
+          <div className="relative z-10 mx-auto max-w-6xl px-6 py-32 flex flex-col items-center text-center gap-8">
+            {/* Eyebrow */}
+            <span
+              className="font-heading text-[9px] text-[#FFD500] tracking-widest px-3 py-2"
+              style={{ border: "1px solid rgba(255,213,0,0.3)" }}
+            >
+              FREE TO START
+            </span>
+
+            {/* Headline */}
+            <h2
+              className="font-heading text-white leading-snug max-w-lg"
+              style={{ fontSize: "clamp(16px, 3vw, 28px)" }}
+            >
+              THE CUBE GRIND{" "}
+              <span style={{ color: "#FFD500" }}>STARTS HERE.</span>
+            </h2>
+
+            {/* Subtext */}
+            <p className="font-sans text-base text-zinc-500 max-w-sm leading-relaxed">
+              Create a free account and start earning XP today. No cube required
+              to get started.
+            </p>
+
+            {/* CTA buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-5 mt-2">
+              <Link
+                href="/auth/signup"
+                className="font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-8 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px]"
+                style={{
+                  boxShadow:
+                    "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.25)",
+                }}
+              >
+                CREATE FREE ACCOUNT
+              </Link>
+              <Link
+                href="/algorithms"
+                className="font-sans text-sm text-zinc-500 hover:text-zinc-300 transition-colors duration-200"
+              >
+                Explore first →
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </>

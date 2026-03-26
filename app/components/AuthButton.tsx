@@ -21,11 +21,19 @@ export default async function AuthButton() {
   }
 
   return (
-    <a
-      href="/auth/login"
-      className="font-heading rounded bg-[#FFD500] px-3 py-1.5 text-[10px] text-black transition hover:bg-yellow-400"
-    >
-      SIGN IN
-    </a>
+    <div className="flex items-center gap-3">
+      <a
+        href="/auth/login"
+        className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300"
+      >
+        Sign in
+      </a>
+      <a
+        href="/auth/signup"
+        className="font-heading bg-[#FFD500] px-3 py-1.5 text-[10px] text-black transition hover:brightness-110"
+      >
+        SIGN UP
+      </a>
+    </div>
   );
 }
