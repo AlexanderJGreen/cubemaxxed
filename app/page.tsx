@@ -278,9 +278,6 @@ export default function Home() {
                 />
               ))}
             </div>
-            <span className="font-heading text-[8px] text-zinc-700 tracking-widest">
-              SCRAMBLED
-            </span>
           </div>
         </div>
       </section>
@@ -405,7 +402,8 @@ export default function Home() {
                 left: "calc(16.67% - 11px)",
                 right: "calc(16.67% - 11px)",
                 height: "1px",
-                background: "linear-gradient(to right, #009B48, #FFD500, #C41E3A)",
+                background:
+                  "linear-gradient(to right, #009B48, #FFD500, #C41E3A)",
                 opacity: 0.4,
               }}
             />
@@ -430,7 +428,10 @@ export default function Home() {
                 desc: "Every action earns XP. Build daily streaks, complete challenges, and rise through 24 rank tiers.",
               },
             ].map(({ step, color, title, desc }) => (
-              <div key={step} className="relative flex flex-col items-center gap-5 text-center">
+              <div
+                key={step}
+                className="relative flex flex-col items-center gap-5 text-center"
+              >
                 {/* Step number */}
                 <div
                   className="w-10 h-10 flex items-center justify-center shrink-0"
