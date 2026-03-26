@@ -472,3 +472,53 @@ if (token.move !== expectedMove) {
 ```
 
 The user cannot "skip ahead" or rearrange — they must build the sequence left-to-right in order. Any deviation from the correct next move immediately ends the round and reveals the full algorithm. This is intentional: the game tests whether the user has the sequence memorized precisely, not just whether they can recognize individual moves.
+
+---
+
+## Speed Recognition — How It Works
+
+### What's new
+
+Speed Recognition is the fourth game mode (`mode === "speed"`). It shows a case diagram and asks the user to tap the correct case name from four buttons as fast as possible. Unlike Case Recognition (which shows an algorithm and asks you to find the diagram), this is the reverse: see the shape, name it.
+
+### New state
+
+```ts
+srPhase: SRPhase           // "idle" | "playing" | "result"
+srCurrentCase              // the case being shown this round
+srOptions: TrainerCase[]   // the 4 shuffled name options
+srSeen: string[]           // cases already covered this cycle
+srSelected: string | null  // which name the user tapped
+srIsCorrect: boolean | null
+srXpStatus: XpStatus
+srReactionMs: number | null  // how long the user took to tap (ms)
+srSessionTimes: number[]     // reaction times from every round this session
+srStartTimeRef: useRef<number>  // NOT useState — explained below
+```
+
+### Why `useRef` for the start time
+
+`srStartTimeRef` stores the timestamp when the current round began (`Date.now()`). It's a `useRef`, not a `useState`, for one specific reason: writing to a ref does **not** trigger a re-render. If we used `useState`, setting the start time at the beginning of each round would cause React to re-render the component — which would reset the visual state and cause a flicker. Since we only ever *read* the start time (when the user taps), we don't need React to track it reactively. The ref just holds the value quietly until we need it.
+
+### How reaction time is measured
+
+When a round begins (`srBeginRound`), we write `srStartTimeRef.current = Date.now()`. When the user taps an option (`srHandleSelect`), we immediately read `Date.now() - srStartTimeRef.current`. This gives milliseconds elapsed since the case appeared on screen. That value is stored in `srReactionMs` for display and in `srSessionTimes` for the running average.
+
+### Tiered XP scoring
+
+```ts
+const SR_XP_FAST = 15; // < 3 seconds
+const SR_XP_MID  = 8;  // < 6 seconds
+const SR_XP_SLOW = 3;  // >= 6 seconds
+// Wrong answer: 0 XP
+```
+
+Only correct answers earn XP. The tier is determined by `srXpForTime(reactionMs)` at the moment the user taps. The reaction time badge on the result screen is also color-coded: yellow for fast, orange for mid, grey for slow.
+
+### Session average reaction time
+
+`srSessionTimes` accumulates every reaction time during the session (correct and incorrect). The session average (`srSessionAvgMs`) is the mean of this array and is displayed:
+- During **playing**: shown next to the mode label in the top-left ("AVG 2.34s") so the user can see their running pace without it being distracting
+- During **result**: shown in its own row below the correct case name
+
+The session average resets when the user starts a new cycle.
