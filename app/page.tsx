@@ -13,10 +13,9 @@ const FEATURES: {
   {
     color: "#0051A2",
     label: "LESSONS",
-    title: "STRUCTURED CURRICULUM",
-    desc: "43 lessons across 7 stages take you from never touching a cube to completing a full CFOP solve.",
+    title: "FULL BEGINNER COURSE",
+    desc: "20 lessons across 3 stages take you from zero to solving the cube on your own — no experience needed.",
     icon: "book",
-    comingSoon: true,
   },
   {
     color: "#FFD500",
@@ -232,8 +231,8 @@ export default function Home() {
               {/* Subtitle */}
               <p className="font-sans text-base sm:text-lg text-zinc-400 max-w-md leading-relaxed">
                 Real XP, daily streaks, and ranks that actually mean something.
-                Perfect for all levels. Addicting enough to keep you going.
-                Beginner to CFOP curriculum coming soon!
+                Perfect for all levels. Addicting enough to keep you going. Full
+                CFOP curriculum coming soon!
               </p>
             </div>
 
@@ -283,6 +282,30 @@ export default function Home() {
               SCRAMBLED
             </span>
           </div>
+        </div>
+      </section>
+
+      {/* ── Stats Bar ── */}
+      <section className="border-t border-b border-white/[0.04] bg-[#0a0a12]">
+        <div className="mx-auto max-w-6xl px-6 py-6 flex flex-wrap justify-center sm:justify-between gap-6">
+          {[
+            { value: "20", label: "BEGINNER LESSONS" },
+            { value: "24", label: "RANK TIERS" },
+            { value: "57", label: "OLL ALGORITHMS" },
+            { value: "21", label: "PLL ALGORITHMS" },
+          ].map(({ value, label }) => (
+            <div key={label} className="flex flex-col items-center gap-1.5">
+              <span
+                className="font-heading text-[#FFD500] leading-none"
+                style={{ fontSize: "clamp(20px, 3vw, 32px)" }}
+              >
+                {value}
+              </span>
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest">
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -516,6 +539,41 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* ── Footer ── */}
+      <footer className="border-t border-white/[0.04] bg-[#0a0a12]">
+        <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+          {/* Brand */}
+          <span
+            className="font-heading text-[10px] text-[#FFD500] leading-none"
+            style={{ textShadow: "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A" }}
+          >
+            CubeMaxxed
+          </span>
+
+          {/* Nav links */}
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {[
+              { href: "/algorithms", label: "Algorithms" },
+              { href: "/playground", label: "Playground" },
+              { href: "/auth/signup", label: "Sign Up" },
+              { href: "/auth/login", label: "Sign In" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="font-sans text-sm text-zinc-600 hover:text-zinc-300 transition-colors duration-200"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Copyright */}
+          <span className="font-sans text-xs text-zinc-700">
+            © {new Date().getFullYear()} CubeMaxxed
+          </span>
+        </div>
+      </footer>
     </>
   );
 }
