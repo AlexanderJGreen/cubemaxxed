@@ -36,9 +36,13 @@ export default function Header({
   authButton?: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
+  const [activeColor, setActiveColor] = useState(CUBE_COLORS[0]);
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setActiveColor(randomCubeColor());
+  }, []);
 
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);

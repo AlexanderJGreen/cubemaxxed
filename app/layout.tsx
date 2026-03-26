@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Press_Start_2P, Inter } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header";
+import Header from "./components/header";
 import AuthButton from "./components/AuthButton";
 import { Analytics } from "@vercel/analytics/react";
 
