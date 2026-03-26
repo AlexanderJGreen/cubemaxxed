@@ -112,7 +112,7 @@ function Timer() {
       ...prev,
       { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true },
     ]);
-    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"));
+    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours());
     setPending(null);
     setCurrentScramble(generateScramble());
   }, [pending]);

@@ -402,7 +402,7 @@ export default async function Dashboard() {
           style={{ border: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
-            <RankBadge name={rank.rank} color={rank.color} glow={rank.glow} />
+            <RankBadge name={rank.rank} />
           </div>
           <div className="flex flex-col gap-2 min-w-0">
             <span className="font-heading text-white text-[11px] leading-none truncate">

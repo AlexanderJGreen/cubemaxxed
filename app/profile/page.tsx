@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
+import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 import { getSolveChartData, getPersonalBests } from "@/lib/analytics";
 import SolveChart from "./SolveChart";
 
@@ -17,34 +18,34 @@ type Achievement = {
   id: string;
   name: string;
   desc: string;
-  symbol: string;
+  icon: PixelIconName;
   category: string;
   hidden: boolean;
 };
 
 const ACHIEVEMENTS: Achievement[] = [
-  { id: "first_steps",      name: "First Steps",     desc: "Complete your first lesson",               symbol: "▸",   category: "LEARNING", hidden: false },
-  { id: "first_solve",      name: "First Solve",      desc: "Complete Stage 2",                         symbol: "◆",   category: "LEARNING", hidden: false },
-  { id: "method_master",    name: "Method Master",    desc: "Complete Stage 7 — full CFOP learned",     symbol: "★",   category: "LEARNING", hidden: false },
-  { id: "perfect_student",  name: "Perfect Student",  desc: "Pass every quiz first try in a stage",     symbol: "◉",   category: "LEARNING", hidden: false },
-  { id: "scholar",          name: "Scholar",          desc: "Complete all 43 lessons",                  symbol: "▤",   category: "LEARNING", hidden: false },
-  { id: "sub_120",          name: "Sub-2:00 Club",    desc: "Log a solve under 2 minutes",              symbol: "◷",   category: "SPEED",    hidden: false },
-  { id: "sub_60",           name: "Sub-1:00 Club",    desc: "Log a solve under 1 minute",               symbol: "◷",   category: "SPEED",    hidden: false },
-  { id: "sub_45",           name: "Sub-45 Club",      desc: "Log a solve under 45 seconds",             symbol: "◷",   category: "SPEED",    hidden: false },
-  { id: "sub_30",           name: "Sub-30 Club",      desc: "Log a solve under 30 seconds",             symbol: "◷",   category: "SPEED",    hidden: false },
-  { id: "getting_started",  name: "Getting Started",  desc: "Log 10 total solves",                      symbol: "▲",   category: "PRACTICE", hidden: false },
-  { id: "century",          name: "Century",          desc: "Log 100 total solves",                     symbol: "▲▲",  category: "PRACTICE", hidden: false },
-  { id: "thousand_club",    name: "Thousand Club",    desc: "Log 1,000 total solves",                   symbol: "✦",   category: "PRACTICE", hidden: false },
-  { id: "alg_apprentice",   name: "Alg. Apprentice",  desc: "Master 10 algorithms",                     symbol: "◈",   category: "PRACTICE", hidden: false },
-  { id: "alg_expert",       name: "Alg. Expert",      desc: "Master all 2-look OLL and PLL algorithms", symbol: "◈◈",  category: "PRACTICE", hidden: false },
-  { id: "first_week",       name: "First Week",       desc: "Reach a 7-day streak",                     symbol: "7",   category: "STREAK",   hidden: false },
-  { id: "monthly_grinder",  name: "Monthly Grinder",  desc: "Reach a 30-day streak",                    symbol: "30",  category: "STREAK",   hidden: false },
-  { id: "dedicated",        name: "Dedicated",        desc: "Reach a 100-day streak",                   symbol: "100", category: "STREAK",   hidden: false },
-  { id: "one_year_strong",  name: "One Year Strong",  desc: "Reach a 365-day streak",                   symbol: "365", category: "STREAK",   hidden: false },
-  { id: "night_owl",        name: "Night Owl",        desc: "Log a solve after midnight",                symbol: "?",   category: "HIDDEN",   hidden: true  },
-  { id: "early_bird",       name: "Early Bird",       desc: "Log a solve before 6 AM",                  symbol: "?",   category: "HIDDEN",   hidden: true  },
-  { id: "speed_demon",      name: "Speed Demon",      desc: "Solve 20 times in a single session",       symbol: "?",   category: "HIDDEN",   hidden: true  },
-  { id: "perfectionist",    name: "Perfectionist",    desc: "Get a personal best 5 times in one week",  symbol: "?",   category: "HIDDEN",   hidden: true  },
+  { id: "first_steps",      name: "First Steps",     desc: "Complete your first lesson",               icon: "arrow",      category: "LEARNING", hidden: false },
+  { id: "first_solve",      name: "First Solve",      desc: "Complete Stage 2",                         icon: "diamond",    category: "LEARNING", hidden: false },
+  { id: "method_master",    name: "Method Master",    desc: "Complete Stage 7 — full CFOP learned",     icon: "star",       category: "LEARNING", hidden: false },
+  { id: "perfect_student",  name: "Perfect Student",  desc: "Pass every quiz first try in a stage",     icon: "bullseye",   category: "LEARNING", hidden: false },
+  { id: "scholar",          name: "Scholar",          desc: "Complete all 43 lessons",                  icon: "book",       category: "LEARNING", hidden: false },
+  { id: "sub_120",          name: "Sub-2:00 Club",    desc: "Log a solve under 2 minutes",              icon: "clock",      category: "SPEED",    hidden: false },
+  { id: "sub_60",           name: "Sub-1:00 Club",    desc: "Log a solve under 1 minute",               icon: "clock",      category: "SPEED",    hidden: false },
+  { id: "sub_45",           name: "Sub-45 Club",      desc: "Log a solve under 45 seconds",             icon: "clock",      category: "SPEED",    hidden: false },
+  { id: "sub_30",           name: "Sub-30 Club",      desc: "Log a solve under 30 seconds",             icon: "clock",      category: "SPEED",    hidden: false },
+  { id: "getting_started",  name: "Getting Started",  desc: "Log 10 total solves",                      icon: "mountain",   category: "PRACTICE", hidden: false },
+  { id: "century",          name: "Century",          desc: "Log 100 total solves",                     icon: "mountain",   category: "PRACTICE", hidden: false },
+  { id: "thousand_club",    name: "Thousand Club",    desc: "Log 1,000 total solves",                   icon: "fourstar",   category: "PRACTICE", hidden: false },
+  { id: "alg_apprentice",   name: "Alg. Apprentice",  desc: "Master 10 algorithms",                     icon: "algdiamond", category: "PRACTICE", hidden: false },
+  { id: "alg_expert",       name: "Alg. Expert",      desc: "Master all 2-look OLL and PLL algorithms", icon: "algdiamond", category: "PRACTICE", hidden: false },
+  { id: "first_week",       name: "First Week",       desc: "Reach a 7-day streak",                     icon: "flame",      category: "STREAK",   hidden: false },
+  { id: "monthly_grinder",  name: "Monthly Grinder",  desc: "Reach a 30-day streak",                    icon: "flame",      category: "STREAK",   hidden: false },
+  { id: "dedicated",        name: "Dedicated",        desc: "Reach a 100-day streak",                   icon: "flame",      category: "STREAK",   hidden: false },
+  { id: "one_year_strong",  name: "One Year Strong",  desc: "Reach a 365-day streak",                   icon: "flame",      category: "STREAK",   hidden: false },
+  { id: "night_owl",        name: "Night Owl",        desc: "Log a solve after midnight",                icon: "star",       category: "HIDDEN",   hidden: true  },
+  { id: "early_bird",       name: "Early Bird",       desc: "Log a solve before 6 AM",                  icon: "star",       category: "HIDDEN",   hidden: true  },
+  { id: "speed_demon",      name: "Speed Demon",      desc: "Solve 20 times in a single session",       icon: "lightning",  category: "HIDDEN",   hidden: true  },
+  { id: "perfectionist",    name: "Perfectionist",    desc: "Get a personal best 5 times in one week",  icon: "fourstar",   category: "HIDDEN",   hidden: true  },
 ];
 
 const TIER_ORDER = ["I", "II", "III"];
@@ -64,17 +65,19 @@ function AchievementBadge({ a, unlocked }: { a: Achievement; unlocked: boolean }
       title={show ? a.desc : undefined}
     >
       <div
-        className="flex items-center justify-center font-heading leading-none"
+        className="flex items-center justify-center"
         style={{
           width: 44, height: 44,
           backgroundColor: show ? `${color}15` : "#13131e",
           border: `2px solid ${show ? color : dimColor}`,
           color: show ? color : "rgba(255,255,255,0.1)",
-          fontSize: a.symbol.length > 2 ? "7px" : a.symbol.length > 1 ? "9px" : "14px",
           boxShadow: show ? `0 0 14px ${color}40` : "none",
         }}
       >
-        {a.hidden ? "?" : a.symbol}
+        {a.hidden
+          ? <span className="font-heading" style={{ fontSize: 14 }}>?</span>
+          : <PixelIcon name={a.icon} size={22} />
+        }
       </div>
       <span
         className="font-heading text-center leading-relaxed"
@@ -184,11 +187,7 @@ export default async function Profile() {
       >
         <div className="flex-shrink-0 flex flex-col items-center gap-4">
           <div className="w-24 h-24 flex items-center justify-center">
-            <RankBadge
-              name={rank.rank}
-              color={rank.color}
-              glow={rank.rank === "GRANDMASTER" ? rank.glow : undefined}
-            />
+            <RankBadge name={rank.rank} />
           </div>
           <div className="flex gap-[6px]">
             {TIER_ORDER.map((t, i) => (

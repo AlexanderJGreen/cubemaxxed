@@ -45,6 +45,15 @@ export async function completeLesson(lessonId: string, stageNum: number, xpRewar
       .in("lesson_id", stage2Lessons);
     if (stage2Count === stage2Lessons.length) achievements.push("first_solve");
 
+    // Check if stage 7 completed (full CFOP learned)
+    const stage7Lessons = STAGES[7].lessons.map((l) => l.number);
+    const { count: stage7Count } = await supabase
+      .from("lesson_completions")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .in("lesson_id", stage7Lessons);
+    if (stage7Count === stage7Lessons.length) achievements.push("method_master");
+
     // Check if all 43 lessons completed
     if (lessonCount === 43) achievements.push("scholar");
 

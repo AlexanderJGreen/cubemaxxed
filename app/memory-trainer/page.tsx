@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { PixelIcon } from "@/app/components/PixelIcon";
 import {
   CaseDiagram,
   PLLCaseDiagram,
@@ -278,35 +279,35 @@ function FilterToggle({
 const MODE_META: {
   id: Mode;
   label: string;
-  icon: string;
+  icon: import("@/app/components/PixelIcon").PixelIconName;
   color: string;
   desc: string;
 }[] = [
   {
     id: "flash",
     label: "FLASH & RECALL",
-    icon: "◷",
+    icon: "clock",
     color: "#FF5800",
     desc: "Memorize, then type it",
   },
   {
     id: "recognition",
     label: "CASE RECOGNITION",
-    icon: "◈",
+    icon: "algdiamond",
     color: "#4a90d9",
     desc: "Algorithm → diagram",
   },
   {
     id: "sequence",
     label: "SEQUENCE BUILDER",
-    icon: "▤",
+    icon: "book",
     color: "#009B48",
     desc: "Click moves in order",
   },
   {
     id: "speed",
     label: "SPEED RECOGNITION",
-    icon: "⚡",
+    icon: "lightning",
     color: "#FFD500",
     desc: "Diagram → name fast",
   },
@@ -335,14 +336,8 @@ function ModeSwitcher({
             }}
           >
             <div className="flex items-center justify-between">
-              <span
-                className="font-heading leading-none"
-                style={{
-                  fontSize: 13,
-                  color: active ? opt.color : "rgba(255,255,255,0.25)",
-                }}
-              >
-                {opt.icon}
+              <span style={{ color: active ? opt.color : "rgba(255,255,255,0.25)" }}>
+                <PixelIcon name={opt.icon} size={14} />
               </span>
               {active && (
                 <span
@@ -2023,10 +2018,11 @@ export default function MemoryTrainer() {
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-3">
                   <span
-                    className="font-heading text-[9px] tracking-widest"
+                    className="font-heading text-[9px] tracking-widest inline-flex items-center gap-1"
                     style={{ color: "#FF5800" }}
                   >
-                    ⚡ SPEED RECOGNITION
+                    <PixelIcon name="lightning" size={9} />
+                    SPEED RECOGNITION
                   </span>
                   {srSessionAvgMs !== null && (
                     <span className="font-heading text-[9px] text-zinc-600 tracking-widest">

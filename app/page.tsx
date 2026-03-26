@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { RankBadge } from "@/app/components/RankBadge";
+import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 
-const FEATURES = [
+const FEATURES: { color: string; label: string; title: string; desc: string; icon: PixelIconName; comingSoon?: boolean }[] = [
   {
     color: "#0051A2",
     label: "LESSONS",
     title: "STRUCTURED CURRICULUM",
     desc: "43 lessons across 7 stages take you from never touching a cube to completing a full CFOP solve.",
-    symbol: "▤",
+    icon: "book",
     comingSoon: true,
   },
   {
@@ -15,21 +16,21 @@ const FEATURES = [
     label: "GAMIFICATION",
     title: "XP, RANKS & STREAKS",
     desc: "Earn XP for every action, climb 24 rank tiers, and build streaks that multiply your rewards.",
-    symbol: "▲",
+    icon: "mountain",
   },
   {
     color: "#009B48",
     label: "TRAINER",
     title: "ALGORITHM TRAINER",
     desc: "Drill OLL and PLL with spaced repetition — the system tracks what you know and targets what you don't.",
-    symbol: "◈",
+    icon: "algdiamond",
   },
   {
     color: "#C41E3A",
     label: "TIMER",
     title: "BUILT-IN TIMER",
     desc: "Scramble, solve, and log your times with a full-featured timer that tracks every session.",
-    symbol: "◷",
+    icon: "clock",
   },
 ];
 
@@ -288,7 +289,7 @@ export default function Home() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FEATURES.map(({ color, label, title, symbol, desc, comingSoon }) => (
+          {FEATURES.map(({ color, label, title, icon, desc, comingSoon }) => (
             <div
               key={title}
               className="relative flex flex-col gap-5 p-6 bg-[#0f0f1a] transition-colors duration-200 hover:bg-[#13131f] group"
@@ -308,11 +309,8 @@ export default function Home() {
 
               {/* Icon + label */}
               <div className="flex items-center gap-2">
-                <span
-                  className="font-heading text-base leading-none"
-                  style={{ color }}
-                >
-                  {symbol}
+                <span style={{ color }}>
+                  <PixelIcon name={icon} size={18} />
                 </span>
                 <span
                   className="font-heading text-[8px] leading-none tracking-widest"
@@ -380,13 +378,7 @@ export default function Home() {
                   >
                     {/* Pixel art badge */}
                     <div className="w-16 h-16 flex items-center justify-center">
-                      <RankBadge
-                        name={rank.name}
-                        color={rank.color}
-                        glow={
-                          rank.name === "GRANDMASTER" ? rank.glow : undefined
-                        }
-                      />
+                      <RankBadge name={rank.name} />
                     </div>
 
                     {/* Rank name */}
@@ -426,9 +418,9 @@ export default function Home() {
           </div>
 
           {/* Footer note */}
-          <p className="font-sans text-xs text-zinc-700 mt-10">
-            ◆ Each dot represents one sub-tier. Complete all 3 to advance to the
-            next rank.
+          <p className="font-sans text-xs text-zinc-700 mt-10 flex items-center gap-1.5">
+            <PixelIcon name="diamond" size={8} />
+            Each dot represents one sub-tier. Complete all 3 to advance to the next rank.
           </p>
         </div>
       </section>

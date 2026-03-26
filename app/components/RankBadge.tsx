@@ -20,15 +20,7 @@ const SVG_PROPS = {
 // Left face:  (5,11)  → (16,17) → (16,27) → (5,21)
 // Right face: (27,11) → (16,17) → (16,27) → (27,21)
 
-export function RankBadge({
-  name,
-  color,
-  glow,
-}: {
-  name: string;
-  color: string;
-  glow?: string;
-}) {
+export function RankBadge({ name }: { name: string }) {
   switch (name) {
     // ─────────────────────────────────────────────
     // UNRANKED — hollow dashed circle, nothing earned yet

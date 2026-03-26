@@ -21,6 +21,7 @@ export async function saveSolve(
   time_ms: number,
   scramble: string,
   localDate?: string,
+  localHour?: number,
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -57,6 +58,75 @@ export async function saveSolve(
     }
   }
 
+  // Hidden: Night Owl — solve logged between midnight and 3:59 AM
+  if (localHour !== undefined && localHour < 4) {
+    achievements.push("night_owl");
+  }
+
+  // Hidden: Early Bird — solve logged between 4 AM and 5:59 AM
+  if (localHour !== undefined && localHour >= 4 && localHour < 6) {
+    achievements.push("early_bird");
+  }
+
+  // Hidden: Speed Demon — 20+ solves in a single day
+  if (localDate && totalSolves !== null) {
+    const { count: todaySolves } = await supabase
+      .from("solve_times")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .gte("created_at", `${localDate}T00:00:00`)
+      .lt("created_at", `${localDate}T23:59:59`);
+    if (todaySolves !== null && todaySolves >= 20) {
+      achievements.push("speed_demon");
+    }
+  }
+
+  // Hidden: Perfectionist — set 5+ personal bests in the past 7 days
+  // A PB is any solve faster than all solves that came before it.
+  // Strategy: find the best time from before 7 days ago, then count
+  // how many solves in the past 7 days beat that baseline (each
+  // successive one sets a new PB within the window).
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString();
+
+  const { data: oldBestRow } = await supabase
+    .from("solve_times")
+    .select("time_ms")
+    .eq("user_id", user.id)
+    .lt("created_at", sevenDaysAgoStr)
+    .order("time_ms", { ascending: true })
+    .limit(1)
+    .single();
+
+  const { data: recentSolves } = await supabase
+    .from("solve_times")
+    .select("time_ms")
+    .eq("user_id", user.id)
+    .gte("created_at", sevenDaysAgoStr)
+    .order("time_ms", { ascending: true });
+
+  if (recentSolves) {
+    let runningBest = oldBestRow?.time_ms ?? Infinity;
+    let pbCount = 0;
+    // iterate in chronological order (fastest first is wrong — we need created_at order)
+    // re-query in time order for correctness
+    const { data: recentChron } = await supabase
+      .from("solve_times")
+      .select("time_ms")
+      .eq("user_id", user.id)
+      .gte("created_at", sevenDaysAgoStr)
+      .order("created_at", { ascending: true });
+
+    for (const row of recentChron ?? []) {
+      if (row.time_ms < runningBest) {
+        runningBest = row.time_ms;
+        pbCount++;
+      }
+    }
+    if (pbCount >= 5) achievements.push("perfectionist");
+  }
+
   if (achievements.length > 0) {
     await supabase.from("user_achievements").upsert(
       achievements.map((id) => ({ user_id: user.id, achievement_id: id })),
@@ -77,8 +147,8 @@ export type AlgProgressRecord = {
 };
 
 const ALG_MILESTONES: Record<number, string> = {
-  10: "algorithm_apprentice",
-  20: "algorithm_expert",
+  10: "alg_apprentice",
+  20: "alg_expert",
 };
 
 export async function getAlgorithmProgress(): Promise<Record<string, AlgProgressRecord>> {
