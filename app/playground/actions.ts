@@ -66,3 +66,92 @@ export async function saveSolve(
 
   revalidatePath("/dashboard");
 }
+
+// ─── Algorithm Trainer ───────────────────────────────────────────────────────
+
+export type AlgProgressRecord = {
+  mastered: boolean;
+  correct_streak: number;
+  times_seen: number;
+  times_correct: number;
+};
+
+const ALG_MILESTONES: Record<number, string> = {
+  10: "algorithm_apprentice",
+  20: "algorithm_expert",
+};
+
+export async function getAlgorithmProgress(): Promise<Record<string, AlgProgressRecord>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return {};
+
+  const { data } = await supabase
+    .from("algorithm_progress")
+    .select("algorithm_id, mastered, correct_streak, times_seen, times_correct")
+    .eq("user_id", user.id);
+
+  const result: Record<string, AlgProgressRecord> = {};
+  for (const row of data ?? []) {
+    result[row.algorithm_id] = {
+      mastered:       row.mastered        ?? false,
+      correct_streak: row.correct_streak  ?? 0,
+      times_seen:     row.times_seen      ?? 0,
+      times_correct:  row.times_correct   ?? 0,
+    };
+  }
+  return result;
+}
+
+export async function recordAlgorithmAnswer(
+  algorithmId: string,
+  newStreak: number,
+  timesSeenTotal: number,
+  timesCorrectTotal: number,
+  mastered: boolean,
+): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("algorithm_progress").upsert(
+    {
+      user_id:        user.id,
+      algorithm_id:   algorithmId,
+      mastered,
+      correct_streak: newStreak,
+      times_seen:     timesSeenTotal,
+      times_correct:  timesCorrectTotal,
+    },
+    { onConflict: "user_id,algorithm_id" },
+  );
+
+  if (mastered) {
+    await supabase.rpc("increment_xp", { user_id: user.id, amount: 30 });
+    await updateStreak(supabase, user.id);
+
+    const { count } = await supabase
+      .from("algorithm_progress")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .eq("mastered", true);
+
+    if (count !== null) {
+      const achievements = Object.entries(ALG_MILESTONES)
+        .filter(([threshold]) => count >= Number(threshold))
+        .map(([, id]) => ({ user_id: user.id, achievement_id: id }));
+
+      if (achievements.length > 0) {
+        await supabase.from("user_achievements").upsert(achievements, {
+          onConflict: "user_id,achievement_id",
+        });
+      }
+    }
+
+    revalidatePath("/dashboard");
+  }
+}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { OLL_CASES, PLL_CASES } from "../algorithms/data";
+import { OLL_CASES, PLL_CASES, type OLLCase, type PLLCase } from "../algorithms/data";
 import { formatTime } from "@/lib/rank";
-import { saveSolve } from "./actions";
+import { saveSolve, getAlgorithmProgress, recordAlgorithmAnswer } from "./actions";
 import { generateScramble } from "@/lib/scramble";
 
 type Tab = "timer" | "trainer";
@@ -261,6 +261,22 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 // ─── Algorithm Trainer ───────────────────────────────────────────────────────
 
+type AlgCase = OLLCase | PLLCase;
+
+interface AlgProgressData {
+  mastered: boolean;
+  correct_streak: number;
+  times_seen: number;
+  times_correct: number;
+}
+
+const EMPTY_PROGRESS: AlgProgressData = {
+  mastered: false,
+  correct_streak: 0,
+  times_seen: 0,
+  times_correct: 0,
+};
+
 type S = "Y" | "G";
 type PColor = "Y" | "R" | "G" | "O" | "B";
 type TrainerTab = "full-oll" | "full-pll";
@@ -269,15 +285,14 @@ const TRAINER_TABS: { id: TrainerTab; label: string }[] = [
   { id: "full-oll", label: "Full OLL" },
   { id: "full-pll", label: "Full PLL" },
 ];
-const PLL_TOP_Y: [PColor,PColor,PColor,PColor,PColor,PColor,PColor,PColor,PColor] =
-  ["Y","Y","Y","Y","Y","Y","Y","Y","Y"];
+const PLL_TOP_Y: [PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor] =
+  ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"];
 
 const Y_COL = "#FFD700";
 const G_COL = "#3a3a3a";
 function sty(c: S): React.CSSProperties {
   return { backgroundColor: c === "Y" ? Y_COL : G_COL, borderRadius: 2 };
 }
-
 const PLL_COLORS: Record<PColor, string> = {
   Y: "#FFD500", R: "#C41E3A", G: "#009B48", O: "#FF5800", B: "#0051A2",
 };
@@ -321,59 +336,177 @@ function PLLDiagramView({ top, back, front, left, right }: PLLDiagram) {
   );
 }
 
-
 const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
 function randomCubeColor(exclude?: string) {
   const options = CUBE_COLORS.filter((c) => c !== exclude);
   return options[Math.floor(Math.random() * options.length)];
 }
 
+function algKey(tab: TrainerTab, caseId: number | string): string {
+  return `${tab === "full-oll" ? "oll" : "pll"}-${caseId}`;
+}
+
+function pickNextCase(
+  tab: TrainerTab,
+  progress: Record<string, AlgProgressData>,
+  excludeKey?: string,
+): AlgCase {
+  const algs: AlgCase[] = tab === "full-oll" ? OLL_CASES : PLL_CASES;
+  const candidates = algs.filter((a) => algKey(tab, a.id) !== excludeKey);
+
+  const weighted = candidates.map((a) => {
+    const p = progress[algKey(tab, a.id)];
+    let w: number;
+    if (!p || p.times_seen === 0) {
+      w = 2.5; // unseen — moderate priority to mix in with weak ones
+    } else if (p.mastered) {
+      w = 0.3; // mastered — rare review
+    } else {
+      const accuracy = p.times_correct / p.times_seen;
+      w = 1 + (1 - accuracy) * 3; // 1x–4x: worse accuracy = shown more often
+    }
+    return { alg: a, w };
+  });
+
+  const total = weighted.reduce((s, x) => s + x.w, 0);
+  let rand = Math.random() * total;
+  for (const { alg, w } of weighted) {
+    rand -= w;
+    if (rand <= 0) return alg;
+  }
+  return weighted[weighted.length - 1].alg;
+}
+
+function StreakDots({ streak, mastered }: { streak: number; mastered: boolean }) {
+  if (mastered) {
+    return (
+      <span className="font-heading text-[8px] leading-none shrink-0" style={{ color: "#FFD500" }}>
+        MASTERED
+      </span>
+    );
+  }
+  return (
+    <div className="flex items-center gap-[3px] shrink-0" title={`${streak} / 5 correct in a row`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div
+          key={i}
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: 1,
+            backgroundColor: i <= streak ? "#009B48" : "#27272a",
+            boxShadow: i <= streak ? "0 0 4px rgba(0,155,72,0.6)" : undefined,
+            transition: "background-color 0.2s, box-shadow 0.2s",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function AlgorithmTrainer() {
   const [tab, setTab] = useState<TrainerTab>("full-oll");
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
-  const [index, setIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const [progress, setProgress] = useState<Record<string, AlgProgressData>>({});
+  const [progressLoaded, setProgressLoaded] = useState(false);
+  const [currentCase, setCurrentCase] = useState<AlgCase | null>(null);
+  const [phase, setPhase] = useState<"question" | "revealed" | "celebrating">("question");
+  const [lastResult, setLastResult] = useState<"correct" | "incorrect" | null>(null);
+  const [sessionCorrect, setSessionCorrect] = useState(0);
+  const [sessionTotal, setSessionTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const answering = useRef(false);
+
+  // Load progress from DB on mount
+  useEffect(() => {
+    getAlgorithmProgress().then((p) => {
+      setProgress(p);
+      setProgressLoaded(true);
+    });
+  }, []);
+
+  // Pick first case once progress is loaded
+  useEffect(() => {
+    if (progressLoaded) {
+      setCurrentCase(pickNextCase(tab, progress));
+    }
+    // progress is settled in the same batch as progressLoaded — safe to omit
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressLoaded]);
+
+  function handleTabChange(t: TrainerTab) {
+    setActiveColor(randomCubeColor(activeColor));
+    setTab(t);
+    setPhase("question");
+    setLastResult(null);
+    setSearch("");
+    setSearchOpen(false);
+    setSessionCorrect(0);
+    setSessionTotal(0);
+    if (progressLoaded) setCurrentCase(pickNextCase(t, progress));
+  }
+
+  async function handleAnswer(correct: boolean) {
+    if (!currentCase || phase !== "revealed" || answering.current) return;
+    answering.current = true;
+
+    const key = algKey(tab, currentCase.id);
+    const prev = progress[key] ?? EMPTY_PROGRESS;
+    const newStreak = correct ? prev.correct_streak + 1 : 0;
+    const newlyMastered = !prev.mastered && newStreak >= 5;
+    const updated: AlgProgressData = {
+      mastered:       prev.mastered || newlyMastered,
+      correct_streak: newStreak,
+      times_seen:     prev.times_seen + 1,
+      times_correct:  prev.times_correct + (correct ? 1 : 0),
+    };
+
+    const newProgress = { ...progress, [key]: updated };
+    setProgress(newProgress);
+    setSessionTotal((n) => n + 1);
+    if (correct) setSessionCorrect((n) => n + 1);
+    setLastResult(correct ? "correct" : "incorrect");
+    if (newlyMastered) setPhase("celebrating");
+
+    // Fire-and-forget: persists to DB, awards 30 XP + achievements if newly mastered
+    recordAlgorithmAnswer(key, newStreak, updated.times_seen, updated.times_correct, updated.mastered);
+
+    setTimeout(() => {
+      setLastResult(null);
+      setPhase("question");
+      setCurrentCase(pickNextCase(tab, newProgress, key));
+      answering.current = false;
+    }, newlyMastered ? 2200 : 500);
+  }
+
+  function jumpTo(target: AlgCase) {
+    setCurrentCase(target);
+    setPhase("question");
+    setLastResult(null);
+    setSearch("");
+    setSearchOpen(false);
+  }
 
   const isOLL = tab === "full-oll";
-
-  const algs = tab === "full-oll" ? OLL_CASES : PLL_CASES;
-
+  const algs: AlgCase[] = isOLL ? OLL_CASES : PLL_CASES;
   const filtered = search.trim()
     ? algs.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
     : [];
 
-  const current = algs[index % algs.length];
-  const tabLabel = TRAINER_TABS.find((t) => t.id === tab)!.label;
+  const ollMastered = Object.entries(progress).filter(([k, v]) => k.startsWith("oll-") && v.mastered).length;
+  const pllMastered = Object.entries(progress).filter(([k, v]) => k.startsWith("pll-") && v.mastered).length;
+  const categoryMastered = isOLL ? ollMastered : pllMastered;
+  const categoryTotal = algs.length;
 
-  function handleTabChange(t: TrainerTab) {
-    const next = randomCubeColor(activeColor);
-    setActiveColor(next);
-    setTab(t);
-    setIndex(0);
-    setRevealed(false);
-    setSearch("");
-    setSearchOpen(false);
-  }
-
-  function handleNext() {
-    setIndex((i) => (i + 1) % algs.length);
-    setRevealed(false);
-  }
-
-  function jumpTo(target: typeof algs[0]) {
-    const i = algs.indexOf(target as never);
-    if (i !== -1) setIndex(i);
-    setRevealed(false);
-    setSearch("");
-    setSearchOpen(false);
-  }
+  const currentKey = currentCase ? algKey(tab, currentCase.id) : null;
+  const currentProgress = (currentKey && progress[currentKey]) ? progress[currentKey] : EMPTY_PROGRESS;
 
   return (
     <div className="space-y-4">
-      {/* Tab selector + search */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      {/* Controls row */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+        {/* OLL / PLL tabs */}
         <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
           {TRAINER_TABS.map((t) => (
             <button
@@ -389,7 +522,7 @@ function AlgorithmTrainer() {
           ))}
         </div>
 
-        {/* Search */}
+        {/* Search / jump to */}
         <div className="relative">
           <div className="flex items-center gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
             <div className="flex items-center gap-2 px-3 py-1.5">
@@ -401,22 +534,32 @@ function AlgorithmTrainer() {
                 onFocus={() => setSearchOpen(true)}
                 onBlur={() => { if (!search) setSearchOpen(false); }}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
-                className="bg-transparent text-sm text-white placeholder-zinc-600 outline-none w-14"
+                placeholder="Jump to..."
+                className="bg-transparent text-sm text-white placeholder-zinc-600 outline-none w-20"
               />
             </div>
           </div>
           {searchOpen && filtered.length > 0 && (
-            <div className="absolute top-full mt-1 left-0 w-full bg-[#0a0a11] border border-zinc-700 rounded-lg overflow-hidden z-10 shadow-xl">
-              {filtered.map((a) => (
-                <button
-                  key={a.name}
-                  onMouseDown={() => jumpTo(a)}
-                  className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
-                >
-                  {a.name}
-                </button>
-              ))}
+            <div className="absolute top-full mt-1 left-0 min-w-[160px] bg-[#0a0a11] border border-zinc-700 rounded-lg overflow-hidden z-10 shadow-xl">
+              {filtered.map((a) => {
+                const p = progress[algKey(tab, a.id)];
+                return (
+                  <button
+                    key={a.name}
+                    onMouseDown={() => jumpTo(a)}
+                    className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer flex items-center justify-between gap-3"
+                  >
+                    <span>{a.name}</span>
+                    {p?.mastered ? (
+                      <span className="font-heading text-[7px] shrink-0" style={{ color: "#FFD500" }}>MASTERED</span>
+                    ) : p && p.times_seen > 0 ? (
+                      <span className="text-xs text-zinc-600 shrink-0 tabular-nums">
+                        {Math.round((p.times_correct / p.times_seen) * 100)}%
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
             </div>
           )}
           {searchOpen && search && filtered.length === 0 && (
@@ -426,71 +569,139 @@ function AlgorithmTrainer() {
           )}
         </div>
 
-        <span className="text-xs text-zinc-600 shrink-0 ml-auto">
-          {index + 1} / {algs.length}
-        </span>
+        {/* Mastery + session stats */}
+        <div className="flex items-center gap-4 sm:ml-auto">
+          <span className="text-xs text-zinc-600">
+            {categoryMastered} / {categoryTotal} mastered
+          </span>
+          {sessionTotal > 0 && (
+            <span className="text-xs text-zinc-500">
+              {sessionCorrect}/{sessionTotal} this session
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
-        {/* Algorithm name */}
-        <div className="border-b border-zinc-800 px-8 py-4 text-center">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">
-            {tabLabel}
-          </p>
-          <h2 className="font-heading text-xs text-white">{current.name}</h2>
+      {!progressLoaded || !currentCase ? (
+        <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] flex items-center justify-center py-24">
+          <span className="text-zinc-700 text-sm">Loading...</span>
         </div>
 
-        {/* Diagram */}
-        <div className="flex flex-col items-center gap-6 py-12 px-8">
-          <div className="p-3 rounded-lg border border-zinc-800 bg-[#13131f] flex items-center justify-center">
-            {isOLL ? (
-              <OLLDiagramView
-                top={(current as typeof OLL_CASES[0]).top}
-                back={current.back as [S,S,S]}
-                front={current.front as [S,S,S]}
-                left={current.left as [S,S,S]}
-                right={current.right as [S,S,S]}
-              />
-            ) : (
-              <PLLDiagramView
-                top={PLL_TOP_Y}
-                back={current.back as [PColor,PColor,PColor]}
-                front={current.front as [PColor,PColor,PColor]}
-                left={current.left as [PColor,PColor,PColor]}
-                right={current.right as [PColor,PColor,PColor]}
-              />
-            )}
+      ) : phase === "celebrating" ? (
+        <div className="rounded-xl bg-[#0a0a11] overflow-hidden" style={{ border: "1px solid rgba(255,213,0,0.25)" }}>
+          <div className="flex flex-col items-center justify-center gap-5 py-24 px-8 text-center">
+            <div className="flex gap-[4px]">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} style={{ width: 8, height: 8, borderRadius: 1, backgroundColor: "#FFD500", boxShadow: "0 0 8px rgba(255,213,0,0.7)" }} />
+              ))}
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="font-heading text-[9px] tracking-widest" style={{ color: "#FFD500" }}>
+                ALGORITHM MASTERED
+              </span>
+              <span className="font-heading text-sm text-white">{currentCase.name}</span>
+            </div>
+            <span className="font-heading text-xs" style={{ color: "#009B48" }}>+30 XP</span>
           </div>
+        </div>
 
-          {/* Solution reveal */}
-          <div className="text-center min-h-[3rem] flex items-center justify-center">
-            {revealed ? (
-              <p className="font-mono text-[#FFD500] text-lg tracking-wide">
-                {current.alg}
+      ) : (
+        <div
+          className="rounded-xl bg-[#0a0a11] overflow-hidden transition-colors duration-300"
+          style={{
+            border: `1px solid ${
+              lastResult === "correct"   ? "rgba(0,155,72,0.4)"   :
+              lastResult === "incorrect" ? "rgba(196,30,58,0.4)"  :
+              "#27272a"
+            }`,
+          }}
+        >
+          {/* Header: name + streak indicator */}
+          <div className="border-b border-zinc-800 px-8 py-4 flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1.5 min-w-0">
+              <p className="text-xs text-zinc-600 uppercase tracking-widest">
+                {TRAINER_TABS.find((t) => t.id === tab)!.label}
               </p>
-            ) : (
-              <button
-                onClick={() => setRevealed(true)}
-                className="px-6 py-2 rounded-lg border border-zinc-700 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white transition-colors cursor-pointer"
-              >
-                Show Solution
-              </button>
-            )}
+              <h2 className="font-heading text-xs text-white truncate">{currentCase.name}</h2>
+            </div>
+            <StreakDots streak={currentProgress.correct_streak} mastered={currentProgress.mastered} />
           </div>
-        </div>
 
-        {/* Next button */}
-        <div className="border-t border-zinc-800 px-8 py-4 flex justify-end">
-          <button
-            onClick={handleNext}
-            className="px-6 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-colors cursor-pointer"
-          >
-            Next →
-          </button>
+          {/* Diagram */}
+          <div className="flex flex-col items-center gap-6 py-12 px-8">
+            <div className="p-3 rounded-lg border border-zinc-800 bg-[#13131f] flex items-center justify-center">
+              {isOLL ? (
+                <OLLDiagramView
+                  top={(currentCase as OLLCase).top}
+                  back={currentCase.back as [S, S, S]}
+                  front={currentCase.front as [S, S, S]}
+                  left={currentCase.left as [S, S, S]}
+                  right={currentCase.right as [S, S, S]}
+                />
+              ) : (
+                <PLLDiagramView
+                  top={PLL_TOP_Y}
+                  back={currentCase.back as [PColor, PColor, PColor]}
+                  front={currentCase.front as [PColor, PColor, PColor]}
+                  left={currentCase.left as [PColor, PColor, PColor]}
+                  right={currentCase.right as [PColor, PColor, PColor]}
+                />
+              )}
+            </div>
+
+            {/* Reveal / answer zone */}
+            <div className="flex flex-col items-center gap-3 min-h-[4rem] justify-center">
+              {phase === "question" ? (
+                <button
+                  onClick={() => setPhase("revealed")}
+                  className="px-6 py-2 rounded-lg border border-zinc-700 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white transition-colors cursor-pointer"
+                >
+                  Show Solution
+                </button>
+              ) : (
+                <>
+                  <p className="font-mono text-[#FFD500] text-lg tracking-wide text-center">
+                    {currentCase.alg}
+                  </p>
+                  <p className="text-xs text-zinc-600">Did you know this one?</p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Got it / Missed it */}
+          {phase === "revealed" && (
+            <div className="border-t border-zinc-800 px-8 py-4 flex gap-3">
+              <button
+                onClick={() => handleAnswer(true)}
+                className="flex-1 py-3 font-heading text-[10px] tracking-widest text-white transition-all active:scale-95 cursor-pointer"
+                style={{ backgroundColor: "#009B48", boxShadow: "3px 3px 0 rgba(0,0,0,0.4)" }}
+              >
+                GOT IT
+              </button>
+              <button
+                onClick={() => handleAnswer(false)}
+                className="flex-1 py-3 border border-zinc-700 text-zinc-400 font-heading text-[10px] tracking-widest transition-all hover:border-red-900 hover:text-red-400 active:scale-95 cursor-pointer"
+              >
+                MISSED IT
+              </button>
+            </div>
+          )}
+
+          {/* Per-case accuracy footer */}
+          {currentProgress.times_seen > 0 && phase === "question" && (
+            <div className="border-t border-zinc-800/50 px-8 py-2.5 flex items-center justify-between">
+              <span className="text-xs text-zinc-700">
+                {currentProgress.times_correct} / {currentProgress.times_seen} correct
+              </span>
+              <span className="text-xs text-zinc-700">
+                {Math.round((currentProgress.times_correct / currentProgress.times_seen) * 100)}% accuracy
+              </span>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
