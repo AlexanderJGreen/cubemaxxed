@@ -3,6 +3,183 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
+import { claimChallengeXP } from "./actions";
+
+// ─── Challenge System ────────────────────────────────────────────────────────
+
+type ChallengeType =
+  | "solves_today"
+  | "lessons_today"
+  | "solves_week"
+  | "lessons_week"
+  | "streak_days";
+
+interface Challenge {
+  text: string;
+  xp: number;
+  type: ChallengeType;
+  target: number;
+}
+
+const DAILY_CHALLENGES: Challenge[] = [
+  { text: "Log 5 solves in the timer", xp: 30, type: "solves_today", target: 5 },
+  { text: "Complete a lesson", xp: 40, type: "lessons_today", target: 1 },
+  { text: "Log 3 solves in the timer", xp: 20, type: "solves_today", target: 3 },
+  { text: "Log 10 solves in the timer", xp: 50, type: "solves_today", target: 10 },
+  { text: "Complete 2 lessons", xp: 60, type: "lessons_today", target: 2 },
+  { text: "Get in a practice session", xp: 25, type: "solves_today", target: 1 },
+  { text: "Log 7 solves in the timer", xp: 40, type: "solves_today", target: 7 },
+];
+
+const WEEKLY_CHALLENGES: Challenge[] = [
+  { text: "Log 30 solves this week", xp: 150, type: "solves_week", target: 30 },
+  { text: "Complete 3 lessons this week", xp: 200, type: "lessons_week", target: 3 },
+  { text: "Keep your streak going all week", xp: 100, type: "streak_days", target: 7 },
+  { text: "Log 15 solves this week", xp: 100, type: "solves_week", target: 15 },
+  { text: "Complete 5 lessons this week", xp: 300, type: "lessons_week", target: 5 },
+  { text: "Log 50 solves this week", xp: 200, type: "solves_week", target: 50 },
+  { text: "Complete 2 lessons this week", xp: 150, type: "lessons_week", target: 2 },
+];
+
+function getDailyChallenge(dateStr: string): Challenge {
+  const d = new Date(dateStr);
+  const daysSinceEpoch = Math.floor(d.getTime() / (1000 * 60 * 60 * 24));
+  return DAILY_CHALLENGES[daysSinceEpoch % DAILY_CHALLENGES.length];
+}
+
+function getWeeklyChallenge(weekStartStr: string): Challenge {
+  const d = new Date(weekStartStr);
+  const weeksSinceEpoch = Math.floor(d.getTime() / (1000 * 60 * 60 * 24 * 7));
+  return WEEKLY_CHALLENGES[weeksSinceEpoch % WEEKLY_CHALLENGES.length];
+}
+
+function getChallengeProgress(
+  challenge: Challenge,
+  counts: {
+    solvesToday: number;
+    lessonsToday: number;
+    solvesWeek: number;
+    lessonsWeek: number;
+    streakDays: number;
+  }
+): number {
+  switch (challenge.type) {
+    case "solves_today":  return Math.min(challenge.target, counts.solvesToday);
+    case "lessons_today": return Math.min(challenge.target, counts.lessonsToday);
+    case "solves_week":   return Math.min(challenge.target, counts.solvesWeek);
+    case "lessons_week":  return Math.min(challenge.target, counts.lessonsWeek);
+    case "streak_days":   return Math.min(challenge.target, counts.streakDays);
+  }
+}
+
+function ChallengeCard({
+  label,
+  challenge,
+  progress,
+  accentColor,
+  accentGlow,
+  resetLabel,
+  challengeKey,
+  claimed,
+  claimAction,
+}: {
+  label: string;
+  challenge: Challenge;
+  progress: number;
+  accentColor: string;
+  accentGlow: string;
+  resetLabel: string;
+  challengeKey: string;
+  claimed: boolean;
+  claimAction: (formData: FormData) => Promise<void>;
+}) {
+  const pct = Math.min(100, Math.round((progress / challenge.target) * 100));
+  const done = progress >= challenge.target;
+
+  return (
+    <div
+      className="flex flex-col gap-4 p-6 bg-[#0f0f1a]"
+      style={{
+        border: `1px solid ${
+          claimed
+            ? "rgba(255,255,255,0.05)"
+            : done
+              ? accentColor + "50"
+              : "rgba(255,255,255,0.05)"
+        }`,
+      }}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">
+          {label}
+        </span>
+        <span
+          className="font-heading text-[8px] leading-none shrink-0"
+          style={{ color: claimed ? "#52525b" : accentColor }}
+        >
+          +{challenge.xp} XP
+        </span>
+      </div>
+
+      <span
+        className="font-sans text-sm leading-relaxed"
+        style={{ color: claimed ? "#52525b" : "#d4d4d8" }}
+      >
+        {challenge.text}
+      </span>
+
+      <div className="flex flex-col gap-2 mt-auto">
+        <div
+          className="relative h-3 w-full bg-[#1a1a26]"
+          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <div
+            className="absolute inset-y-0 left-0 transition-all duration-500"
+            style={{
+              width: `${pct}%`,
+              backgroundColor: claimed ? "#3f3f46" : accentColor,
+              boxShadow:
+                !claimed && done
+                  ? `0 0 10px ${accentGlow}`
+                  : !claimed && pct > 0
+                    ? `0 0 6px ${accentGlow}`
+                    : undefined,
+            }}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-sans text-xs text-zinc-600">
+            {progress} / {challenge.target}
+          </span>
+          {claimed ? (
+            <span className="font-heading text-[8px] leading-none text-zinc-600">
+              CLAIMED
+            </span>
+          ) : !done ? (
+            <span className="font-sans text-xs text-zinc-700">{resetLabel}</span>
+          ) : null}
+        </div>
+      </div>
+
+      {done && !claimed && (
+        <form action={claimAction}>
+          <input type="hidden" name="challengeKey" value={challengeKey} />
+          <input type="hidden" name="xp" value={challenge.xp.toString()} />
+          <button
+            type="submit"
+            className="w-full font-heading text-[10px] leading-none text-[#0d0d14] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px]"
+            style={{
+              backgroundColor: accentColor,
+              boxShadow: `3px 3px 0px rgba(0,0,0,0.5)`,
+            }}
+          >
+            CLAIM +{challenge.xp} XP
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
 
 const FIRE_GRID = [
   [0, 0, 0, 1, 0, 0, 0],
@@ -111,6 +288,76 @@ export default async function Dashboard() {
   const lessonCount = lessonsRes.count ?? 0;
   const algCount = algsRes.count ?? 0;
   const lastLesson = lastLessonRes.data?.[0] ?? null;
+
+  // Date helpers for challenge windows (UTC)
+  const now = new Date();
+  const todayUTC = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const utcDay = now.getUTCDay(); // 0=Sun,1=Mon,...
+  const daysFromMonday = utcDay === 0 ? 6 : utcDay - 1;
+  const weekStartDate = new Date(now);
+  weekStartDate.setUTCDate(now.getUTCDate() - daysFromMonday);
+  const weekStartUTC = weekStartDate.toISOString().split("T")[0];
+
+  const dailyKey  = `daily_${todayUTC}`;
+  const weeklyKey = `weekly_${weekStartUTC}`;
+
+  const [challengeSolvesTodayRes, challengeLessonsTodayRes, challengeSolvesWeekRes, challengeLessonsWeekRes, claimedRes] =
+    await Promise.all([
+      supabase
+        .from("solve_times")
+        .select("id", { count: "exact" })
+        .eq("user_id", user.id)
+        .gte("created_at", `${todayUTC}T00:00:00.000Z`),
+      supabase
+        .from("lesson_completions")
+        .select("id", { count: "exact" })
+        .eq("user_id", user.id)
+        .gte("completed_at", `${todayUTC}T00:00:00.000Z`),
+      supabase
+        .from("solve_times")
+        .select("id", { count: "exact" })
+        .eq("user_id", user.id)
+        .gte("created_at", `${weekStartUTC}T00:00:00.000Z`),
+      supabase
+        .from("lesson_completions")
+        .select("id", { count: "exact" })
+        .eq("user_id", user.id)
+        .gte("completed_at", `${weekStartUTC}T00:00:00.000Z`),
+      supabase
+        .from("challenge_completions")
+        .select("challenge_key")
+        .eq("user_id", user.id)
+        .in("challenge_key", [dailyKey, weeklyKey]),
+    ]);
+
+  const claimedKeys = new Set((claimedRes.data ?? []).map((r) => r.challenge_key));
+
+  const challengeCounts = {
+    solvesToday:  challengeSolvesTodayRes.count  ?? 0,
+    lessonsToday: challengeLessonsTodayRes.count ?? 0,
+    solvesWeek:   challengeSolvesWeekRes.count   ?? 0,
+    lessonsWeek:  challengeLessonsWeekRes.count  ?? 0,
+    streakDays:   profile.current_streak,
+  };
+
+  const dailyChallenge  = getDailyChallenge(todayUTC);
+  const weeklyChallenge = getWeeklyChallenge(weekStartUTC);
+  const dailyProgress   = getChallengeProgress(dailyChallenge,  challengeCounts);
+  const weeklyProgress  = getChallengeProgress(weeklyChallenge, challengeCounts);
+  const dailyClaimed    = claimedKeys.has(dailyKey);
+  const weeklyClaimed   = claimedKeys.has(weeklyKey);
+
+  // Format reset countdowns
+  const msUntilMidnight = new Date(`${todayUTC}T00:00:00.000Z`).getTime() + 86400000 - now.getTime();
+  const hrsUntilMidnight = Math.floor(msUntilMidnight / 3600000);
+  const minsUntilMidnight = Math.floor((msUntilMidnight % 3600000) / 60000);
+  const dailyResetLabel = `resets in ${hrsUntilMidnight}h ${minsUntilMidnight}m`;
+
+  const nextMonday = new Date(weekStartDate);
+  nextMonday.setUTCDate(weekStartDate.getUTCDate() + 7);
+  const msUntilWeekEnd = nextMonday.getTime() - now.getTime();
+  const daysUntilWeekEnd = Math.floor(msUntilWeekEnd / 86400000);
+  const weeklyResetLabel = daysUntilWeekEnd === 0 ? "resets tomorrow" : `resets in ${daysUntilWeekEnd}d`;
 
   const rank = getRankInfo(profile.total_xp);
   const xpInTier = profile.total_xp - rank.start;
@@ -276,6 +523,37 @@ export default async function Dashboard() {
             <span className="font-sans text-xs text-zinc-700">{sub}</span>
           </div>
         ))}
+      </div>
+
+      {/* Daily & Weekly Challenges */}
+      <div className="flex flex-col gap-3">
+        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+          CHALLENGES
+        </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <ChallengeCard
+            label="DAILY CHALLENGE"
+            challenge={dailyChallenge}
+            progress={dailyProgress}
+            accentColor="#FFD500"
+            accentGlow="rgba(255,213,0,0.5)"
+            resetLabel={dailyResetLabel}
+            challengeKey={dailyKey}
+            claimed={dailyClaimed}
+            claimAction={claimChallengeXP}
+          />
+          <ChallengeCard
+            label="WEEKLY CHALLENGE"
+            challenge={weeklyChallenge}
+            progress={weeklyProgress}
+            accentColor="#4FC3F7"
+            accentGlow="rgba(79,195,247,0.5)"
+            resetLabel={weeklyResetLabel}
+            challengeKey={weeklyKey}
+            claimed={weeklyClaimed}
+            claimAction={claimChallengeXP}
+          />
+        </div>
       </div>
 
       {/* Continue Learning */}
