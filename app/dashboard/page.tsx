@@ -388,24 +388,41 @@ export default async function Dashboard() {
     },
   ];
 
-  return (
-    <div className="mx-auto max-w-4xl w-full px-6 py-14 flex flex-col gap-8">
-      <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
-        DASHBOARD
-      </span>
+  const STAT_COLORS = ["#009B48", "#FFD500", "#4FC3F7", "#a855f7"];
 
-      {/* Top row: rank identity + streak */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Rank identity card */}
-        <div
-          className="flex items-center gap-5 p-6 bg-[#0f0f1a]"
-          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center">
+  return (
+    <div className="relative min-h-screen">
+      {/* Background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 60% 30% at 50% 0%, ${rank.glow} 0%, transparent 70%)`,
+        }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-4xl w-full px-6 py-14 flex flex-col gap-8">
+
+        {/* Page header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
             <RankBadge name={rank.rank} />
           </div>
-          <div className="flex flex-col gap-2 min-w-0">
-            <span className="font-heading text-white text-[11px] leading-none truncate">
+          <div className="flex flex-col gap-2">
+            <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+              WELCOME BACK
+            </span>
+            <span
+              className="font-heading leading-none"
+              style={{ fontSize: "clamp(16px, 3vw, 24px)", color: "#ffffff" }}
+            >
               {displayName}
             </span>
             <div className="flex items-center gap-2">
@@ -428,9 +445,54 @@ export default async function Dashboard() {
                   />
                 ))}
               </div>
+              <span className="font-sans text-xs text-zinc-600">
+                · {profile.total_xp.toLocaleString()} XP
+              </span>
             </div>
-            <span className="font-sans text-xs text-zinc-600">
-              {profile.total_xp.toLocaleString()} total XP
+          </div>
+        </div>
+
+        {/* XP progress bar */}
+        <div
+          className="flex flex-col gap-4 p-6 bg-[#0f0f1a]"
+          style={{ border: `1px solid ${rank.color}28` }}
+        >
+          <div className="flex items-center justify-between">
+            <span
+              className="font-heading text-[9px] leading-none"
+              style={{ color: rank.color }}
+            >
+              {rank.rank} {rank.tier}
+            </span>
+            <span className="font-heading text-[9px] text-zinc-500 leading-none">
+              {rank.nextLabel}
+            </span>
+          </div>
+          <div
+            className="relative h-4 w-full bg-[#1a1a26]"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <div
+              className="absolute inset-y-0 left-0 transition-all"
+              style={{
+                width: `${xpProgress}%`,
+                backgroundColor: rank.color,
+                boxShadow: `0 0 16px ${rank.glow}`,
+              }}
+            />
+            <span
+              className="absolute inset-0 flex items-center justify-center font-heading text-[8px] leading-none"
+              style={{ color: xpProgress > 20 ? rank.bg : rank.color }}
+            >
+              {xpProgress}%
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-sans text-xs text-zinc-500">
+              {xpInTier.toLocaleString()} / {xpNeeded.toLocaleString()} XP to next tier
+            </span>
+            <span className="font-heading text-[9px] text-zinc-600">
+              {Math.max(0, xpNeeded - xpInTier).toLocaleString()} XP remaining
             </span>
           </div>
         </div>
@@ -438,7 +500,14 @@ export default async function Dashboard() {
         {/* Streak card */}
         <div
           className="flex items-center gap-5 p-6 bg-[#0f0f1a]"
-          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          style={{
+            border: profile.current_streak > 0
+              ? "1px solid rgba(255,88,0,0.3)"
+              : "1px solid rgba(255,255,255,0.05)",
+            boxShadow: profile.current_streak > 0
+              ? "0 0 24px rgba(255,88,0,0.08)"
+              : undefined,
+          }}
         >
           <PixelFire />
           <div className="flex flex-col gap-1.5">
@@ -458,136 +527,94 @@ export default async function Dashboard() {
             </span>
           </div>
         </div>
-      </div>
 
-      {/* XP progress bar */}
-      <div
-        className="flex flex-col gap-4 p-6 bg-[#0f0f1a]"
-        style={{ border: "1px solid rgba(255,255,255,0.05)" }}
-      >
-        <div className="flex items-center justify-between">
-          <span
-            className="font-heading text-[9px] leading-none"
-            style={{ color: rank.color }}
-          >
-            {rank.rank} {rank.tier}
-          </span>
-          <span className="font-heading text-[9px] text-zinc-500 leading-none">
-            {rank.nextLabel}
-          </span>
+        {/* Quick stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {QUICK_STATS.map(({ label, value, sub }, i) => (
+            <div
+              key={label}
+              className="flex flex-col gap-3 p-5 bg-[#0f0f1a]"
+              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <div className="h-[2px] w-6" style={{ backgroundColor: STAT_COLORS[i] }} />
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">
+                {label}
+              </span>
+              <span
+                className="font-heading text-xl leading-none"
+                style={{ color: STAT_COLORS[i] }}
+              >
+                {value}
+              </span>
+              <span className="font-sans text-xs text-zinc-700">{sub}</span>
+            </div>
+          ))}
         </div>
-        <div
-          className="relative h-4 w-full bg-[#1a1a26]"
-          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <div
-            className="absolute inset-y-0 left-0 transition-all"
-            style={{
-              width: `${xpProgress}%`,
-              backgroundColor: rank.color,
-              boxShadow: `0 0 12px ${rank.glow}`,
-            }}
-          />
-          <span
-            className="absolute inset-0 flex items-center justify-center font-heading text-[8px] leading-none"
-            style={{ color: xpProgress > 20 ? rank.bg : rank.color }}
-          >
-            {xpProgress}%
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="font-sans text-xs text-zinc-500">
-            {xpInTier.toLocaleString()} / {xpNeeded.toLocaleString()} XP to next
-            tier
-          </span>
-          <span className="font-heading text-[9px] text-zinc-600">
-            {Math.max(0, xpNeeded - xpInTier).toLocaleString()} XP remaining
-          </span>
-        </div>
-      </div>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {QUICK_STATS.map(({ label, value, sub }) => (
-          <div
-            key={label}
-            className="flex flex-col gap-3 p-5 bg-[#0f0f1a]"
-            style={{ border: "1px solid rgba(255,255,255,0.05)" }}
-          >
-            <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">
-              {label}
-            </span>
-            <span className="font-heading text-xl text-white leading-none">
-              {value}
-            </span>
-            <span className="font-sans text-xs text-zinc-700">{sub}</span>
+        {/* Daily & Weekly Challenges */}
+        <div className="flex flex-col gap-3">
+          <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
+            CHALLENGES
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ChallengeCard
+              label="DAILY CHALLENGE"
+              challenge={dailyChallenge}
+              progress={dailyProgress}
+              accentColor="#FFD500"
+              accentGlow="rgba(255,213,0,0.5)"
+              resetLabel={dailyResetLabel}
+              challengeKey={dailyKey}
+              claimed={dailyClaimed}
+              claimAction={claimChallengeXP}
+            />
+            <ChallengeCard
+              label="WEEKLY CHALLENGE"
+              challenge={weeklyChallenge}
+              progress={weeklyProgress}
+              accentColor="#4FC3F7"
+              accentGlow="rgba(79,195,247,0.5)"
+              resetLabel={weeklyResetLabel}
+              challengeKey={weeklyKey}
+              claimed={weeklyClaimed}
+              claimAction={claimChallengeXP}
+            />
           </div>
-        ))}
-      </div>
-
-      {/* Daily & Weekly Challenges */}
-      <div className="flex flex-col gap-3">
-        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
-          CHALLENGES
-        </span>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ChallengeCard
-            label="DAILY CHALLENGE"
-            challenge={dailyChallenge}
-            progress={dailyProgress}
-            accentColor="#FFD500"
-            accentGlow="rgba(255,213,0,0.5)"
-            resetLabel={dailyResetLabel}
-            challengeKey={dailyKey}
-            claimed={dailyClaimed}
-            claimAction={claimChallengeXP}
-          />
-          <ChallengeCard
-            label="WEEKLY CHALLENGE"
-            challenge={weeklyChallenge}
-            progress={weeklyProgress}
-            accentColor="#4FC3F7"
-            accentGlow="rgba(79,195,247,0.5)"
-            resetLabel={weeklyResetLabel}
-            challengeKey={weeklyKey}
-            claimed={weeklyClaimed}
-            claimAction={claimChallengeXP}
-          />
-        </div>
-      </div>
-
-      {/* Continue Learning */}
-      <div
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-[#0f0f1a]"
-        style={{ border: "1px solid rgba(255,255,255,0.05)" }}
-      >
-        <div className="flex flex-col gap-2">
-          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
-            {lastLesson ? "CONTINUE WHERE YOU LEFT OFF" : "START LEARNING"}
-          </span>
-          {lastLesson ? (
-            <span className="font-sans text-xs text-zinc-500">
-              Stage {lastLesson.stage} · Lesson {lastLesson.lesson_id}
-            </span>
-          ) : (
-            <span className="font-sans text-sm text-zinc-400">
-              You haven&apos;t started any lessons yet.
-            </span>
-          )}
-          <span className="font-sans text-xs text-zinc-600">
-            {lessonCount} of 43 lessons completed
-          </span>
         </div>
 
-        <Link
-          href="/learn"
-          className="flex-shrink-0 font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px] whitespace-nowrap"
-          style={{
-            boxShadow: "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.2)",
-          }}
+        {/* Continue Learning */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-[#0f0f1a]"
+          style={{ border: "1px solid rgba(255,213,0,0.15)" }}
         >
-          {lastLesson ? "CONTINUE LEARNING" : "START LEARNING"}
-        </Link>
+          <div className="flex flex-col gap-2">
+            <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
+              {lastLesson ? "CONTINUE WHERE YOU LEFT OFF" : "START LEARNING"}
+            </span>
+            {lastLesson ? (
+              <span className="font-sans text-xs text-zinc-500">
+                Stage {lastLesson.stage} · Lesson {lastLesson.lesson_id}
+              </span>
+            ) : (
+              <span className="font-sans text-sm text-zinc-400">
+                You haven&apos;t started any lessons yet.
+              </span>
+            )}
+            <span className="font-sans text-xs text-zinc-600">
+              {lessonCount} of 43 lessons completed
+            </span>
+          </div>
+
+          <Link
+            href="/learn"
+            className="flex-shrink-0 font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px] whitespace-nowrap"
+            style={{
+              boxShadow: "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.2)",
+            }}
+          >
+            {lastLesson ? "CONTINUE LEARNING" : "START LEARNING"}
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
 import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 import { getSolveChartData, getPersonalBests } from "@/lib/analytics";
-import SolveChart from "./SolveChart";
+import SolveChartClient from "./SolveChartClient";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
@@ -313,7 +313,7 @@ export default async function Profile() {
           <span className="font-heading text-[9px] text-zinc-600 tracking-widest">SOLVE PROGRESS</span>
           <span className="font-sans text-xs text-zinc-600">single · ao5 · ao12 over time</span>
         </div>
-        <SolveChart data={chartData} />
+        <SolveChartClient data={chartData} />
       </div>
 
       {/* Personal bests timeline */}
