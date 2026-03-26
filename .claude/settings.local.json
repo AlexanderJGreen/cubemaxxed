@@ -26,7 +26,8 @@
       "Bash(npm run:*)",
       "Bash(ls /mnt/c/Users/User/Desktop/projects/cubemaxxed/app/learn/[stage]/)",
       "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name *.sql -o -name schema* -o -name migration*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name *.sql -o -name *schema* -o -name *migration*)"
     ]
   }
 }

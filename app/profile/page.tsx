@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
+import { getSolveChartData, getPersonalBests } from "@/lib/analytics";
+import SolveChart from "./SolveChart";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
@@ -106,11 +108,17 @@ export default async function Profile() {
     profile = { id: user.id, total_xp: 0, current_streak: 0, longest_streak: 0, streak_freeze_available: true, created_at: new Date().toISOString() };
   }
 
-  const [solvesRes, lessonsRes, algsRes, achievementsRes] = await Promise.all([
+  const now = new Date();
+  const todayUTCStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+
+  const [solvesRes, lessonsRes, algsRes, achievementsRes, chartData, personalBests, todaySolvesRes] = await Promise.all([
     supabase.from("solve_times").select("time_ms").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100),
     supabase.from("lesson_completions").select("id", { count: "exact" }).eq("user_id", user.id),
     supabase.from("algorithm_progress").select("id", { count: "exact" }).eq("user_id", user.id).eq("mastered", true),
     supabase.from("user_achievements").select("achievement_id").eq("user_id", user.id),
+    getSolveChartData(user.id),
+    getPersonalBests(user.id),
+    supabase.from("solve_times").select("time_ms").eq("user_id", user.id).gte("created_at", todayUTCStart),
   ]);
 
   const solves = solvesRes.data ?? [];
@@ -121,6 +129,25 @@ export default async function Profile() {
   const lessonCount = lessonsRes.count ?? 0;
   const algCount = algsRes.count ?? 0;
   const unlockedIds = new Set((achievementsRes.data ?? []).map((a) => a.achievement_id));
+
+  // Session breakdown
+  const todaySolves = todaySolvesRes.data ?? [];
+  const todaySolveCount = todaySolves.length;
+  const todayBest = todaySolveCount > 0 ? Math.min(...todaySolves.map((s) => s.time_ms)) : null;
+  const todayAo5 = calcAo(todaySolves.slice(0, 5).map((s) => s.time_ms));
+  const allTimeTimes = chartData.map((d) => d.time_ms);
+  const allTimeAvg = allTimeTimes.length > 0
+    ? Math.round(allTimeTimes.reduce((a, b) => a + b, 0) / allTimeTimes.length)
+    : null;
+  const todayAvg = todaySolveCount > 0
+    ? Math.round(todaySolves.reduce((a, b) => a + b.time_ms, 0) / todaySolveCount)
+    : null;
+  const sessionVsAvg: "better" | "worse" | "same" | null =
+    todayAvg !== null && allTimeAvg !== null
+      ? todayAvg < allTimeAvg * 0.98 ? "better"
+      : todayAvg > allTimeAvg * 1.02 ? "worse"
+      : "same"
+      : null;
 
   const rank = getRankInfo(profile.total_xp);
   const xpInTier = profile.total_xp - rank.start;
@@ -279,6 +306,101 @@ export default async function Profile() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Solve progress graph */}
+      <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <div className="flex flex-col gap-1">
+          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">SOLVE PROGRESS</span>
+          <span className="font-sans text-xs text-zinc-600">single · ao5 · ao12 over time</span>
+        </div>
+        <SolveChart data={chartData} />
+      </div>
+
+      {/* Personal bests timeline */}
+      <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PERSONAL BESTS</span>
+        <div className="grid grid-cols-2 gap-3">
+          {personalBests.map((pb) => {
+            const achieved = pb.time_ms !== null;
+            const date = pb.achievedAt
+              ? new Date(pb.achievedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+              : null;
+            return (
+              <div
+                key={pb.milestone}
+                className="flex flex-col gap-2.5 p-4"
+                style={{
+                  backgroundColor: achieved ? "#0d1a10" : "#0a0a12",
+                  border: achieved ? "1px solid rgba(0,155,72,0.2)" : "1px solid rgba(255,255,255,0.04)",
+                }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-heading text-[8px] tracking-widest leading-relaxed" style={{ color: achieved ? "#009B48" : "rgba(255,255,255,0.15)" }}>
+                    {pb.label}
+                  </span>
+                  {!achieved && (
+                    <span className="font-heading text-[7px]" style={{ color: "rgba(255,255,255,0.1)" }}>LOCKED</span>
+                  )}
+                </div>
+                <span className="font-heading text-lg leading-none" style={{ color: achieved ? "#ffffff" : "rgba(255,255,255,0.12)" }}>
+                  {achieved ? pb.timeFormatted : "—"}
+                </span>
+                <span className="font-sans text-xs" style={{ color: achieved ? "#55556a" : "rgba(255,255,255,0.08)" }}>
+                  {date ?? "not yet achieved"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Session breakdown */}
+      <div className="flex flex-col gap-4 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">TODAY&apos;S SESSION</span>
+        {todaySolveCount === 0 ? (
+          <span className="font-sans text-sm text-zinc-600">No solves logged today yet.</span>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="flex flex-col gap-2 p-4" style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">SOLVES</span>
+              <span className="font-heading text-lg text-white leading-none">{todaySolveCount}</span>
+              <span className="font-sans text-xs text-zinc-700">today</span>
+            </div>
+            <div className="flex flex-col gap-2 p-4" style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">BEST</span>
+              <span className="font-heading text-lg text-white leading-none">{todayBest ? formatTime(todayBest) : "—"}</span>
+              <span className="font-sans text-xs text-zinc-700">today&apos;s single</span>
+            </div>
+            <div className="flex flex-col gap-2 p-4" style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">AO5</span>
+              <span className="font-heading text-lg text-white leading-none">{todayAo5 ? formatTime(todayAo5) : "—"}</span>
+              <span className="font-sans text-xs text-zinc-700">{todaySolveCount < 5 ? `need ${5 - todaySolveCount} more` : "today"}</span>
+            </div>
+            <div
+              className="flex flex-col gap-2 p-4"
+              style={{
+                backgroundColor: "#0a0a12",
+                border: sessionVsAvg === "better" ? "1px solid rgba(0,155,72,0.2)"
+                  : sessionVsAvg === "worse" ? "1px solid rgba(196,30,58,0.2)"
+                  : "1px solid rgba(255,255,255,0.04)",
+              }}
+            >
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">VS AVG</span>
+              <span
+                className="font-heading text-lg leading-none"
+                style={{
+                  color: sessionVsAvg === "better" ? "#009B48"
+                    : sessionVsAvg === "worse" ? "#C41E3A"
+                    : "#ffffff",
+                }}
+              >
+                {sessionVsAvg === "better" ? "BETTER" : sessionVsAvg === "worse" ? "WORSE" : "ON PAR"}
+              </span>
+              <span className="font-sans text-xs text-zinc-700">vs all-time avg</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Achievements */}
