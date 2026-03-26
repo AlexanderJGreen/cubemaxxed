@@ -296,7 +296,7 @@ export default function Home() {
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center gap-1.5">
               <span
-                className="font-heading text-[#FFD500] leading-none"
+                className="font-heading text-[#C41E3A] leading-none"
                 style={{ fontSize: "clamp(20px, 3vw, 32px)" }}
               >
                 {value}
@@ -376,6 +376,92 @@ export default function Home() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── How It Works Section ── */}
+      <section className="py-24 border-t border-white/[0.04]">
+        <div className="mx-auto max-w-6xl px-6">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center gap-3 mb-16">
+            <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
+              THE LOOP
+            </span>
+            <h2
+              className="font-heading text-white leading-snug"
+              style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+            >
+              HOW IT WORKS
+            </h2>
+          </div>
+
+          {/* Steps */}
+          <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {/* Connecting line — desktop only, center of col1 box to center of col3 box */}
+            <div
+              className="hidden sm:block absolute pointer-events-none"
+              style={{
+                top: "20px",
+                left: "calc(16.67% - 11px)",
+                right: "calc(16.67% - 11px)",
+                height: "1px",
+                background: "linear-gradient(to right, #009B48, #FFD500, #C41E3A)",
+                opacity: 0.4,
+              }}
+            />
+
+            {[
+              {
+                step: "01",
+                color: "#009B48",
+                title: "Create your account",
+                desc: "Sign up free in seconds. No cube required — you can start exploring right away.",
+              },
+              {
+                step: "02",
+                color: "#FFD500",
+                title: "Learn & practice",
+                desc: "Work through beginner lessons, drill algorithms with spaced repetition, and log your solves.",
+              },
+              {
+                step: "03",
+                color: "#C41E3A",
+                title: "Earn XP & climb the ranks",
+                desc: "Every action earns XP. Build daily streaks, complete challenges, and rise through 24 rank tiers.",
+              },
+            ].map(({ step, color, title, desc }) => (
+              <div key={step} className="relative flex flex-col items-center gap-5 text-center">
+                {/* Step number */}
+                <div
+                  className="w-10 h-10 flex items-center justify-center shrink-0"
+                  style={{
+                    border: `1px solid ${color}`,
+                    boxShadow: `0 0 16px ${color}22`,
+                  }}
+                >
+                  <span
+                    className="font-heading leading-none"
+                    style={{ fontSize: "10px", color }}
+                  >
+                    {step}
+                  </span>
+                </div>
+
+                {/* Text */}
+                <div className="flex flex-col gap-2">
+                  <h3
+                    className="font-heading text-white leading-relaxed"
+                    style={{ fontSize: "10px" }}
+                  >
+                    {title}
+                  </h3>
+                  <p className="font-sans text-sm text-zinc-500 leading-relaxed">
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
