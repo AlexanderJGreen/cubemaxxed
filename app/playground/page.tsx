@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { OLL_CASES, PLL_CASES, type OLLCase, type PLLCase } from "../algorithms/data";
+import { OLL_CASES, PLL_CASES, type OLLCase, type PLLCase, type PLLColor } from "../algorithms/data";
 import { formatTime } from "@/lib/rank";
 import { saveSolve, getAlgorithmProgress, recordAlgorithmAnswer } from "./actions";
 import { generateScramble } from "@/lib/scramble";
@@ -324,12 +324,12 @@ const TWO_LOOK_OLL_CASES: OLLCase[] = [
 
 // 2-Look PLL cases (6 cases: 2 corner + 4 edge permutation)
 const TWO_LOOK_PLL_CASES: PLLCase[] = [
-  { id: "2L-T",  name: "T-Perm",  group: "Corner", back: ["G","G","R"] as [PColor,PColor,PColor], front: ["B","B","R"] as [PColor,PColor,PColor], left: ["O","R","O"] as [PColor,PColor,PColor], right: ["B","O","G"] as [PColor,PColor,PColor], alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
-  { id: "2L-Y",  name: "Y-Perm",  group: "Corner", back: ["R","B","O"] as [PColor,PColor,PColor], front: ["R","R","O"] as [PColor,PColor,PColor], left: ["G","O","B"] as [PColor,PColor,PColor], right: ["B","G","G"] as [PColor,PColor,PColor], alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
-  { id: "2L-Ua", name: "Ua-Perm", group: "Edge",   back: ["G","G","G"] as [PColor,PColor,PColor], front: ["B","R","B"] as [PColor,PColor,PColor], left: ["O","B","O"] as [PColor,PColor,PColor], right: ["R","O","R"] as [PColor,PColor,PColor], alg: "R U' R U R U R U' R' U' R2" },
-  { id: "2L-Ub", name: "Ub-Perm", group: "Edge",   back: ["G","G","G"] as [PColor,PColor,PColor], front: ["B","O","B"] as [PColor,PColor,PColor], left: ["O","R","O"] as [PColor,PColor,PColor], right: ["R","B","R"] as [PColor,PColor,PColor], alg: "R2 U R U R' U' R' U' R' U R'" },
-  { id: "2L-H",  name: "H-Perm",  group: "Edge",   back: ["O","R","O"] as [PColor,PColor,PColor], front: ["R","O","R"] as [PColor,PColor,PColor], left: ["B","G","B"] as [PColor,PColor,PColor], right: ["G","B","G"] as [PColor,PColor,PColor], alg: "M2 U M2 U2 M2 U M2" },
-  { id: "2L-Z",  name: "Z-Perm",  group: "Edge",   back: ["O","G","O"] as [PColor,PColor,PColor], front: ["R","B","R"] as [PColor,PColor,PColor], left: ["B","R","B"] as [PColor,PColor,PColor], right: ["G","O","G"] as [PColor,PColor,PColor], alg: "M2 U M2 U M' U2 M2 U2 M'" },
+  { id: "2L-T",  name: "T-Perm",  group: "Corner", back: ["G","G","R"] as [PLLColor,PLLColor,PLLColor], front: ["B","B","R"] as [PLLColor,PLLColor,PLLColor], left: ["O","R","O"] as [PLLColor,PLLColor,PLLColor], right: ["B","O","G"] as [PLLColor,PLLColor,PLLColor], alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
+  { id: "2L-Y",  name: "Y-Perm",  group: "Corner", back: ["R","B","O"] as [PLLColor,PLLColor,PLLColor], front: ["R","R","O"] as [PLLColor,PLLColor,PLLColor], left: ["G","O","B"] as [PLLColor,PLLColor,PLLColor], right: ["B","G","G"] as [PLLColor,PLLColor,PLLColor], alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
+  { id: "2L-Ua", name: "Ua-Perm", group: "Edge",   back: ["G","G","G"] as [PLLColor,PLLColor,PLLColor], front: ["B","R","B"] as [PLLColor,PLLColor,PLLColor], left: ["O","B","O"] as [PLLColor,PLLColor,PLLColor], right: ["R","O","R"] as [PLLColor,PLLColor,PLLColor], alg: "R U' R U R U R U' R' U' R2" },
+  { id: "2L-Ub", name: "Ub-Perm", group: "Edge",   back: ["G","G","G"] as [PLLColor,PLLColor,PLLColor], front: ["B","O","B"] as [PLLColor,PLLColor,PLLColor], left: ["O","R","O"] as [PLLColor,PLLColor,PLLColor], right: ["R","B","R"] as [PLLColor,PLLColor,PLLColor], alg: "R2 U R U R' U' R' U' R' U R'" },
+  { id: "2L-H",  name: "H-Perm",  group: "Edge",   back: ["O","R","O"] as [PLLColor,PLLColor,PLLColor], front: ["R","O","R"] as [PLLColor,PLLColor,PLLColor], left: ["B","G","B"] as [PLLColor,PLLColor,PLLColor], right: ["G","B","G"] as [PLLColor,PLLColor,PLLColor], alg: "M2 U M2 U2 M2 U M2" },
+  { id: "2L-Z",  name: "Z-Perm",  group: "Edge",   back: ["O","G","O"] as [PLLColor,PLLColor,PLLColor], front: ["R","B","R"] as [PLLColor,PLLColor,PLLColor], left: ["B","R","B"] as [PLLColor,PLLColor,PLLColor], right: ["G","O","G"] as [PLLColor,PLLColor,PLLColor], alg: "M2 U M2 U M' U2 M2 U2 M'" },
 ];
 const PLL_TOP_Y: [PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor] =
   ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"];
