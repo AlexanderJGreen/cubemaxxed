@@ -163,7 +163,7 @@ export default async function Learn() {
                       backgroundColor: active ? `${cardColor}08` : completed ? `${cardColor}04` : "#080810",
                       border: `1px solid ${dimmed ? "rgba(255,255,255,0.04)" : completed ? `${cardColor}22` : `${cardColor}55`}`,
                       borderLeft: `6px solid ${dimmed ? "rgba(255,255,255,0.07)" : cardColor}`,
-                      opacity: dimmed ? 0.44 : 1,
+                      opacity: comingSoon ? 0.65 : locked ? 0.44 : 1,
                       padding: "22px 26px 22px 20px",
                       transition: "filter 0.2s",
                       ...activeVars,
@@ -196,7 +196,7 @@ export default async function Learn() {
                         )}
                         {locked && <LockPixels />}
                         {comingSoon && (
-                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#2e2e42", border: "1px solid rgba(255,255,255,0.06)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#aaaabc", border: "1px solid rgba(255,255,255,0.25)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
                             COMING SOON
                           </div>
                         )}

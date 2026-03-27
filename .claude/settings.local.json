@@ -28,7 +28,8 @@
       "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name *.sql -o -name schema* -o -name migration*)",
       "Bash(ls:*)",
       "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name *.sql -o -name *schema* -o -name *migration*)",
-      "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name middleware* -o -name *middleware*)"
+      "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -name middleware* -o -name *middleware*)",
+      "Bash(wc:*)"
     ]
   }
 }
