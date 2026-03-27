@@ -244,15 +244,38 @@ export default async function Learn() {
         {/* Footer stats */}
         <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#07070f" }}>
           {[
-            { label: "TOTAL LESSONS",       value: "43" },
-            { label: "TOTAL XP AVAILABLE",  value: "4,700" },
-            { label: "YOUR PROGRESS",        value: user ? `${completedLessons} / ${totalLessons}` : "Sign in to track" },
+            { label: "TOTAL LESSONS",      value: "43" },
+            { label: "TOTAL XP AVAILABLE", value: "4,700" },
           ].map((stat, i) => (
-            <div key={i} style={{ padding: "18px 22px", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+            <div key={i} style={{ padding: "18px 22px", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
               <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", marginBottom: 10, letterSpacing: "0.18em" }}>{stat.label}</div>
               <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#c0c0d4" }}>{stat.value}</div>
             </div>
           ))}
+          <div style={{ padding: "18px 22px" }}>
+            <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", marginBottom: 10, letterSpacing: "0.18em" }}>YOUR PROGRESS</div>
+            {user ? (
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#c0c0d4" }}>{completedLessons} / {totalLessons}</div>
+            ) : (
+              <Link
+                href="/auth/login"
+                style={{
+                  display: "inline-block",
+                  fontFamily: "var(--font-heading), monospace",
+                  fontSize: 8,
+                  color: "#FFD500",
+                  border: "1px solid rgba(255,213,0,0.35)",
+                  backgroundColor: "rgba(255,213,0,0.07)",
+                  padding: "5px 10px",
+                  letterSpacing: "0.1em",
+                  textDecoration: "none",
+                  transition: "background-color 0.15s",
+                }}
+              >
+                SIGN IN TO TRACK
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </>

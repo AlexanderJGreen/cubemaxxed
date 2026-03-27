@@ -82,12 +82,18 @@ export default function Header({
               <Link
                 key={href}
                 href={href}
-                className={`font-sans text-[15px] font-medium transition-colors duration-300 ${
+                className={`relative font-sans text-[15px] font-medium transition-colors duration-300 pb-1 ${
                   isActive ? "font-bold" : "text-zinc-400 hover:text-zinc-100"
                 }`}
                 style={isActive ? { color: activeColor } : undefined}
               >
                 {label}
+                {isActive && (
+                  <span
+                    className="absolute bottom-0 left-0 right-0 h-px"
+                    style={{ background: `linear-gradient(to right, transparent, ${activeColor}70, transparent)` }}
+                  />
+                )}
               </Link>
             );
           })}
@@ -97,12 +103,18 @@ export default function Header({
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/profile"
-            className={`font-sans text-[15px] font-medium transition-colors duration-300 ${
+            className={`relative font-sans text-[15px] font-medium transition-colors duration-300 pb-1 ${
               pathname === "/profile" ? "font-bold" : "text-zinc-400 hover:text-zinc-100"
             }`}
             style={pathname === "/profile" ? { color: activeColor } : undefined}
           >
             Profile
+            {pathname === "/profile" && (
+              <span
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                style={{ backgroundColor: activeColor }}
+              />
+            )}
           </Link>
           {authButton}
         </div>
