@@ -17,22 +17,27 @@ export default function Playground() {
   const [activeTab, setActiveTab] = useState<Tab>("timer");
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-6 py-14 flex flex-col gap-8">
       {/* Page heading */}
-      <h1 className="font-heading text-sm text-[#FFD500] mb-1">Playground</h1>
-      <p className="text-zinc-400 text-sm mb-8">
-        Practice on your own terms. Timer and trainer sessions still earn XP.
-      </p>
+      <div className="flex flex-col gap-2">
+        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PLAYGROUND</span>
+        <p className="font-sans text-sm text-zinc-500">
+          Practice on your own terms. Timer and trainer sessions still earn XP.
+        </p>
+      </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1 w-full sm:w-fit mb-8">
+      <div className="flex" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 sm:flex-none px-5 py-2 rounded-md text-sm cursor-pointer transition-colors ${
-              activeTab === tab.id ? "font-bold text-white" : "font-medium text-zinc-400 hover:text-zinc-100"
-            }`}
+            className="font-heading text-[9px] tracking-widest px-6 py-3 cursor-pointer transition-colors"
+            style={{
+              color: activeTab === tab.id ? "#FFD500" : "rgba(255,255,255,0.25)",
+              borderBottom: activeTab === tab.id ? "2px solid #FFD500" : "2px solid transparent",
+              marginBottom: -1,
+            }}
           >
             {tab.label}
           </button>
@@ -48,7 +53,7 @@ export default function Playground() {
 
 type Solve = {
   id: number;
-  time: number; // ms
+  time: number;
   scramble: string;
   confirmed: boolean;
 };
@@ -152,13 +157,13 @@ function Timer() {
   const ao12 = calcAverage(history, 12);
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {/* Timer card */}
-      <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
+      <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
         {/* Scramble */}
-        <div className="border-b border-zinc-800 px-8 py-5 text-center">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Scramble</p>
-          <p className="font-mono text-zinc-200 text-lg tracking-wide">{currentScramble}</p>
+        <div className="px-8 py-5 text-center" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SCRAMBLE</span>
+          <p className="font-mono text-zinc-200 text-base tracking-wide mt-3">{currentScramble}</p>
         </div>
 
         {/* Timer display */}
@@ -168,31 +173,37 @@ function Timer() {
           className="w-full py-10 sm:py-20 flex flex-col items-center gap-6 focus:outline-none cursor-pointer group disabled:cursor-default"
         >
           <span
-            className={`font-mono text-5xl sm:text-8xl font-bold tabular-nums transition-colors ${
-              running ? "text-[#FFD500]" : elapsed > 0 ? "text-white" : "text-zinc-600"
-            }`}
+            className="font-mono tabular-nums transition-colors"
+            style={{
+              fontSize: "clamp(48px, 10vw, 96px)",
+              fontWeight: 700,
+              color: running ? "#FFD500" : elapsed > 0 ? "#ffffff" : "rgba(255,255,255,0.15)",
+              textShadow: "none",
+            }}
           >
             {formatTime(elapsed)}
           </span>
           {!pending && (
-            <span className="text-zinc-600 text-sm group-hover:text-zinc-400 transition-colors">
-              {running ? "click or press space to stop" : "click or press space to start"}
+            <span className="font-heading text-[8px] text-zinc-700 tracking-widest group-hover:text-zinc-500 transition-colors">
+              {running ? "CLICK OR SPACE TO STOP" : "CLICK OR SPACE TO START"}
             </span>
           )}
         </button>
 
         {/* Confirm / Discard */}
         {pending && (
-          <div className="border-t border-zinc-800 px-8 py-5 flex items-center justify-center gap-4">
+          <div className="px-8 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
             <button
               onClick={confirm}
-              className="flex-1 sm:flex-none px-8 py-3 bg-[#FFD500] text-black font-heading text-[11px] tracking-widest transition hover:brightness-110 active:scale-95 cursor-pointer"
+              className="flex-1 sm:flex-none px-8 py-3 font-heading text-[10px] tracking-widest text-black transition-all hover:brightness-110 active:scale-95 cursor-pointer"
+              style={{ backgroundColor: "#FFD500" }}
             >
               CONFIRM SOLVE
             </button>
             <button
               onClick={discard}
-              className="flex-1 sm:flex-none px-8 py-3 border border-zinc-700 text-zinc-400 font-heading text-[11px] tracking-widest transition hover:border-zinc-500 hover:text-zinc-200 active:scale-95 cursor-pointer"
+              className="flex-1 sm:flex-none px-8 py-3 font-heading text-[10px] tracking-widest text-zinc-400 transition-all hover:text-zinc-200 active:scale-95 cursor-pointer"
+              style={{ border: "1px solid rgba(255,255,255,0.1)" }}
             >
               DISCARD
             </button>
@@ -200,40 +211,64 @@ function Timer() {
         )}
       </div>
 
-      {/* Session stats — only confirmed solves */}
+      {/* Session stats */}
       {confirmedSolves.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
-          <StatCard label="Solves" value={String(confirmedSolves.length)} />
-          <StatCard label="ao5" value={ao5} />
-          <StatCard label="ao12" value={ao12} />
+          {[
+            { label: "SOLVES", value: String(confirmedSolves.length), color: "#009B48" },
+            { label: "AO5",    value: ao5,                            color: "#C41E3A" },
+            { label: "AO12",   value: ao12,                           color: "#4FC3F7" },
+          ].map(({ label, value, color }) => (
+            <div
+              key={label}
+              className="flex flex-col gap-2.5 p-4"
+              style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              <div className="h-[2px] w-5" style={{ backgroundColor: color }} />
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">{label}</span>
+              <span className="font-heading text-lg leading-none" style={{ color: value === "—" ? "rgba(255,255,255,0.15)" : color }}>
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Solve history — all attempts */}
+      {/* Solve history */}
       {history.length > 0 && (
-        <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] overflow-hidden">
-          <div className="border-b border-zinc-800 px-6 py-3 flex items-center justify-between">
-            <p className="text-xs text-zinc-500 uppercase tracking-widest">Session History</p>
+        <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="px-6 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SESSION HISTORY</span>
             <button
               onClick={() => setHistory([])}
-              className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
+              className="font-heading text-[8px] text-zinc-700 hover:text-zinc-400 transition-colors cursor-pointer tracking-widest"
             >
-              Clear
+              CLEAR
             </button>
           </div>
-          <div className="divide-y divide-zinc-800/60">
+          <div>
             {[...history].reverse().map((solve) => (
               <div
                 key={solve.id}
-                className={`px-6 py-3 flex items-center gap-4 ${!solve.confirmed ? "opacity-40" : ""}`}
+                className="px-6 py-3 flex items-center gap-4"
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.03)",
+                  opacity: solve.confirmed ? 1 : 0.35,
+                }}
               >
-                <span className="text-xs text-zinc-600 w-6 text-right shrink-0">{solve.id}</span>
-                <span className={`font-mono text-sm w-20 shrink-0 ${solve.confirmed ? "text-white" : "text-zinc-500 line-through"}`}>
+                <span className="font-heading text-[8px] text-zinc-700 w-5 text-right shrink-0">{solve.id}</span>
+                <span
+                  className="font-mono text-sm w-20 shrink-0"
+                  style={{
+                    color: solve.confirmed ? "#ffffff" : "rgba(255,255,255,0.3)",
+                    textDecoration: solve.confirmed ? "none" : "line-through",
+                  }}
+                >
                   {formatTime(solve.time)}
                 </span>
-                <span className="font-mono text-zinc-600 text-xs truncate">{solve.scramble}</span>
+                <span className="font-mono text-zinc-700 text-xs truncate">{solve.scramble}</span>
                 {!solve.confirmed && (
-                  <span className="font-heading text-[8px] text-zinc-700 tracking-widest shrink-0">DISCARDED</span>
+                  <span className="font-heading text-[7px] text-zinc-800 tracking-widest shrink-0">DISCARDED</span>
                 )}
               </div>
             ))}
@@ -244,22 +279,7 @@ function Timer() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] px-6 py-4 text-center">
-      <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">
-        {label}
-      </p>
-      <p
-        className={`font-mono text-lg font-bold ${value === "—" ? "text-zinc-700" : "text-white"}`}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-// ─── Algorithm Trainer ───────────────────────────────────────────────────────
+// ─── Algorithm Trainer ────────────────────────────────────────────────────────
 
 type AlgCase = OLLCase | PLLCase;
 
@@ -279,11 +299,37 @@ const EMPTY_PROGRESS: AlgProgressData = {
 
 type S = "Y" | "G";
 type PColor = "Y" | "R" | "G" | "O" | "B";
-type TrainerTab = "full-oll" | "full-pll";
+type TrainerTab = "2look-oll" | "2look-pll" | "full-oll" | "full-pll";
 
 const TRAINER_TABS: { id: TrainerTab; label: string }[] = [
-  { id: "full-oll", label: "Full OLL" },
-  { id: "full-pll", label: "Full PLL" },
+  { id: "2look-oll", label: "2-Look OLL" },
+  { id: "2look-pll", label: "2-Look PLL" },
+  { id: "full-oll",  label: "Full OLL"   },
+  { id: "full-pll",  label: "Full PLL"   },
+];
+
+// 2-Look OLL cases (10 cases: 3 edge orientation + 7 corner orientation)
+const TWO_LOOK_OLL_CASES: OLLCase[] = [
+  { id: 1001, name: "Dot Shape",   group: "Edge", top: ["G","G","G","G","Y","G","G","G","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","Y","G"] as [S,S,S], front: ["G","Y","G"] as [S,S,S], left: ["G","Y","G"] as [S,S,S], right: ["G","Y","G"] as [S,S,S], alg: "F R U R' U' F' f R U R' U' f'" },
+  { id: 1002, name: "I-Shape",     group: "Edge", top: ["G","G","G","Y","Y","Y","G","G","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","Y","G"] as [S,S,S], front: ["G","Y","G"] as [S,S,S], left: ["G","G","G"] as [S,S,S], right: ["G","G","G"] as [S,S,S], alg: "F R U R' U' F'" },
+  { id: 1003, name: "L-Shape",     group: "Edge", top: ["G","G","G","G","Y","Y","G","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","Y","G"] as [S,S,S], front: ["G","G","G"] as [S,S,S], left: ["G","Y","G"] as [S,S,S], right: ["G","G","G"] as [S,S,S], alg: "f R U R' U' f'" },
+  { id: 1004, name: "Antisune",    group: "Corner", top: ["G","Y","Y","Y","Y","Y","G","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","G","G"] as [S,S,S], front: ["Y","G","G"] as [S,S,S], left: ["Y","G","G"] as [S,S,S], right: ["G","G","Y"] as [S,S,S], alg: "R U2 R' U' R U' R'" },
+  { id: 1005, name: "Sune",        group: "Corner", top: ["G","Y","G","Y","Y","Y","Y","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["Y","G","G"] as [S,S,S], front: ["G","G","Y"] as [S,S,S], left: ["G","G","G"] as [S,S,S], right: ["Y","G","G"] as [S,S,S], alg: "R U R' U R U2 R'" },
+  { id: 1006, name: "H",           group: "Corner", top: ["G","Y","G","Y","Y","Y","G","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","G","G"] as [S,S,S], front: ["G","G","G"] as [S,S,S], left: ["Y","G","Y"] as [S,S,S], right: ["Y","G","Y"] as [S,S,S], alg: "R U R' U R U' R' U R U2 R'" },
+  { id: 1007, name: "L",           group: "Corner", top: ["Y","Y","G","Y","Y","Y","G","Y","Y"] as [S,S,S,S,S,S,S,S,S], back: ["G","G","G"] as [S,S,S], front: ["Y","G","G"] as [S,S,S], left: ["G","G","G"] as [S,S,S], right: ["Y","G","G"] as [S,S,S], alg: "F R' F' r U R U' r'" },
+  { id: 1008, name: "Pi",          group: "Corner", top: ["G","Y","G","Y","Y","Y","G","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","G","Y"] as [S,S,S], front: ["G","G","Y"] as [S,S,S], left: ["Y","G","Y"] as [S,S,S], right: ["G","G","G"] as [S,S,S], alg: "R U2 R2 U' R2 U' R2 U2 R" },
+  { id: 1009, name: "T",           group: "Corner", top: ["G","Y","Y","Y","Y","Y","G","Y","Y"] as [S,S,S,S,S,S,S,S,S], back: ["Y","G","G"] as [S,S,S], front: ["Y","G","G"] as [S,S,S], left: ["G","G","G"] as [S,S,S], right: ["G","G","G"] as [S,S,S], alg: "r U R' U' r' F R F'" },
+  { id: 1010, name: "U",           group: "Corner", top: ["Y","Y","Y","Y","Y","Y","G","Y","G"] as [S,S,S,S,S,S,S,S,S], back: ["G","G","G"] as [S,S,S], front: ["Y","G","Y"] as [S,S,S], left: ["G","G","G"] as [S,S,S], right: ["G","G","G"] as [S,S,S], alg: "R2 D R' U2 R D' R' U2 R'" },
+];
+
+// 2-Look PLL cases (6 cases: 2 corner + 4 edge permutation)
+const TWO_LOOK_PLL_CASES: PLLCase[] = [
+  { id: 2001, name: "T-Perm",  group: "Corner", back: ["G","G","R"] as [PColor,PColor,PColor], front: ["B","B","R"] as [PColor,PColor,PColor], left: ["O","R","O"] as [PColor,PColor,PColor], right: ["B","O","G"] as [PColor,PColor,PColor], alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
+  { id: 2002, name: "Y-Perm",  group: "Corner", back: ["R","B","O"] as [PColor,PColor,PColor], front: ["R","R","O"] as [PColor,PColor,PColor], left: ["G","O","B"] as [PColor,PColor,PColor], right: ["B","G","G"] as [PColor,PColor,PColor], alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
+  { id: 2003, name: "Ua-Perm", group: "Edge",   back: ["G","G","G"] as [PColor,PColor,PColor], front: ["B","R","B"] as [PColor,PColor,PColor], left: ["O","B","O"] as [PColor,PColor,PColor], right: ["R","O","R"] as [PColor,PColor,PColor], alg: "R U' R U R U R U' R' U' R2" },
+  { id: 2004, name: "Ub-Perm", group: "Edge",   back: ["G","G","G"] as [PColor,PColor,PColor], front: ["B","O","B"] as [PColor,PColor,PColor], left: ["O","R","O"] as [PColor,PColor,PColor], right: ["R","B","R"] as [PColor,PColor,PColor], alg: "R2 U R U R' U' R' U' R' U R'" },
+  { id: 2005, name: "H-Perm",  group: "Edge",   back: ["O","R","O"] as [PColor,PColor,PColor], front: ["R","O","R"] as [PColor,PColor,PColor], left: ["B","G","B"] as [PColor,PColor,PColor], right: ["G","B","G"] as [PColor,PColor,PColor], alg: "M2 U M2 U2 M2 U M2" },
+  { id: 2006, name: "Z-Perm",  group: "Edge",   back: ["O","G","O"] as [PColor,PColor,PColor], front: ["R","B","R"] as [PColor,PColor,PColor], left: ["B","R","B"] as [PColor,PColor,PColor], right: ["G","O","G"] as [PColor,PColor,PColor], alg: "M2 U M2 U M' U2 M2 U2 M'" },
 ];
 const PLL_TOP_Y: [PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor, PColor] =
   ["Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"];
@@ -343,7 +389,8 @@ function randomCubeColor(exclude?: string) {
 }
 
 function algKey(tab: TrainerTab, caseId: number | string): string {
-  return `${tab === "full-oll" ? "oll" : "pll"}-${caseId}`;
+  const prefix = tab === "full-oll" ? "oll" : tab === "full-pll" ? "pll" : tab === "2look-oll" ? "2oll" : "2pll";
+  return `${prefix}-${caseId}`;
 }
 
 function pickNextCase(
@@ -351,19 +398,19 @@ function pickNextCase(
   progress: Record<string, AlgProgressData>,
   excludeKey?: string,
 ): AlgCase {
-  const algs: AlgCase[] = tab === "full-oll" ? OLL_CASES : PLL_CASES;
+  const algs: AlgCase[] = tab === "full-oll" ? OLL_CASES : tab === "full-pll" ? PLL_CASES : tab === "2look-oll" ? TWO_LOOK_OLL_CASES : TWO_LOOK_PLL_CASES;
   const candidates = algs.filter((a) => algKey(tab, a.id) !== excludeKey);
 
   const weighted = candidates.map((a) => {
     const p = progress[algKey(tab, a.id)];
     let w: number;
     if (!p || p.times_seen === 0) {
-      w = 2.5; // unseen — moderate priority to mix in with weak ones
+      w = 2.5;
     } else if (p.mastered) {
-      w = 0.3; // mastered — rare review
+      w = 0.3;
     } else {
       const accuracy = p.times_correct / p.times_seen;
-      w = 1 + (1 - accuracy) * 3; // 1x–4x: worse accuracy = shown more often
+      w = 1 + (1 - accuracy) * 3;
     }
     return { alg: a, w };
   });
@@ -393,8 +440,8 @@ function StreakDots({ streak, mastered }: { streak: number; mastered: boolean })
           style={{
             width: 6,
             height: 6,
-            borderRadius: 1,
-            backgroundColor: i <= streak ? "#009B48" : "#27272a",
+            backgroundColor: i <= streak ? "#009B48" : "#1a1a26",
+            border: `1px solid ${i <= streak ? "#009B48" : "rgba(255,255,255,0.08)"}`,
             boxShadow: i <= streak ? "0 0 4px rgba(0,155,72,0.6)" : undefined,
             transition: "background-color 0.2s, box-shadow 0.2s",
           }}
@@ -418,7 +465,6 @@ function AlgorithmTrainer() {
   const [searchOpen, setSearchOpen] = useState(false);
   const answering = useRef(false);
 
-  // Load progress from DB on mount
   useEffect(() => {
     getAlgorithmProgress().then((p) => {
       setProgress(p);
@@ -426,12 +472,10 @@ function AlgorithmTrainer() {
     });
   }, []);
 
-  // Pick first case once progress is loaded
   useEffect(() => {
     if (progressLoaded) {
       setCurrentCase(pickNextCase(tab, progress));
     }
-    // progress is settled in the same batch as progressLoaded — safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progressLoaded]);
 
@@ -469,7 +513,6 @@ function AlgorithmTrainer() {
     setLastResult(correct ? "correct" : "incorrect");
     if (newlyMastered) setPhase("celebrating");
 
-    // Fire-and-forget: persists to DB, awards 30 XP + achievements if newly mastered
     recordAlgorithmAnswer(key, newStreak, updated.times_seen, updated.times_correct, updated.mastered);
 
     setTimeout(() => {
@@ -488,34 +531,36 @@ function AlgorithmTrainer() {
     setSearchOpen(false);
   }
 
-  const isOLL = tab === "full-oll";
-  const algs: AlgCase[] = isOLL ? OLL_CASES : PLL_CASES;
+  const isOLL = tab === "full-oll" || tab === "2look-oll";
+  const algs: AlgCase[] = tab === "full-oll" ? OLL_CASES : tab === "full-pll" ? PLL_CASES : tab === "2look-oll" ? TWO_LOOK_OLL_CASES : TWO_LOOK_PLL_CASES;
   const filtered = search.trim()
     ? algs.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
     : [];
 
-  const ollMastered = Object.entries(progress).filter(([k, v]) => k.startsWith("oll-") && v.mastered).length;
-  const pllMastered = Object.entries(progress).filter(([k, v]) => k.startsWith("pll-") && v.mastered).length;
-  const categoryMastered = isOLL ? ollMastered : pllMastered;
+  const prefixMap: Record<TrainerTab, string> = { "full-oll": "oll-", "full-pll": "pll-", "2look-oll": "2oll-", "2look-pll": "2pll-" };
+  const categoryMastered = Object.entries(progress).filter(([k, v]) => k.startsWith(prefixMap[tab]) && v.mastered).length;
   const categoryTotal = algs.length;
 
   const currentKey = currentCase ? algKey(tab, currentCase.id) : null;
   const currentProgress = (currentKey && progress[currentKey]) ? progress[currentKey] : EMPTY_PROGRESS;
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {/* Controls row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
-        {/* OLL / PLL tabs */}
-        <div className="flex gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
+
+        {/* OLL / PLL sub-tabs */}
+        <div className="flex" style={{ border: "1px solid rgba(255,255,255,0.06)", backgroundColor: "#0a0a12" }}>
           {TRAINER_TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => handleTabChange(t.id)}
-              className={`px-4 py-1.5 rounded-md text-sm cursor-pointer transition-all duration-300 ease-in-out ${
-                tab === t.id ? "font-bold" : "font-medium text-zinc-400 hover:text-zinc-100"
-              }`}
-              style={tab === t.id ? { color: activeColor } : undefined}
+              className="px-5 py-2.5 font-heading text-[8px] tracking-widest cursor-pointer transition-colors"
+              style={{
+                color: tab === t.id ? activeColor : "rgba(255,255,255,0.25)",
+                backgroundColor: tab === t.id ? "rgba(255,255,255,0.04)" : "transparent",
+                borderRight: t.id === "2look-pll" ? "1px solid rgba(255,255,255,0.06)" : "none",
+              }}
             >
               {t.label}
             </button>
@@ -524,36 +569,41 @@ function AlgorithmTrainer() {
 
         {/* Search / jump to */}
         <div className="relative">
-          <div className="flex items-center gap-1 bg-[#0a0a11] border border-zinc-800 rounded-lg p-1">
-            <div className="flex items-center gap-2 px-3 py-1.5">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-zinc-500 shrink-0">
-                <circle cx="6.5" cy="6.5" r="5" /><path d="M11 11l3 3" strokeLinecap="round" />
-              </svg>
-              <input
-                value={search}
-                onFocus={() => setSearchOpen(true)}
-                onBlur={() => { if (!search) setSearchOpen(false); }}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Jump to..."
-                className="bg-transparent text-sm text-white placeholder-zinc-600 outline-none w-20"
-              />
-            </div>
+          <div
+            className="flex items-center gap-2 px-5 py-2.5"
+            style={{ border: "1px solid rgba(255,255,255,0.06)", backgroundColor: "#0a0a12" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-zinc-600 shrink-0">
+              <circle cx="6.5" cy="6.5" r="5" /><path d="M11 11l3 3" strokeLinecap="round" />
+            </svg>
+            <input
+              value={search}
+              onFocus={() => setSearchOpen(true)}
+              onBlur={() => { if (!search) setSearchOpen(false); }}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Jump to..."
+              className="bg-transparent font-heading text-[8px] tracking-widest text-white placeholder-zinc-700 outline-none w-24"
+            />
           </div>
           {searchOpen && filtered.length > 0 && (
-            <div className="absolute top-full mt-1 left-0 min-w-[160px] bg-[#0a0a11] border border-zinc-700 rounded-lg overflow-hidden z-10 shadow-xl">
+            <div
+              className="absolute top-full mt-1 left-0 min-w-[180px] z-10"
+              style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
               {filtered.map((a) => {
                 const p = progress[algKey(tab, a.id)];
                 return (
                   <button
                     key={a.name}
                     onMouseDown={() => jumpTo(a)}
-                    className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer flex items-center justify-between gap-3"
+                    className="w-full text-left px-4 py-2.5 font-sans text-sm text-zinc-400 hover:text-white transition-colors cursor-pointer flex items-center justify-between gap-3"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                   >
                     <span>{a.name}</span>
                     {p?.mastered ? (
                       <span className="font-heading text-[7px] shrink-0" style={{ color: "#FFD500" }}>MASTERED</span>
                     ) : p && p.times_seen > 0 ? (
-                      <span className="text-xs text-zinc-600 shrink-0 tabular-nums">
+                      <span className="font-heading text-[7px] text-zinc-700 shrink-0 tabular-nums">
                         {Math.round((p.times_correct / p.times_seen) * 100)}%
                       </span>
                     ) : null}
@@ -563,37 +613,51 @@ function AlgorithmTrainer() {
             </div>
           )}
           {searchOpen && search && filtered.length === 0 && (
-            <div className="absolute top-full mt-1 left-0 w-full bg-[#0a0a11] border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-600 z-10">
-              No results
+            <div
+              className="absolute top-full mt-1 left-0 w-full px-4 py-2.5 z-10"
+              style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <span className="font-heading text-[8px] text-zinc-700">NO RESULTS</span>
             </div>
           )}
         </div>
 
         {/* Mastery + session stats */}
-        <div className="flex items-center gap-4 sm:ml-auto">
-          <span className="text-xs text-zinc-600">
-            {categoryMastered} / {categoryTotal} mastered
-          </span>
-          {sessionTotal > 0 && (
-            <span className="text-xs text-zinc-500">
-              {sessionCorrect}/{sessionTotal} this session
+        <div className="flex items-center gap-5 sm:ml-auto">
+          <div className="flex flex-col gap-1">
+            <span className="font-heading text-[7px] text-zinc-700 tracking-widest">MASTERED</span>
+            <span className="font-heading text-xs" style={{ color: "#FFD500" }}>
+              {categoryMastered}/{categoryTotal}
             </span>
+          </div>
+          {sessionTotal > 0 && (
+            <div className="flex flex-col gap-1">
+              <span className="font-heading text-[7px] text-zinc-700 tracking-widest">SESSION</span>
+              <span className="font-heading text-xs text-white">
+                {sessionCorrect}/{sessionTotal}
+              </span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Main card */}
       {!progressLoaded || !currentCase ? (
-        <div className="rounded-xl border border-zinc-800 bg-[#0a0a11] flex items-center justify-center py-24">
-          <span className="text-zinc-700 text-sm">Loading...</span>
+        <div
+          className="flex items-center justify-center py-24"
+          style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <span className="font-heading text-[8px] text-zinc-700 tracking-widest">LOADING...</span>
         </div>
 
       ) : phase === "celebrating" ? (
-        <div className="rounded-xl bg-[#0a0a11] overflow-hidden" style={{ border: "1px solid rgba(255,213,0,0.25)" }}>
-          <div className="flex flex-col items-center justify-center gap-5 py-24 px-8 text-center">
-            <div className="flex gap-[4px]">
+        <div
+          style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,213,0,0.2)", boxShadow: "0 0 32px rgba(255,213,0,0.06)" }}
+        >
+          <div className="flex flex-col items-center justify-center gap-6 py-24 px-8 text-center">
+            <div className="flex gap-[5px]">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} style={{ width: 8, height: 8, borderRadius: 1, backgroundColor: "#FFD500", boxShadow: "0 0 8px rgba(255,213,0,0.7)" }} />
+                <div key={i} style={{ width: 8, height: 8, backgroundColor: "#FFD500", boxShadow: "0 0 10px rgba(255,213,0,0.8)" }} />
               ))}
             </div>
             <div className="flex flex-col gap-2">
@@ -608,21 +672,25 @@ function AlgorithmTrainer() {
 
       ) : (
         <div
-          className="rounded-xl bg-[#0a0a11] overflow-hidden transition-colors duration-300"
+          className="transition-colors duration-300"
           style={{
+            backgroundColor: "#0f0f1a",
             border: `1px solid ${
-              lastResult === "correct"   ? "rgba(0,155,72,0.4)"   :
-              lastResult === "incorrect" ? "rgba(196,30,58,0.4)"  :
-              "#27272a"
+              lastResult === "correct"   ? "rgba(0,155,72,0.35)"  :
+              lastResult === "incorrect" ? "rgba(196,30,58,0.35)" :
+              "rgba(255,255,255,0.06)"
             }`,
           }}
         >
-          {/* Header: name + streak indicator */}
-          <div className="border-b border-zinc-800 px-8 py-4 flex items-center justify-between gap-4">
+          {/* Header */}
+          <div
+            className="px-8 py-4 flex items-center justify-between gap-4"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+          >
             <div className="flex flex-col gap-1.5 min-w-0">
-              <p className="text-xs text-zinc-600 uppercase tracking-widest">
-                {TRAINER_TABS.find((t) => t.id === tab)!.label}
-              </p>
+              <span className="font-heading text-[8px] text-zinc-600 tracking-widest">
+                {TRAINER_TABS.find((t) => t.id === tab)!.label.toUpperCase()}
+              </span>
               <h2 className="font-heading text-xs text-white truncate">{currentCase.name}</h2>
             </div>
             <StreakDots streak={currentProgress.correct_streak} mastered={currentProgress.mastered} />
@@ -630,7 +698,10 @@ function AlgorithmTrainer() {
 
           {/* Diagram */}
           <div className="flex flex-col items-center gap-6 py-12 px-8">
-            <div className="p-3 rounded-lg border border-zinc-800 bg-[#13131f] flex items-center justify-center">
+            <div
+              className="flex items-center justify-center p-4"
+              style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.05)" }}
+            >
               {isOLL ? (
                 <OLLDiagramView
                   top={(currentCase as OLLCase).top}
@@ -655,16 +726,17 @@ function AlgorithmTrainer() {
               {phase === "question" ? (
                 <button
                   onClick={() => setPhase("revealed")}
-                  className="px-6 py-2 rounded-lg border border-zinc-700 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white transition-colors cursor-pointer"
+                  className="px-6 py-2.5 font-heading text-[9px] tracking-widest text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  style={{ border: "1px solid rgba(255,255,255,0.1)" }}
                 >
-                  Show Solution
+                  SHOW SOLUTION
                 </button>
               ) : (
                 <>
                   <p className="font-mono text-[#FFD500] text-lg tracking-wide text-center">
                     {currentCase.alg}
                   </p>
-                  <p className="text-xs text-zinc-600">Did you know this one?</p>
+                  <p className="font-heading text-[8px] text-zinc-600 tracking-widest">DID YOU KNOW THIS ONE?</p>
                 </>
               )}
             </div>
@@ -672,7 +744,10 @@ function AlgorithmTrainer() {
 
           {/* Got it / Missed it */}
           {phase === "revealed" && (
-            <div className="border-t border-zinc-800 px-8 py-4 flex gap-3">
+            <div
+              className="px-8 py-4 flex gap-3"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+            >
               <button
                 onClick={() => handleAnswer(true)}
                 className="flex-1 py-3 font-heading text-[10px] tracking-widest text-white transition-all active:scale-95 cursor-pointer"
@@ -682,7 +757,16 @@ function AlgorithmTrainer() {
               </button>
               <button
                 onClick={() => handleAnswer(false)}
-                className="flex-1 py-3 border border-zinc-700 text-zinc-400 font-heading text-[10px] tracking-widest transition-all hover:border-red-900 hover:text-red-400 active:scale-95 cursor-pointer"
+                className="flex-1 py-3 font-heading text-[10px] tracking-widest text-zinc-500 transition-all active:scale-95 cursor-pointer"
+                style={{ border: "1px solid rgba(196,30,58,0.25)" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(196,30,58,0.6)";
+                  e.currentTarget.style.color = "#C41E3A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(196,30,58,0.25)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.3)";
+                }}
               >
                 MISSED IT
               </button>
@@ -691,12 +775,15 @@ function AlgorithmTrainer() {
 
           {/* Per-case accuracy footer */}
           {currentProgress.times_seen > 0 && phase === "question" && (
-            <div className="border-t border-zinc-800/50 px-8 py-2.5 flex items-center justify-between">
-              <span className="text-xs text-zinc-700">
-                {currentProgress.times_correct} / {currentProgress.times_seen} correct
+            <div
+              className="px-8 py-2.5 flex items-center justify-between"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.03)" }}
+            >
+              <span className="font-heading text-[7px] text-zinc-800 tracking-widest">
+                {currentProgress.times_correct} / {currentProgress.times_seen} CORRECT
               </span>
-              <span className="text-xs text-zinc-700">
-                {Math.round((currentProgress.times_correct / currentProgress.times_seen) * 100)}% accuracy
+              <span className="font-heading text-[7px] text-zinc-800 tracking-widest">
+                {Math.round((currentProgress.times_correct / currentProgress.times_seen) * 100)}% ACCURACY
               </span>
             </div>
           )}
