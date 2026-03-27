@@ -213,17 +213,27 @@ export const CORNER_ORI: OLLCase[] = [
 // ── Card & Section (2-Look OLL) ───────────────────────────────────────────────
 
 function CaseCard({ c, compact }: { c: OLLCase; compact?: boolean }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(c.alg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
   return (
-    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] ${compact ? "p-4" : "p-7"}`}>
+    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "p-4" : "p-7"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
       <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
         <CaseDiagram {...c.diagram} compact={compact} />
       </div>
-      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
-        {c.alg}
-      </p>
+      <button
+        onClick={copy}
+        title="Copy algorithm"
+        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
+      >
+        {copied ? "COPIED!" : c.alg}
+      </button>
     </div>
   );
 }
@@ -233,11 +243,11 @@ function Section({ title, cases, cols = "auto" }: { title: string; cases: OLLCas
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.05]" />
-        <span className="font-heading text-[9px] text-zinc-700">
+        <div className="flex-1 h-px bg-white/[0.1]" />
+        <span className="font-heading text-[9px] text-zinc-500">
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
@@ -404,17 +414,27 @@ export const EDGE_PERM: PLLCase[] = [
 // ── Card & Section (2-Look PLL) ───────────────────────────────────────────────
 
 function PLLCaseCard({ c, compact }: { c: PLLCase; compact?: boolean }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(c.alg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
   return (
-    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] ${compact ? "p-4" : "p-7"}`}>
+    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "p-4" : "p-7"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
       <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
         <PLLCaseDiagram {...c.diagram} compact={compact} />
       </div>
-      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
-        {c.alg}
-      </p>
+      <button
+        onClick={copy}
+        title="Copy algorithm"
+        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
+      >
+        {copied ? "COPIED!" : c.alg}
+      </button>
     </div>
   );
 }
@@ -424,11 +444,11 @@ function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLL
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.05]" />
-        <span className="font-heading text-[9px] text-zinc-700">
+        <div className="flex-1 h-px bg-white/[0.1]" />
+        <span className="font-heading text-[9px] text-zinc-500">
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
@@ -444,8 +464,14 @@ function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLL
 // ── Full OLL Components ───────────────────────────────────────────────────────
 
 function FullOLLCard({ c }: { c: FullOLLCase }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(c.alg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
       <div className="text-center">
         <p className="font-heading text-zinc-500 text-[9px] tracking-widest">
           OLL {c.id}
@@ -463,9 +489,13 @@ function FullOLLCard({ c }: { c: FullOLLCase }) {
           right={c.right}
         />
       </div>
-      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
-        {c.alg}
-      </p>
+      <button
+        onClick={copy}
+        title="Copy algorithm"
+        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
+      >
+        {copied ? "COPIED!" : c.alg}
+      </button>
     </div>
   );
 }
@@ -474,11 +504,11 @@ function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.05]" />
-        <span className="font-heading text-[9px] text-zinc-700">
+        <div className="flex-1 h-px bg-white/[0.1]" />
+        <span className="font-heading text-[9px] text-zinc-500">
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
@@ -494,8 +524,14 @@ function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] 
 // ── Full PLL Components ───────────────────────────────────────────────────────
 
 function FullPLLCard({ c }: { c: FullPLLCase }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(c.alg);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
@@ -508,9 +544,13 @@ function FullPLLCard({ c }: { c: FullPLLCase }) {
           right={c.right as [PColor, PColor, PColor]}
         />
       </div>
-      <p className="font-mono text-[#FFD700] text-xs tracking-wide text-center leading-relaxed">
-        {c.alg}
-      </p>
+      <button
+        onClick={copy}
+        title="Copy algorithm"
+        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
+      >
+        {copied ? "COPIED!" : c.alg}
+      </button>
     </div>
   );
 }
@@ -519,11 +559,11 @@ function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <span className="font-heading text-[9px] text-zinc-500 tracking-widest whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.05]" />
-        <span className="font-heading text-[9px] text-zinc-700">
+        <div className="flex-1 h-px bg-white/[0.1]" />
+        <span className="font-heading text-[9px] text-zinc-500">
           {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
         </span>
       </div>
@@ -568,9 +608,16 @@ function randomCubeColor(exclude?: string) {
 export default function Algorithms() {
   const [tab, setTab] = useState<Tab>("oll-pll");
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
+  const [search, setSearch] = useState("");
 
-  const ollGroups = groupBy(OLL_CASES, "group");
-  const pllGroups = groupBy(PLL_CASES, "group");
+  const ollGroups = groupBy(
+    search.trim() ? OLL_CASES.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())) : OLL_CASES,
+    "group",
+  );
+  const pllGroups = groupBy(
+    search.trim() ? PLL_CASES.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())) : PLL_CASES,
+    "group",
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
@@ -579,16 +626,16 @@ export default function Algorithms() {
         <span className="font-heading text-[9px] text-zinc-600 tracking-widest">
           REFERENCE
         </span>
-        <h1
-          className="font-heading text-white leading-snug mt-2"
-          style={{ fontSize: "clamp(12px, 2vw, 16px)" }}
-        >
+        <h1 className="font-heading text-white text-xl leading-snug mt-2">
           ALGORITHMS
         </h1>
         <p className="text-zinc-400 text-sm mt-2">
           {tab === "oll-pll" && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
           {tab === "full-oll" && "Full OLL — all 57 orientation cases."}
           {tab === "full-pll" && "Full PLL — all 21 permutation cases."}
+        </p>
+        <p className="font-heading text-[9px] text-zinc-600 tracking-widest mt-3">
+          {OLL_CASES.length} OLL · {PLL_CASES.length} PLL · {EDGE_ORI.length + CORNER_ORI.length + CORNER_PERM.length + EDGE_PERM.length} 2-LOOK
         </p>
       </div>
 
@@ -601,8 +648,11 @@ export default function Algorithms() {
               const next = randomCubeColor(activeColor);
               setActiveColor(next);
               setTab(t.id);
+              setSearch("");
             }}
-            className="relative px-5 py-2 rounded-md text-sm cursor-pointer"
+            className={`relative px-5 py-2 rounded-md text-sm cursor-pointer transition-all duration-200 ${
+              tab === t.id ? "bg-[#13131f] border border-zinc-700 shadow-sm" : "border border-transparent"
+            }`}
           >
             <span className="font-bold invisible">{t.label}</span>
             <span
@@ -643,19 +693,43 @@ export default function Algorithms() {
 
       {/* Full OLL */}
       {tab === "full-oll" && (
-        <div className="flex flex-col gap-12">
-          {ollGroups.map(([group, cases]) => (
-            <FullOLLSection key={group} title={group} cases={cases} />
-          ))}
+        <div className="flex flex-col gap-10">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search OLL cases..."
+            className="w-full max-w-xs bg-[#0a0a11] border border-zinc-700 rounded-lg px-4 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
+          />
+          {ollGroups.length === 0 ? (
+            <p className="text-zinc-600 text-sm">No cases match &quot;{search}&quot;.</p>
+          ) : (
+            <div className="flex flex-col gap-12">
+              {ollGroups.map(([group, cases]) => (
+                <FullOLLSection key={group} title={group} cases={cases} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* Full PLL */}
       {tab === "full-pll" && (
-        <div className="flex flex-col gap-12">
-          {pllGroups.map(([group, cases]) => (
-            <FullPLLSection key={group} title={group} cases={cases} />
-          ))}
+        <div className="flex flex-col gap-10">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search PLL cases..."
+            className="w-full max-w-xs bg-[#0a0a11] border border-zinc-700 rounded-lg px-4 py-2 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
+          />
+          {pllGroups.length === 0 ? (
+            <p className="text-zinc-600 text-sm">No cases match &quot;{search}&quot;.</p>
+          ) : (
+            <div className="flex flex-col gap-12">
+              {pllGroups.map(([group, cases]) => (
+                <FullPLLSection key={group} title={group} cases={cases} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
