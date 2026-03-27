@@ -24,7 +24,7 @@ export default async function AuthButton() {
     <div className="flex items-center gap-3">
       <a
         href="/auth/login"
-        className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300"
+        className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300 pb-1"
       >
         Sign in
       </a>

@@ -76,6 +76,7 @@ function Timer() {
   const [elapsed, setElapsed] = useState(0);
   const [pending, setPending] = useState<Pending | null>(null);
   const [history, setHistory] = useState<Solve[]>([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [currentScramble, setCurrentScramble] = useState(() => generateScramble());
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -151,6 +152,20 @@ function Timer() {
   useEffect(() => {
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
   }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cubemaxxed_session_history");
+      if (saved) setHistory(JSON.parse(saved));
+    } catch {}
+    setHistoryLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!historyLoaded) return;
+    localStorage.setItem("cubemaxxed_session_history", JSON.stringify(history));
+  }, [history, historyLoaded]);
+
 
   const confirmedSolves = history.filter((s) => s.confirmed);
   const ao5 = calcAverage(history, 5);
@@ -240,7 +255,7 @@ function Timer() {
           <div className="px-6 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
             <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SESSION HISTORY</span>
             <button
-              onClick={() => setHistory([])}
+              onClick={() => { setHistory([]); localStorage.removeItem("cubemaxxed_session_history"); }}
               className="font-heading text-[8px] text-zinc-700 hover:text-zinc-400 transition-colors cursor-pointer tracking-widest"
             >
               CLEAR
