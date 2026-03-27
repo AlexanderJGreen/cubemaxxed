@@ -133,7 +133,7 @@ export default function Header({
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-white/5 bg-black px-6 py-4 flex flex-col gap-1">
+        <div className="md:hidden border-t border-white/5 bg-[#0d0d14] px-6 py-4 flex flex-col gap-1">
           {navLinks.map(({ href, label }) => {
             const isActive = pathname === href;
             return (

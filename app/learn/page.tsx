@@ -102,21 +102,21 @@ export default async function Learn() {
 
         {/* Page header */}
         <div style={{ marginBottom: 52 }}>
-          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#2e2e42", letterSpacing: "0.35em", marginBottom: 14 }}>
+          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#555570", letterSpacing: "0.35em", marginBottom: 14 }}>
             CURRICULUM MAP
           </div>
           <h1 style={{ fontFamily: "var(--font-heading), monospace", fontSize: "clamp(13px, 2.2vw, 20px)", color: "#ededed", marginBottom: 16, lineHeight: 1.4 }}>
             CHOOSE YOUR STAGE
           </h1>
-          <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 13, color: "#4a4a5e", lineHeight: 1.75, maxWidth: 480, marginBottom: 32 }}>
+          <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 13, color: "#7a7a96", lineHeight: 1.75, maxWidth: 480, marginBottom: 32 }}>
             43 lessons across 7 stages. Complete each stage to unlock the next.
           </p>
 
           {/* Overall progress meter */}
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#2e2e42", letterSpacing: "0.2em" }}>OVERALL PROGRESS</span>
-              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#3a3a52" }}>{completedLessons} / {totalLessons} · {overallPct}%</span>
+              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", letterSpacing: "0.2em" }}>OVERALL PROGRESS</span>
+              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#888899" }}>{completedLessons} / {totalLessons} · {overallPct}%</span>
             </div>
             <div style={{ height: 4, backgroundColor: "#0c0c16", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: "0 auto 0 0", width: `${overallPct}%`, background: "linear-gradient(90deg, #009B48 0%, #FFD500 100%)", boxShadow: "0 0 10px rgba(0,155,72,0.5)" }} />
@@ -219,7 +219,7 @@ export default async function Learn() {
                           <div style={{ height: 3, backgroundColor: "#0d0d1a", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
                             <div style={{ position: "absolute", inset: "0 auto 0 0", width: `${Math.round((stage.doneLessons / stage.totalLessons) * 100)}%`, backgroundColor: cardColor, boxShadow: `0 0 8px ${cardColor}` }} />
                           </div>
-                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#252535", marginTop: 7, letterSpacing: "0.1em" }}>
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#555570", marginTop: 7, letterSpacing: "0.1em" }}>
                             {stage.doneLessons} / {stage.totalLessons} LESSONS COMPLETE
                           </div>
                         </div>
@@ -228,8 +228,8 @@ export default async function Learn() {
                       {/* Row 4: Pips + XP */}
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                         <LessonPips total={stage.totalLessons} done={stage.doneLessons} color={cardColor} />
-                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: dimmed ? "#161620" : "#2e2e42", flexShrink: 0 }}>
-                          <span style={{ color: dimmed ? "#161620" : `${cardColor}bb` }}>+{totalXP.toLocaleString()}</span> XP
+                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: dimmed ? "#161620" : "#555570", flexShrink: 0 }}>
+                          <span style={{ color: dimmed ? "#161620" : `${cardColor}cc` }}>+{totalXP.toLocaleString()}</span> XP
                         </div>
                       </div>
                     </div>
@@ -249,8 +249,8 @@ export default async function Learn() {
             { label: "YOUR PROGRESS",        value: user ? `${completedLessons} / ${totalLessons}` : "Sign in to track" },
           ].map((stat, i) => (
             <div key={i} style={{ padding: "18px 22px", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#1e1e2e", marginBottom: 10, letterSpacing: "0.18em" }}>{stat.label}</div>
-              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#3a3a52" }}>{stat.value}</div>
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", marginBottom: 10, letterSpacing: "0.18em" }}>{stat.label}</div>
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#c0c0d4" }}>{stat.value}</div>
             </div>
           ))}
         </div>
