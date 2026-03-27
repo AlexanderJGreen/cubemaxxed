@@ -12,7 +12,7 @@ export default async function AuthButton() {
       <form className="flex items-center">
         <button
           formAction={signout}
-          className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300 cursor-pointer"
+          className="font-sans text-[15px] font-medium text-zinc-400 hover:text-zinc-100 transition-colors duration-300 cursor-pointer pb-1"
         >
           Sign out
         </button>
