@@ -10,7 +10,7 @@ import {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = "oll-pll" | "full-oll" | "full-pll";
+type Tab = "oll-pll" | "full-oll" | "full-pll" | "favorites";
 export type S = "Y" | "G";
 
 export interface DiagramProps {
@@ -25,6 +25,43 @@ export interface OLLCase {
   name: string;
   diagram: DiagramProps;
   alg: string;
+}
+
+// ── Favorites ─────────────────────────────────────────────────────────────────
+
+interface FavoritesCtx {
+  isFavorited: (key: string) => boolean;
+  toggle: (key: string) => void;
+  size: number;
+}
+
+const FavoritesContext = React.createContext<FavoritesCtx>({
+  isFavorited: () => false,
+  toggle: () => {},
+  size: 0,
+});
+
+function useFavorites(): FavoritesCtx {
+  const [keys, setKeys] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cubemaxxed:favorites");
+      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
+    } catch {}
+  }, []);
+
+  function toggle(key: string) {
+    setKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      localStorage.setItem("cubemaxxed:favorites", JSON.stringify([...next]));
+      return next;
+    });
+  }
+
+  return { isFavorited: (k) => keys.has(k), toggle, size: keys.size };
 }
 
 // ── CaseDiagram ───────────────────────────────────────────────────────────────
@@ -213,12 +250,14 @@ export const CORNER_ORI: OLLCase[] = [
 // ── AlgDisplay — inline editable algorithm with localStorage persistence ──────
 
 function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: string }) {
+  const { isFavorited, toggle: toggleFav } = React.useContext(FavoritesContext);
   const storageKey = `cubemaxxed:alg:${caseKey}`;
   const [custom, setCustom] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const favorited = isFavorited(caseKey);
 
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
@@ -284,7 +323,7 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
       >
         {copied ? "COPIED!" : alg}
       </button>
-      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
+      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
         {isCustom && (
           <button
             onClick={resetAlg}
@@ -304,6 +343,15 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
         >
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+          </svg>
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleFav(caseKey); }}
+          title={favorited ? "Remove from favorites" : "Add to favorites"}
+          className={`transition-colors ${favorited ? "text-yellow-400 hover:text-yellow-300" : "text-zinc-500 hover:text-zinc-200"}`}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
         </button>
       </div>
@@ -629,6 +677,45 @@ function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] 
   );
 }
 
+// ── Favorites Tab ─────────────────────────────────────────────────────────────
+
+function FavoritesTab() {
+  const { isFavorited } = React.useContext(FavoritesContext);
+
+  const fav2LOLL  = [...EDGE_ORI, ...CORNER_ORI].filter((c) => isFavorited(`2l-oll-${c.name}`));
+  const fav2LPLL  = [...CORNER_PERM, ...EDGE_PERM].filter((c) => isFavorited(`2l-pll-${c.name}`));
+  const favFullOLL = OLL_CASES.filter((c) => isFavorited(`full-oll-${c.id}`));
+  const favFullPLL = PLL_CASES.filter((c) => isFavorited(`full-pll-${c.id}`));
+  const total = fav2LOLL.length + fav2LPLL.length + favFullOLL.length + favFullPLL.length;
+
+  if (total === 0) {
+    return (
+      <div className="flex flex-col items-center gap-5 py-24 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-[#0a0a11] border border-zinc-800 flex items-center justify-center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+        </div>
+        <div>
+          <p className="font-heading text-zinc-300 text-sm">No favorites yet</p>
+          <p className="text-zinc-600 text-xs mt-2 max-w-[22rem] leading-relaxed">
+            Star any algorithm from the other tabs to save it here for quick reference.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-12">
+      {fav2LOLL.length  > 0 && <Section        title="2-Look OLL" cases={fav2LOLL}  />}
+      {fav2LPLL.length  > 0 && <PLLSection     title="2-Look PLL" cases={fav2LPLL}  />}
+      {favFullOLL.length > 0 && <FullOLLSection title="Full OLL"   cases={favFullOLL} />}
+      {favFullPLL.length > 0 && <FullPLLSection title="Full PLL"   cases={favFullPLL} />}
+    </div>
+  );
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function groupBy<T>(arr: T[], key: keyof T): [string, T[]][] {
@@ -644,9 +731,10 @@ function groupBy<T>(arr: T[], key: keyof T): [string, T[]][] {
 // ── Tab config ────────────────────────────────────────────────────────────────
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "oll-pll",  label: "2-Look OLL + PLL" },
-  { id: "full-oll", label: "Full OLL"          },
-  { id: "full-pll", label: "Full PLL"          },
+  { id: "oll-pll",   label: "2-Look OLL + PLL" },
+  { id: "full-oll",  label: "Full OLL"          },
+  { id: "full-pll",  label: "Full PLL"          },
+  { id: "favorites", label: "Favorites"         },
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -659,6 +747,7 @@ function randomCubeColor(exclude?: string) {
 }
 
 export default function Algorithms() {
+  const favorites = useFavorites();
   const [tab, setTab] = useState<Tab>("oll-pll");
   const [activeColor, setActiveColor] = useState(CUBE_COLORS[0]);
   useEffect(() => { setActiveColor(randomCubeColor()); }, []);
@@ -674,6 +763,7 @@ export default function Algorithms() {
   );
 
   return (
+    <FavoritesContext.Provider value={favorites}>
     <div className="mx-auto max-w-5xl px-6 py-10">
       {/* Page heading */}
       <div className="mb-8">
@@ -684,9 +774,10 @@ export default function Algorithms() {
           ALGORITHMS
         </h1>
         <p className="text-zinc-400 text-sm mt-2">
-          {tab === "oll-pll" && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
-          {tab === "full-oll" && "Full OLL — all 57 orientation cases."}
-          {tab === "full-pll" && "Full PLL — all 21 permutation cases."}
+          {tab === "oll-pll"   && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
+          {tab === "full-oll"  && "Full OLL — all 57 orientation cases."}
+          {tab === "full-pll"  && "Full PLL — all 21 permutation cases."}
+          {tab === "favorites" && "Your starred algorithms — one place for the cases you're drilling."}
         </p>
         <p className="font-heading text-[9px] text-zinc-600 tracking-widest mt-3">
           {OLL_CASES.length} OLL · {PLL_CASES.length} PLL · {EDGE_ORI.length + CORNER_ORI.length + CORNER_PERM.length + EDGE_PERM.length} 2-LOOK
@@ -786,6 +877,10 @@ export default function Algorithms() {
           )}
         </div>
       )}
+
+      {/* Favorites */}
+      {tab === "favorites" && <FavoritesTab />}
     </div>
+    </FavoritesContext.Provider>
   );
 }
