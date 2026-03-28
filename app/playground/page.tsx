@@ -56,6 +56,7 @@ type Solve = {
   time: number;
   scramble: string;
   confirmed: boolean;
+  xp: number;
 };
 
 type Pending = {
@@ -231,9 +232,9 @@ function Timer() {
     if (!pending) return;
     setHistory((prev) => [
       ...prev,
-      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true },
+      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true, xp: SCRAMBLE_XP[scrambleType] },
     ]);
-    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours(), SCRAMBLE_XP[scrambleType]);
+    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours(), SCRAMBLE_XP[scrambleType], scrambleType);
     setPending(null);
     requestNewScramble(scrambleType);
   }, [pending, scrambleType, requestNewScramble]);
@@ -242,7 +243,7 @@ function Timer() {
     if (!pending) return;
     setHistory((prev) => [
       ...prev,
-      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: false },
+      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: false, xp: 0 },
     ]);
     setPending(null);
     requestNewScramble(scrambleType);
@@ -382,11 +383,12 @@ function Timer() {
 
       {/* Session stats */}
       {confirmedSolves.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           {[
-            { label: "SOLVES", value: String(confirmedSolves.length), color: "#009B48" },
-            { label: "AO5",    value: ao5,                            color: "#C41E3A" },
-            { label: "AO12",   value: ao12,                           color: "#4FC3F7" },
+            { label: "SOLVES",     value: String(confirmedSolves.length),                                           color: "#009B48" },
+            { label: "AO5",        value: ao5,                                                                      color: "#C41E3A" },
+            { label: "AO12",       value: ao12,                                                                     color: "#4FC3F7" },
+            { label: "SESSION XP", value: `+${confirmedSolves.reduce((sum, s) => sum + s.xp, 0)}`,                  color: "#FFD500" },
           ].map(({ label, value, color }) => (
             <div
               key={label}
@@ -436,7 +438,11 @@ function Timer() {
                   {formatTime(solve.time)}
                 </span>
                 <span className="font-mono text-zinc-400 text-xs truncate">{solve.scramble}</span>
-                {!solve.confirmed && (
+                {solve.confirmed ? (
+                  <span className="font-heading text-[10px] tracking-widest shrink-0" style={{ color: solve.xp === 5 ? "#009B48" : "#C41E3A" }}>
+                    +{solve.xp} XP
+                  </span>
+                ) : (
                   <span className="font-heading text-[7px] text-zinc-500 tracking-widest shrink-0">DISCARDED</span>
                 )}
               </div>

@@ -23,6 +23,7 @@ export async function saveSolve(
   localDate?: string,
   localHour?: number,
   xp: number = 5,
+  scrambleType: string = "333",
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -37,6 +38,12 @@ export async function saveSolve(
 
   await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
   await updateStreak(supabase, user.id, localDate);
+
+  // Analytics and achievements only count for full WCA 3x3 solves
+  if (scrambleType !== "333") {
+    revalidatePath("/dashboard");
+    return;
+  }
 
   // --- Achievement checks ---
   const achievements: string[] = [];
