@@ -7,6 +7,7 @@ import {
   type OLLCase as FullOLLCase,
   type PLLCase as FullPLLCase,
 } from "./data";
+import { createClient } from "@/lib/supabase/client";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,171 @@ function useFavorites(): FavoritesCtx {
   }
 
   return { isFavorited: (k) => keys.has(k), toggle, size: keys.size };
+}
+
+// ── Achievements ──────────────────────────────────────────────────────────────
+
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: "2look-done",
+    name: "2-Look Done",
+    description: "Learned all 16 two-look OLL & PLL cases.",
+    icon: (
+      <svg viewBox="0 0 28 28" width="28" height="28" fill="none" shapeRendering="crispEdges">
+        <rect x="11" y="4"  width="6" height="20" fill="#FFD700" rx="1" />
+        <rect x="4"  y="11" width="20" height="6"  fill="#FFD700" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    id: "yellow-face",
+    name: "Yellow Face",
+    description: "Learned all 57 full OLL cases.",
+    icon: (
+      <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+        {[0, 1, 2].flatMap((row) =>
+          [0, 1, 2].map((col) => (
+            <rect key={`${row}-${col}`} x={4 + col * 8} y={4 + row * 8} width="6" height="6" rx="1" fill="#FFD700" />
+          ))
+        )}
+      </svg>
+    ),
+  },
+  {
+    id: "last-layer",
+    name: "Last Layer",
+    description: "Learned all 21 full PLL cases.",
+    icon: (
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0051A2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 4 23 10 17 10" />
+        <polyline points="1 20 1 14 7 14" />
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+      </svg>
+    ),
+  },
+  {
+    id: "full-send",
+    name: "Full Send",
+    description: "Learned every OLL and PLL algorithm. Incredible.",
+    icon: (
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FF5800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
+        <path d="M5 20h14" />
+      </svg>
+    ),
+  },
+];
+
+function checkAchievements(keys: Set<string>): string[] {
+  const earned: string[] = [];
+
+  const twoLookKeys = [
+    ...EDGE_ORI.map((c) => `2l-oll-${c.name}`),
+    ...CORNER_ORI.map((c) => `2l-oll-${c.name}`),
+    ...CORNER_PERM.map((c) => `2l-pll-${c.name}`),
+    ...EDGE_PERM.map((c) => `2l-pll-${c.name}`),
+  ];
+  if (twoLookKeys.every((k) => keys.has(k))) earned.push("2look-done");
+  if (OLL_CASES.every((c) => keys.has(`full-oll-${c.id}`))) earned.push("yellow-face");
+  if (PLL_CASES.every((c) => keys.has(`full-pll-${c.id}`))) earned.push("last-layer");
+  if (
+    [...twoLookKeys, ...OLL_CASES.map((c) => `full-oll-${c.id}`), ...PLL_CASES.map((c) => `full-pll-${c.id}`)].every(
+      (k) => keys.has(k)
+    )
+  )
+    earned.push("full-send");
+
+  return earned;
+}
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+
+interface ProgressCtx {
+  isLearned: (key: string) => boolean;
+  toggle: (key: string) => void;
+  isAuthenticated: boolean;
+  pendingAchievement: Achievement | null;
+  dismissAchievement: () => void;
+}
+
+const ProgressContext = React.createContext<ProgressCtx>({
+  isLearned: () => false,
+  toggle: () => {},
+  isAuthenticated: false,
+  pendingAchievement: null,
+  dismissAchievement: () => {},
+});
+
+function useProgress(): ProgressCtx {
+  const [keys, setKeys] = useState<Set<string>>(new Set());
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pendingAchievement, setPendingAchievement] = useState<Achievement | null>(null);
+  const earnedIdsRef = useRef<Set<string>>(new Set());
+  const userIdRef = useRef<string | null>(null);
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cubemaxxed:learned");
+      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
+    } catch {}
+    try {
+      const earned = localStorage.getItem("cubemaxxed:achievements");
+      if (earned) earnedIdsRef.current = new Set(JSON.parse(earned) as string[]);
+    } catch {}
+
+    const supabase = createClient();
+    supabaseRef.current = supabase;
+    supabase.auth.getUser().then(({ data }) => {
+      userIdRef.current = data.user?.id ?? null;
+      setIsAuthenticated(!!data.user);
+    });
+  }, []);
+
+  function toggle(key: string) {
+    setKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      localStorage.setItem("cubemaxxed:learned", JSON.stringify([...next]));
+
+      const nowEarned = checkAchievements(next);
+      const newlyEarned = nowEarned.filter((id) => !earnedIdsRef.current.has(id));
+      if (newlyEarned.length > 0) {
+        newlyEarned.forEach((id) => earnedIdsRef.current.add(id));
+        localStorage.setItem("cubemaxxed:achievements", JSON.stringify([...earnedIdsRef.current]));
+
+        // Persist to Supabase if the user is signed in
+        if (userIdRef.current && supabaseRef.current) {
+          const uid = userIdRef.current;
+          const db = supabaseRef.current;
+          newlyEarned.forEach((id) => {
+            db.from("user_achievements").insert({ user_id: uid, achievement_id: id }).then(() => {});
+          });
+        }
+
+        const achievement = ACHIEVEMENTS.find((a) => a.id === newlyEarned[0]);
+        if (achievement) setPendingAchievement(achievement);
+      }
+
+      return next;
+    });
+  }
+
+  return {
+    isLearned: (k) => keys.has(k),
+    toggle,
+    isAuthenticated,
+    pendingAchievement,
+    dismissAchievement: () => setPendingAchievement(null),
+  };
 }
 
 // ── CaseDiagram ───────────────────────────────────────────────────────────────
@@ -251,6 +417,7 @@ export const CORNER_ORI: OLLCase[] = [
 
 function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: string }) {
   const { isFavorited, toggle: toggleFav } = React.useContext(FavoritesContext);
+  const { isLearned, toggle: toggleLearned, isAuthenticated } = React.useContext(ProgressContext);
   const storageKey = `cubemaxxed:alg:${caseKey}`;
   const [custom, setCustom] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -258,6 +425,7 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const favorited = isFavorited(caseKey);
+  const learned = isLearned(caseKey);
 
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
@@ -354,6 +522,22 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
         </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isAuthenticated) { window.location.href = "/auth/login"; return; }
+            toggleLearned(caseKey);
+          }}
+          title={!isAuthenticated ? "Sign in to track progress" : learned ? "Mark as not learned" : "Mark as learned"}
+          className={`transition-colors ${learned ? "text-green-400 hover:text-green-300" : "text-zinc-500 hover:text-zinc-200"}`}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            {learned
+              ? <><circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" /></>
+              : <><circle cx="12" cy="12" r="10" /><polyline points="9 12 11 14 15 10" strokeOpacity="0.3" /></>
+            }
+          </svg>
+        </button>
       </div>
     </div>
   );
@@ -377,15 +561,24 @@ function CaseCard({ c, compact }: { c: OLLCase; compact?: boolean }) {
 
 function Section({ title, cases, cols = "auto" }: { title: string; cases: OLLCase[]; cols?: "3" | "auto" }) {
   const compact = cols === "3";
+  const { isLearned } = React.useContext(ProgressContext);
+  const learnedCount = cases.filter((c) => isLearned(`2l-oll-${c.name}`)).length;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.1]" />
-        <span className="font-heading text-[9px] text-zinc-500">
-          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
+          {learnedCount > 0 && (
+            <div
+              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+            />
+          )}
+        </div>
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+          {learnedCount}/{cases.length}
         </span>
       </div>
       <div className={compact ? "grid grid-cols-3 gap-3" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"}>
@@ -566,15 +759,24 @@ function PLLCaseCard({ c, compact }: { c: PLLCase; compact?: boolean }) {
 
 function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLLCase[]; cols?: "3" | "auto" }) {
   const compact = cols === "3";
+  const { isLearned } = React.useContext(ProgressContext);
+  const learnedCount = cases.filter((c) => isLearned(`2l-pll-${c.name}`)).length;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.1]" />
-        <span className="font-heading text-[9px] text-zinc-500">
-          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
+          {learnedCount > 0 && (
+            <div
+              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+            />
+          )}
+        </div>
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+          {learnedCount}/{cases.length}
         </span>
       </div>
       <div className={compact ? "grid grid-cols-3 gap-3" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"}>
@@ -614,15 +816,24 @@ function FullOLLCard({ c }: { c: FullOLLCase }) {
 }
 
 function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] }) {
+  const { isLearned } = React.useContext(ProgressContext);
+  const learnedCount = cases.filter((c) => isLearned(`full-oll-${c.id}`)).length;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.1]" />
-        <span className="font-heading text-[9px] text-zinc-500">
-          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
+          {learnedCount > 0 && (
+            <div
+              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+            />
+          )}
+        </div>
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+          {learnedCount}/{cases.length}
         </span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -657,15 +868,24 @@ function FullPLLCard({ c }: { c: FullPLLCase }) {
 }
 
 function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] }) {
+  const { isLearned } = React.useContext(ProgressContext);
+  const learnedCount = cases.filter((c) => isLearned(`full-pll-${c.id}`)).length;
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <span className="font-heading text-[9px] text-zinc-400 tracking-widest whitespace-nowrap">
           {title.toUpperCase()}
         </span>
-        <div className="flex-1 h-px bg-white/[0.1]" />
-        <span className="font-heading text-[9px] text-zinc-500">
-          {cases.length} {cases.length === 1 ? "CASE" : "CASES"}
+        <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
+          {learnedCount > 0 && (
+            <div
+              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+            />
+          )}
+        </div>
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+          {learnedCount}/{cases.length}
         </span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -673,6 +893,44 @@ function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] 
           <FullPLLCard key={c.id} c={c} />
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Achievement Toast ─────────────────────────────────────────────────────────
+
+function AchievementToast({ achievement, onDismiss }: { achievement: Achievement; onDismiss: () => void }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setVisible(true));
+    const timer = setTimeout(onDismiss, 5000);
+    return () => { cancelAnimationFrame(frame); clearTimeout(timer); };
+  }, [onDismiss]);
+
+  return (
+    <div
+      className={`fixed bottom-6 right-6 z-50 flex items-start gap-4 bg-[#0d0d18] border border-zinc-700 rounded-2xl p-4 shadow-2xl w-80 transition-all duration-500 ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      }`}
+    >
+      <div className="w-12 h-12 rounded-xl bg-[#13131f] border border-zinc-700 flex items-center justify-center shrink-0">
+        {achievement.icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-heading text-[9px] text-zinc-500 tracking-widest">ACHIEVEMENT UNLOCKED</p>
+        <p className="font-heading text-white text-sm mt-0.5">{achievement.name}</p>
+        <p className="text-zinc-400 text-xs mt-1 leading-relaxed">{achievement.description}</p>
+      </div>
+      <button
+        onClick={onDismiss}
+        className="text-zinc-600 hover:text-zinc-300 transition-colors shrink-0 mt-0.5"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
     </div>
   );
 }
@@ -748,6 +1006,7 @@ function randomCubeColor(exclude?: string) {
 
 export default function Algorithms() {
   const favorites = useFavorites();
+  const progress = useProgress();
   const [tab, setTab] = useState<Tab>("oll-pll");
   const [activeColor, setActiveColor] = useState(CUBE_COLORS[0]);
   useEffect(() => { setActiveColor(randomCubeColor()); }, []);
@@ -763,6 +1022,8 @@ export default function Algorithms() {
   );
 
   return (
+    <>
+    <ProgressContext.Provider value={progress}>
     <FavoritesContext.Provider value={favorites}>
     <div className="mx-auto max-w-5xl px-6 py-10">
       {/* Page heading */}
@@ -882,5 +1143,15 @@ export default function Algorithms() {
       {tab === "favorites" && <FavoritesTab />}
     </div>
     </FavoritesContext.Provider>
+    </ProgressContext.Provider>
+
+    {/* Achievement toast */}
+    {progress.pendingAchievement && (
+      <AchievementToast
+        achievement={progress.pendingAchievement}
+        onDismiss={progress.dismissAchievement}
+      />
+    )}
+    </>
   );
 }
