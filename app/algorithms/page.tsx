@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   OLL_CASES,
   PLL_CASES,
@@ -210,30 +210,119 @@ export const CORNER_ORI: OLLCase[] = [
   },
 ];
 
-// ── Card & Section (2-Look OLL) ───────────────────────────────────────────────
+// ── AlgDisplay — inline editable algorithm with localStorage persistence ──────
 
-function CaseCard({ c, compact }: { c: OLLCase; compact?: boolean }) {
+function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: string }) {
+  const storageKey = `cubemaxxed:alg:${caseKey}`;
+  const [custom, setCustom] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(c.alg);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey);
+    if (stored) setCustom(stored);
+  }, [storageKey]);
+
+  const alg = custom ?? defaultAlg;
+  const isCustom = custom !== null;
+
+  function startEdit() {
+    setDraft(alg);
+    setIsEditing(true);
+  }
+
+  function commitEdit() {
+    const trimmed = draft.trim();
+    if (!trimmed || trimmed === defaultAlg) {
+      localStorage.removeItem(storageKey);
+      setCustom(null);
+    } else {
+      localStorage.setItem(storageKey, trimmed);
+      setCustom(trimmed);
+    }
+    setIsEditing(false);
+  }
+
+  function resetAlg(e: React.MouseEvent) {
+    e.stopPropagation();
+    localStorage.removeItem(storageKey);
+    setCustom(null);
+  }
+
+  function copy(e: React.MouseEvent) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(alg);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
+
+  if (isEditing) {
+    return (
+      <input
+        ref={inputRef}
+        autoFocus
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commitEdit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+          if (e.key === "Escape") { e.preventDefault(); setIsEditing(false); }
+        }}
+        className="font-mono text-xs tracking-wide text-center w-full bg-[#1a1a2e] border border-zinc-600 rounded-md px-2 py-1 text-[#FFD700] focus:outline-none focus:border-yellow-500/60 transition-colors"
+      />
+    );
+  }
+
   return (
-    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "p-4" : "p-7"}`}>
+    <div className="w-full">
+      <button
+        onClick={copy}
+        title="Copy algorithm"
+        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 w-full ${copied ? "text-green-400" : isCustom ? "text-yellow-300 hover:text-white" : "text-[#FFD700] hover:text-white"}`}
+      >
+        {copied ? "COPIED!" : alg}
+      </button>
+      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
+        {isCustom && (
+          <button
+            onClick={resetAlg}
+            title="Reset to default"
+            className="text-zinc-500 hover:text-zinc-200 transition-colors"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </button>
+        )}
+        <button
+          onClick={startEdit}
+          title="Edit algorithm"
+          className="text-zinc-500 hover:text-zinc-200 transition-colors"
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Card & Section (2-Look OLL) ───────────────────────────────────────────────
+
+function CaseCard({ c, compact }: { c: OLLCase; compact?: boolean }) {
+  return (
+    <div className={`relative flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "pt-4 px-4 pb-8" : "pt-7 px-7 pb-8"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
       <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
         <CaseDiagram {...c.diagram} compact={compact} />
       </div>
-      <button
-        onClick={copy}
-        title="Copy algorithm"
-        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
-      >
-        {copied ? "COPIED!" : c.alg}
-      </button>
+      <AlgDisplay defaultAlg={c.alg} caseKey={`2l-oll-${c.name}`} />
     </div>
   );
 }
@@ -414,27 +503,15 @@ export const EDGE_PERM: PLLCase[] = [
 // ── Card & Section (2-Look PLL) ───────────────────────────────────────────────
 
 function PLLCaseCard({ c, compact }: { c: PLLCase; compact?: boolean }) {
-  const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(c.alg);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
   return (
-    <div className={`flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "p-4" : "p-7"}`}>
+    <div className={`relative flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150 ${compact ? "pt-4 px-4 pb-8" : "pt-7 px-7 pb-8"}`}>
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
       <div className={`rounded-lg bg-[#13131f] border border-zinc-800 flex items-center justify-center ${compact ? "p-2" : "p-3"}`}>
         <PLLCaseDiagram {...c.diagram} compact={compact} />
       </div>
-      <button
-        onClick={copy}
-        title="Copy algorithm"
-        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
-      >
-        {copied ? "COPIED!" : c.alg}
-      </button>
+      <AlgDisplay defaultAlg={c.alg} caseKey={`2l-pll-${c.name}`} />
     </div>
   );
 }
@@ -464,14 +541,8 @@ function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLL
 // ── Full OLL Components ───────────────────────────────────────────────────────
 
 function FullOLLCard({ c }: { c: FullOLLCase }) {
-  const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(c.alg);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
+    <div className="relative flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] pt-7 px-7 pb-8 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
       <div className="text-center">
         <p className="font-heading text-zinc-500 text-[9px] tracking-widest">
           OLL {c.id}
@@ -489,13 +560,7 @@ function FullOLLCard({ c }: { c: FullOLLCase }) {
           right={c.right}
         />
       </div>
-      <button
-        onClick={copy}
-        title="Copy algorithm"
-        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
-      >
-        {copied ? "COPIED!" : c.alg}
-      </button>
+      <AlgDisplay defaultAlg={c.alg} caseKey={`full-oll-${c.id}`} />
     </div>
   );
 }
@@ -524,14 +589,8 @@ function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] 
 // ── Full PLL Components ───────────────────────────────────────────────────────
 
 function FullPLLCard({ c }: { c: FullPLLCase }) {
-  const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(c.alg);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] p-7 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
+    <div className="relative flex flex-col items-center gap-3 rounded-xl border border-zinc-800 bg-[#0a0a11] pt-7 px-7 pb-8 hover:border-zinc-600 hover:bg-[#0d0d18] hover:scale-[1.02] transition-all duration-150">
       <p className="font-heading text-white text-[11px] leading-snug text-center">
         {c.name}
       </p>
@@ -544,13 +603,7 @@ function FullPLLCard({ c }: { c: FullPLLCase }) {
           right={c.right as [PColor, PColor, PColor]}
         />
       </div>
-      <button
-        onClick={copy}
-        title="Copy algorithm"
-        className={`font-mono text-xs tracking-wide text-center leading-relaxed cursor-pointer transition-colors duration-150 ${copied ? "text-green-400" : "text-[#FFD700] hover:text-white"}`}
-      >
-        {copied ? "COPIED!" : c.alg}
-      </button>
+      <AlgDisplay defaultAlg={c.alg} caseKey={`full-pll-${c.id}`} />
     </div>
   );
 }
@@ -607,7 +660,8 @@ function randomCubeColor(exclude?: string) {
 
 export default function Algorithms() {
   const [tab, setTab] = useState<Tab>("oll-pll");
-  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
+  const [activeColor, setActiveColor] = useState(CUBE_COLORS[0]);
+  useEffect(() => { setActiveColor(randomCubeColor()); }, []);
   const [search, setSearch] = useState("");
 
   const ollGroups = groupBy(
