@@ -22,6 +22,7 @@ export async function saveSolve(
   scramble: string,
   localDate?: string,
   localHour?: number,
+  xp: number = 5,
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -34,8 +35,7 @@ export async function saveSolve(
     scramble,
   });
 
-  // Award 5 XP
-  await supabase.rpc("increment_xp", { user_id: user.id, amount: 5 });
+  await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
   await updateStreak(supabase, user.id, localDate);
 
   // --- Achievement checks ---

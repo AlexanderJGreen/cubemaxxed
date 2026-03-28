@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { OLL_CASES, PLL_CASES, type OLLCase, type PLLCase, type PLLColor } from "../algorithms/data";
 import { formatTime } from "@/lib/rank";
 import { saveSolve, getAlgorithmProgress, recordAlgorithmAnswer } from "./actions";
@@ -71,17 +71,109 @@ function calcAverage(solves: Solve[], n: number): string {
   return formatTime(avg);
 }
 
+function ScrambleSelect({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  disabled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const id = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const selected = SCRAMBLE_TYPES.find((t) => t.id === value) ?? SCRAMBLE_TYPES[0];
+
+  return (
+    <div ref={ref} className="relative" id={id}>
+      <button
+        onClick={() => { if (!disabled) setOpen((o) => !o); }}
+        className="font-heading text-[10px] tracking-widest px-4 py-2 flex items-center gap-3 transition-colors"
+        style={{
+          backgroundColor: "#0d0d14",
+          border: "1px solid rgba(255,255,255,0.1)",
+          color: "#FFD500",
+          cursor: disabled ? "default" : "pointer",
+          minWidth: 200,
+        }}
+      >
+        <span className="flex-1 text-left">{selected.label.toUpperCase()}</span>
+        <span style={{ color: "rgba(255,213,0,0.5)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div
+          className="absolute z-50 w-full"
+          style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
+        >
+          {SCRAMBLE_TYPES.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => { onChange(t.id); setOpen(false); }}
+              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+              style={{
+                color: t.id === value ? "#FFD500" : "rgba(255,255,255,0.45)",
+                backgroundColor: t.id === value ? "rgba(255,213,0,0.05)" : "transparent",
+              }}
+            >
+              {t.label.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const SCRAMBLE_TYPES = [
+  { id: "333", label: "WCA 3x3" },
+  { id: "ll",  label: "Last Layer"   },
+  { id: "f2l", label: "Cross Solved"  },
+  { id: "oll", label: "OLL Only"     },
+  { id: "pll",    label: "PLL Only"    },
+  { id: "easyc",  label: "Easy Cross"  },
+  { id: "easyxc", label: "Easy XCross" },
+] as const;
+
+type ScrambleTypeId = typeof SCRAMBLE_TYPES[number]["id"];
+
+const SCRAMBLE_XP: Record<ScrambleTypeId, number> = {
+  "333":    5,
+  "ll":     3,
+  "f2l":    4,
+  "oll":    2,
+  "pll":    2,
+  "easyc":  4,
+  "easyxc": 4,
+};
+
 function Timer() {
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [pending, setPending] = useState<Pending | null>(null);
   const [history, setHistory] = useState<Solve[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [currentScramble, setCurrentScramble] = useState(() => generateScramble());
+  const [currentScramble, setCurrentScramble] = useState("");
+  const [scrambleType, setScrambleType] = useState<ScrambleTypeId>("333");
+  const [scrambleLoading, setScrambleLoading] = useState(false);
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
   const tickRef = useRef<FrameRequestCallback>(() => {});
   const activeScrambleRef = useRef(currentScramble);
+  const workerRef = useRef<Worker | null>(null);
+  const workerCallbacksRef = useRef<Record<number, (result: string) => void>>({});
+  const workerMsgIdRef = useRef(0);
 
   useEffect(() => {
     tickRef.current = () => {
@@ -91,6 +183,29 @@ function Timer() {
       }
     };
   }, []);
+
+  const requestNewScramble = useCallback((code: ScrambleTypeId) => {
+    setScrambleLoading(true);
+    if (!workerRef.current) {
+      setCurrentScramble(generateScramble());
+      setScrambleLoading(false);
+      return;
+    }
+    const id = ++workerMsgIdRef.current;
+    workerCallbacksRef.current[id] = (result) => {
+      setCurrentScramble(result);
+      setScrambleLoading(false);
+    };
+    const length = code === "333" ? 20 + Math.floor(Math.random() * 6) : 0;
+    workerRef.current.postMessage([id, "scramble", [code, length]]);
+  }, []);
+
+  const handleScrambleTypeChange = useCallback((newId: ScrambleTypeId) => {
+    if (running) return;
+    setScrambleType(newId);
+    localStorage.setItem("cubemaxxed_scramble_type", newId);
+    requestNewScramble(newId);
+  }, [running, requestNewScramble]);
 
   const start = useCallback(() => {
     if (pending) return;
@@ -118,10 +233,10 @@ function Timer() {
       ...prev,
       { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true },
     ]);
-    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours());
+    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours(), SCRAMBLE_XP[scrambleType]);
     setPending(null);
-    setCurrentScramble(generateScramble());
-  }, [pending]);
+    requestNewScramble(scrambleType);
+  }, [pending, scrambleType, requestNewScramble]);
 
   const discard = useCallback(() => {
     if (!pending) return;
@@ -130,8 +245,8 @@ function Timer() {
       { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: false },
     ]);
     setPending(null);
-    setCurrentScramble(generateScramble());
-  }, [pending]);
+    requestNewScramble(scrambleType);
+  }, [pending, scrambleType, requestNewScramble]);
 
   const toggle = useCallback(() => {
     if (pending) return;
@@ -154,18 +269,44 @@ function Timer() {
   }, []);
 
   useEffect(() => {
+    // Init cstimer Web Worker
+    const worker = new Worker("/cstimer_module.js");
+    workerRef.current = worker;
+    worker.onmessage = (e: MessageEvent<[number, string, string]>) => {
+      const [msgId, , result] = e.data;
+      const cb = workerCallbacksRef.current[msgId];
+      delete workerCallbacksRef.current[msgId];
+      cb?.(result);
+    };
+
+    // Load persisted scramble type
+    const savedType = (localStorage.getItem("cubemaxxed_scramble_type") ?? "333") as ScrambleTypeId;
+    setScrambleType(savedType);
+
+    // Load session history
     try {
       const saved = localStorage.getItem("cubemaxxed_session_history");
       if (saved) setHistory(JSON.parse(saved));
     } catch {}
     setHistoryLoaded(true);
+
+    // Generate first scramble via worker
+    setScrambleLoading(true);
+    const id = ++workerMsgIdRef.current;
+    workerCallbacksRef.current[id] = (result) => {
+      setCurrentScramble(result);
+      setScrambleLoading(false);
+    };
+    const initLength = savedType === "333" ? 20 + Math.floor(Math.random() * 6) : 0;
+    worker.postMessage([id, "scramble", [savedType, initLength]]);
+
+    return () => worker.terminate();
   }, []);
 
   useEffect(() => {
     if (!historyLoaded) return;
     localStorage.setItem("cubemaxxed_session_history", JSON.stringify(history));
   }, [history, historyLoaded]);
-
 
   const confirmedSolves = history.filter((s) => s.confirmed);
   const ao5 = calcAverage(history, 5);
@@ -175,10 +316,23 @@ function Timer() {
     <div className="flex flex-col gap-4">
       {/* Timer card */}
       <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
-        {/* Scramble */}
-        <div className="px-8 py-5 text-center" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SCRAMBLE</span>
-          <p className="font-mono text-zinc-200 text-base tracking-wide mt-3">{currentScramble}</p>
+        {/* Scramble type selector + scramble display */}
+        <div className="px-8 py-5 flex flex-col gap-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex justify-center">
+            <ScrambleSelect
+              value={scrambleType}
+              onChange={(v) => handleScrambleTypeChange(v as ScrambleTypeId)}
+              disabled={running}
+            />
+          </div>
+          <div className="text-center">
+            <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SCRAMBLE</span>
+            {scrambleLoading ? (
+              <p className="font-mono text-zinc-600 text-base tracking-wide mt-3">generating...</p>
+            ) : (
+              <p className="font-mono text-zinc-200 text-base tracking-wide mt-3">{currentScramble}</p>
+            )}
+          </div>
         </div>
 
         {/* Timer display */}
@@ -271,19 +425,19 @@ function Timer() {
                   opacity: solve.confirmed ? 1 : 0.35,
                 }}
               >
-                <span className="font-heading text-[8px] text-zinc-700 w-5 text-right shrink-0">{solve.id}</span>
+                <span className="font-heading text-[8px] text-zinc-400 w-5 text-right shrink-0">{solve.id}</span>
                 <span
                   className="font-mono text-sm w-20 shrink-0"
                   style={{
-                    color: solve.confirmed ? "#ffffff" : "rgba(255,255,255,0.3)",
+                    color: solve.confirmed ? "#ffffff" : "rgba(255,255,255,0.45)",
                     textDecoration: solve.confirmed ? "none" : "line-through",
                   }}
                 >
                   {formatTime(solve.time)}
                 </span>
-                <span className="font-mono text-zinc-700 text-xs truncate">{solve.scramble}</span>
+                <span className="font-mono text-zinc-400 text-xs truncate">{solve.scramble}</span>
                 {!solve.confirmed && (
-                  <span className="font-heading text-[7px] text-zinc-800 tracking-widest shrink-0">DISCARDED</span>
+                  <span className="font-heading text-[7px] text-zinc-500 tracking-widest shrink-0">DISCARDED</span>
                 )}
               </div>
             ))}
