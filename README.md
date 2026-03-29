@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cubemaxxed
 
-## Getting Started
+**[cubemaxxed.vercel.app](https://cubemaxxed.vercel.app)**
 
-First, run the development server:
+A gamified speedcubing learning platform. Think boot.dev meets Duolingo, but for people who want to get fast at solving a Rubik's cube.
+
+This was built to have fun while learning/playing, rather than having the feeling of reading a textbook.
+
+## What it does
+
+- **Structured curriculum** — 20 lessons currently available covering the beginner course, with more stages on the way (full CFOP planned)
+- **Algorithm trainer** — drill OLL, PLL, and F2L algorithms with spaced repetition vibes
+- **Timer** — solve timer with scramble generation (powered by cstimer's scramble engine), subset modes, and session stats
+- **XP + ranks** — earn XP for completing lessons, hitting solve targets, and maintaining streaks. Progress through 24 rank milestones from Unranked to Grandmaster
+- **Achievements** — pixel art badges for milestones, hidden achievements for doing weird things
+- **Profile** — your stats, rank history, and solve analytics all in one place
+
+## Stack
+
+- **Next.js** (App Router) + TypeScript
+- **Tailwind CSS v4**
+- **Supabase** — auth and Postgres
+- **cubing.js** — 3D cube rendering
+- **Vercel** — deployed here
+
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You'll need a `.env.local` with your Supabase credentials:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  page.tsx          # Dashboard
+  learn/            # Curriculum map
+  playground/       # Timer + algorithm trainer
+  algorithms/       # Algorithm catalog
+  profile/          # User profile + stats
+docs/               # Project briefs, curriculum outline, gamification spec
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docs
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The `docs/` folder has more detail on the vision and design decisions if you want to understand why things are the way they are:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `docs/full-project-brief.md` — full vision and art direction
+- `docs/curriculum-outline.md` — full planned curriculum broken down by stage
+- `docs/gamification-spec.md` — how XP, ranks, and streaks work
+- `docs/tech-stack-brief.md` — why we picked this stack
