@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = "oll-pll" | "full-oll" | "full-pll" | "favorites";
+type Tab = "oll-pll" | "full-oll" | "full-pll" | "f2l" | "favorites";
 export type S = "Y" | "G";
 
 export interface DiagramProps {
@@ -980,6 +980,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "oll-pll",   label: "2-Look OLL + PLL" },
   { id: "full-oll",  label: "Full OLL"          },
   { id: "full-pll",  label: "Full PLL"          },
+  { id: "f2l",       label: "F2L"               },
   { id: "favorites", label: "Favorites"         },
 ];
 
@@ -1025,6 +1026,7 @@ export default function Algorithms() {
           {tab === "oll-pll"   && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
           {tab === "full-oll"  && "Full OLL — all 57 orientation cases."}
           {tab === "full-pll"  && "Full PLL — all 21 permutation cases."}
+          {tab === "f2l"       && "F2L — all 41 cases for inserting corner-edge pairs into the first two layers."}
           {tab === "favorites" && "Your starred algorithms — one place for the cases you're drilling."}
         </p>
         <p className="font-heading text-[9px] text-zinc-600 tracking-widest mt-3">
