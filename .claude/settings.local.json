@@ -32,7 +32,9 @@
       "Bash(wc:*)",
       "Bash(find /mnt/c/Users/User/Desktop/projects/cubemaxxed -maxdepth 2 -name middleware* -type f)",
       "Bash(python3 -m json.tool)",
-      "Bash(node -e \"var cstimer = require\\(''''./node_modules/cstimer_module''''\\); var types = cstimer.getScrambleTypes\\(\\); console.log\\(JSON.stringify\\(types, null, 2\\)\\);\")"
+      "Bash(node -e \"var cstimer = require\\(''''./node_modules/cstimer_module''''\\); var types = cstimer.getScrambleTypes\\(\\); console.log\\(JSON.stringify\\(types, null, 2\\)\\);\")",
+      "Bash(npx next:*)",
+      "Bash(npx eslint:*)"
     ]
   }
 }

@@ -43,14 +43,13 @@ const FavoritesContext = React.createContext<FavoritesCtx>({
 });
 
 function useFavorites(): FavoritesCtx {
-  const [keys, setKeys] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
+  const [keys, setKeys] = useState<Set<string>>(() => {
     try {
       const stored = localStorage.getItem("cubemaxxed:favorites");
-      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
+      if (stored) return new Set(JSON.parse(stored) as string[]);
     } catch {}
-  }, []);
+    return new Set();
+  });
 
   function toggle(key: string) {
     setKeys((prev) => {
@@ -166,7 +165,13 @@ const ProgressContext = React.createContext<ProgressCtx>({
 });
 
 function useProgress(): ProgressCtx {
-  const [keys, setKeys] = useState<Set<string>>(new Set());
+  const [keys, setKeys] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("cubemaxxed:learned");
+      if (stored) return new Set(JSON.parse(stored) as string[]);
+    } catch {}
+    return new Set();
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pendingAchievement, setPendingAchievement] = useState<Achievement | null>(null);
   const earnedIdsRef = useRef<Set<string>>(new Set());
@@ -174,10 +179,6 @@ function useProgress(): ProgressCtx {
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("cubemaxxed:learned");
-      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
-    } catch {}
     try {
       const earned = localStorage.getItem("cubemaxxed:achievements");
       if (earned) earnedIdsRef.current = new Set(JSON.parse(earned) as string[]);
@@ -419,18 +420,13 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
   const { isFavorited, toggle: toggleFav } = React.useContext(FavoritesContext);
   const { isLearned, toggle: toggleLearned, isAuthenticated } = React.useContext(ProgressContext);
   const storageKey = `cubemaxxed:alg:${caseKey}`;
-  const [custom, setCustom] = useState<string | null>(null);
+  const [custom, setCustom] = useState<string | null>(() => typeof window !== "undefined" ? localStorage.getItem(storageKey) : null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const favorited = isFavorited(caseKey);
   const learned = isLearned(caseKey);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey);
-    if (stored) setCustom(stored);
-  }, [storageKey]);
 
   const alg = custom ?? defaultAlg;
   const isCustom = custom !== null;
@@ -570,14 +566,12 @@ function Section({ title, cases, cols = "auto" }: { title: string; cases: OLLCas
           {title.toUpperCase()}
         </span>
         <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
-          {learnedCount > 0 && (
-            <div
-              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
-              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
-            />
-          )}
+          <div
+            className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+            style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+          />
         </div>
-        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap" suppressHydrationWarning>
           {learnedCount}/{cases.length}
         </span>
       </div>
@@ -768,14 +762,12 @@ function PLLSection({ title, cases, cols = "auto" }: { title: string; cases: PLL
           {title.toUpperCase()}
         </span>
         <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
-          {learnedCount > 0 && (
-            <div
-              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
-              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
-            />
-          )}
+          <div
+            className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+            style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+          />
         </div>
-        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap" suppressHydrationWarning>
           {learnedCount}/{cases.length}
         </span>
       </div>
@@ -825,14 +817,12 @@ function FullOLLSection({ title, cases }: { title: string; cases: FullOLLCase[] 
           {title.toUpperCase()}
         </span>
         <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
-          {learnedCount > 0 && (
-            <div
-              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
-              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
-            />
-          )}
+          <div
+            className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+            style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+          />
         </div>
-        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap" suppressHydrationWarning>
           {learnedCount}/{cases.length}
         </span>
       </div>
@@ -877,14 +867,12 @@ function FullPLLSection({ title, cases }: { title: string; cases: FullPLLCase[] 
           {title.toUpperCase()}
         </span>
         <div className="flex-1 h-px bg-white/[0.1] relative overflow-hidden rounded-full">
-          {learnedCount > 0 && (
-            <div
-              className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
-              style={{ width: `${(learnedCount / cases.length) * 100}%` }}
-            />
-          )}
+          <div
+            className="absolute inset-y-0 left-0 bg-green-500/50 transition-all duration-500 rounded-full"
+            style={{ width: `${(learnedCount / cases.length) * 100}%` }}
+          />
         </div>
-        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap">
+        <span className="font-heading text-[9px] text-zinc-500 whitespace-nowrap" suppressHydrationWarning>
           {learnedCount}/{cases.length}
         </span>
       </div>
@@ -1008,8 +996,7 @@ export default function Algorithms() {
   const favorites = useFavorites();
   const progress = useProgress();
   const [tab, setTab] = useState<Tab>("oll-pll");
-  const [activeColor, setActiveColor] = useState(CUBE_COLORS[0]);
-  useEffect(() => { setActiveColor(randomCubeColor()); }, []);
+  const [activeColor, setActiveColor] = useState(() => randomCubeColor());
   const [search, setSearch] = useState("");
 
   const ollGroups = groupBy(
@@ -1066,6 +1053,7 @@ export default function Algorithms() {
                 tab === t.id ? "font-bold" : "font-medium text-zinc-400 hover:text-zinc-100"
               }`}
               style={tab === t.id ? { color: activeColor } : undefined}
+              suppressHydrationWarning
             >
               {t.label}
             </span>
