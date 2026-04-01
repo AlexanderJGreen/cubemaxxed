@@ -782,7 +782,7 @@ export const F2L_CASES: F2LCase[] = [
     name: "Case 6",
     group: "Incorrectly Connected Pieces",
     section: "F2L Case 4",
-    alg: "// TODO",
+    alg: "y' U' (R' U R U) (R' U R U') (R' U R)",
     stickerColors: {
       U: [null, null, null, null, "#FFD500", "#B90000", null, null, "#FFFFFF"],
       F: [
