@@ -25,13 +25,15 @@ const MILESTONES = [
   { id: "sub_30",  label: "Sub-30",   threshold: 30000  },
 ];
 
-export async function getSolveChartData(userId: string): Promise<SolveDataPoint[]> {
+export async function getSolveChartData(userId: string, cubeId?: string | null): Promise<SolveDataPoint[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  let query = supabase
     .from("solve_times")
     .select("time_ms, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: true });
+  if (cubeId) query = query.eq("cube_id", cubeId);
+  const { data } = await query;
 
   if (!data || data.length === 0) return [];
 
@@ -46,13 +48,15 @@ export async function getSolveChartData(userId: string): Promise<SolveDataPoint[
   }));
 }
 
-export async function getPersonalBests(userId: string): Promise<PersonalBest[]> {
+export async function getPersonalBests(userId: string, cubeId?: string | null): Promise<PersonalBest[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  let query = supabase
     .from("solve_times")
     .select("time_ms, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: true });
+  if (cubeId) query = query.eq("cube_id", cubeId);
+  const { data } = await query;
 
   return MILESTONES.map((m) => {
     const first = (data ?? []).find((s) => s.time_ms < m.threshold);

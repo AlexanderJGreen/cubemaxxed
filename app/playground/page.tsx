@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { OLL_CASES, PLL_CASES, type OLLCase, type PLLCase, type PLLColor } from "../algorithms/data";
 import { formatTime } from "@/lib/rank";
 import { saveSolve, getAlgorithmProgress, recordAlgorithmAnswer } from "./actions";
+import { getCubes, addCube, type Cube } from "@/app/cubes/actions";
 import { generateScramble } from "@/lib/scramble";
 
 type Tab = "timer" | "trainer";
@@ -57,6 +58,7 @@ type Solve = {
   scramble: string;
   confirmed: boolean;
   xp: number;
+  cubeName?: string;
 };
 
 type Pending = {
@@ -137,6 +139,139 @@ function ScrambleSelect({
   );
 }
 
+function CubeSelect({
+  cubes,
+  selectedId,
+  onChange,
+  disabled,
+  addingCube,
+  setAddingCube,
+  newCubeName,
+  setNewCubeName,
+  onAddCube,
+}: {
+  cubes: Cube[];
+  selectedId: string | null;
+  onChange: (id: string | null) => void;
+  disabled: boolean;
+  addingCube: boolean;
+  setAddingCube: (v: boolean) => void;
+  newCubeName: string;
+  setNewCubeName: (v: string) => void;
+  onAddCube: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setAddingCube(false);
+      }
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open, setAddingCube]);
+
+  const selectedCube = cubes.find((c) => c.id === selectedId);
+  const label = selectedCube ? selectedCube.name : "ALL CUBES";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => { if (!disabled) setOpen((o) => !o); }}
+        className="font-heading text-[10px] tracking-widest px-4 py-2 flex items-center gap-3 transition-colors"
+        style={{
+          backgroundColor: "#0d0d14",
+          border: selectedId ? "1px solid rgba(0,155,72,0.4)" : "1px solid rgba(255,255,255,0.1)",
+          color: selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
+          cursor: disabled ? "default" : "pointer",
+          minWidth: 200,
+        }}
+      >
+        <span style={{ fontSize: 8, opacity: 0.5 }}>&#9647;</span>
+        <span className="flex-1 text-left truncate">{label.toUpperCase()}</span>
+        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div
+          className="absolute z-50 w-full"
+          style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
+        >
+          {/* All cubes option */}
+          <button
+            onClick={() => { onChange(null); setOpen(false); }}
+            className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+            style={{
+              color: !selectedId ? "#FFD500" : "rgba(255,255,255,0.45)",
+              backgroundColor: !selectedId ? "rgba(255,213,0,0.05)" : "transparent",
+            }}
+          >
+            ALL CUBES
+          </button>
+
+          {/* Divider if cubes exist */}
+          {cubes.length > 0 && (
+            <div style={{ height: 1, backgroundColor: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+          )}
+
+          {/* User's cubes */}
+          {cubes.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => { onChange(c.id); setOpen(false); }}
+              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+              style={{
+                color: c.id === selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
+                backgroundColor: c.id === selectedId ? "rgba(0,155,72,0.06)" : "transparent",
+              }}
+            >
+              {c.name.toUpperCase()}
+            </button>
+          ))}
+
+          {/* Add cube section */}
+          <div style={{ height: 1, backgroundColor: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+          {addingCube ? (
+            <div className="px-3 py-2 flex gap-2">
+              <input
+                autoFocus
+                value={newCubeName}
+                onChange={(e) => setNewCubeName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") onAddCube();
+                  if (e.key === "Escape") { setAddingCube(false); setNewCubeName(""); }
+                }}
+                placeholder="e.g. GAN 16"
+                className="flex-1 font-heading text-[10px] tracking-widest px-2 py-1 bg-transparent outline-none"
+                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#fff", minWidth: 0 }}
+              />
+              <button
+                onClick={onAddCube}
+                className="font-heading text-[9px] tracking-widest px-2 py-1 shrink-0"
+                style={{ backgroundColor: "#009B48", color: "#000" }}
+              >
+                ADD
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAddingCube(true)}
+              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+              style={{ color: "rgba(255,255,255,0.25)" }}
+            >
+              + ADD CUBE...
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const SCRAMBLE_TYPES = [
   { id: "333", label: "WCA 3x3" },
   { id: "ll",  label: "Last Layer"   },
@@ -168,6 +303,10 @@ function Timer() {
   const [currentScramble, setCurrentScramble] = useState("");
   const [scrambleType, setScrambleType] = useState<ScrambleTypeId>("333");
   const [scrambleLoading, setScrambleLoading] = useState(false);
+  const [cubes, setCubes] = useState<Cube[]>([]);
+  const [selectedCubeId, setSelectedCubeId] = useState<string | null>(null);
+  const [addingCube, setAddingCube] = useState(false);
+  const [newCubeName, setNewCubeName] = useState("");
   const startTimeRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
   const tickRef = useRef<FrameRequestCallback>(() => {});
@@ -230,14 +369,15 @@ function Timer() {
 
   const confirm = useCallback(() => {
     if (!pending) return;
+    const cubeName = selectedCubeId ? cubes.find((c) => c.id === selectedCubeId)?.name : undefined;
     setHistory((prev) => [
       ...prev,
-      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true, xp: SCRAMBLE_XP[scrambleType] },
+      { id: prev.length + 1, time: pending.time, scramble: pending.scramble, confirmed: true, xp: SCRAMBLE_XP[scrambleType], cubeName },
     ]);
-    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours(), SCRAMBLE_XP[scrambleType], scrambleType);
+    saveSolve(pending.time, pending.scramble, new Date().toLocaleDateString("en-CA"), new Date().getHours(), SCRAMBLE_XP[scrambleType], scrambleType, selectedCubeId ?? undefined);
     setPending(null);
     requestNewScramble(scrambleType);
-  }, [pending, scrambleType, requestNewScramble]);
+  }, [pending, scrambleType, selectedCubeId, cubes, requestNewScramble]);
 
   const discard = useCallback(() => {
     if (!pending) return;
@@ -253,6 +393,23 @@ function Timer() {
     if (pending) return;
     if (running) stop(); else start();
   }, [running, start, stop, pending]);
+
+  const handleCubeChange = useCallback((cubeId: string | null) => {
+    setSelectedCubeId(cubeId);
+    if (cubeId) localStorage.setItem("cubemaxxed_selected_cube", cubeId);
+    else localStorage.removeItem("cubemaxxed_selected_cube");
+  }, []);
+
+  const handleAddCube = useCallback(async () => {
+    if (!newCubeName.trim()) return;
+    const created = await addCube(newCubeName.trim());
+    if (created) {
+      setCubes((prev) => [...prev, created]);
+      handleCubeChange(created.id);
+    }
+    setNewCubeName("");
+    setAddingCube(false);
+  }, [newCubeName, handleCubeChange]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -291,6 +448,15 @@ function Timer() {
     } catch {}
     setHistoryLoaded(true);
 
+    // Load cubes and restore persisted selection
+    getCubes().then((loaded) => {
+      setCubes(loaded);
+      const savedCubeId = localStorage.getItem("cubemaxxed_selected_cube");
+      if (savedCubeId && loaded.some((c) => c.id === savedCubeId)) {
+        setSelectedCubeId(savedCubeId);
+      }
+    });
+
     // Generate first scramble via worker
     setScrambleLoading(true);
     const id = ++workerMsgIdRef.current;
@@ -317,13 +483,24 @@ function Timer() {
     <div className="flex flex-col gap-4">
       {/* Timer card */}
       <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
-        {/* Scramble type selector + scramble display */}
+        {/* Scramble type selector + cube selector + scramble display */}
         <div className="px-8 py-5 flex flex-col gap-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
             <ScrambleSelect
               value={scrambleType}
               onChange={(v) => handleScrambleTypeChange(v as ScrambleTypeId)}
               disabled={running}
+            />
+            <CubeSelect
+              cubes={cubes}
+              selectedId={selectedCubeId}
+              onChange={handleCubeChange}
+              disabled={running}
+              addingCube={addingCube}
+              setAddingCube={setAddingCube}
+              newCubeName={newCubeName}
+              setNewCubeName={setNewCubeName}
+              onAddCube={handleAddCube}
             />
           </div>
           <div className="text-center">
@@ -438,6 +615,14 @@ function Timer() {
                   {formatTime(solve.time)}
                 </span>
                 <span className="font-mono text-zinc-400 text-xs truncate">{solve.scramble}</span>
+                {solve.confirmed && solve.cubeName && (
+                  <span
+                    className="font-heading text-[7px] tracking-widest shrink-0 px-1.5 py-0.5 hidden sm:inline"
+                    style={{ color: "#009B48", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                  >
+                    {solve.cubeName}
+                  </span>
+                )}
                 {solve.confirmed ? (
                   <span className="font-heading text-[10px] tracking-widest shrink-0" style={{ color: solve.xp === 5 ? "#009B48" : "#C41E3A" }}>
                     +{solve.xp} XP

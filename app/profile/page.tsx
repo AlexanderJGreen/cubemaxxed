@@ -4,7 +4,10 @@ import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
 import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 import { getSolveChartData, getPersonalBests } from "@/lib/analytics";
+import { getCubes } from "@/app/cubes/actions";
 import SolveChartClient from "./SolveChartClient";
+import CubeFilter from "./CubeFilter";
+import CubeManager from "./CubeManager";
 import { GrandmasterGlow } from "./GrandmasterGlow";
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -100,7 +103,12 @@ function AchievementBadge({ a, unlocked }: { a: Achievement; unlocked: boolean }
   );
 }
 
-export default async function Profile() {
+export default async function Profile({
+  searchParams,
+}: {
+  searchParams: Promise<{ cube?: string }>;
+}) {
+  const { cube: selectedCubeId } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -119,14 +127,18 @@ export default async function Profile() {
   const now = new Date();
   const todayUTCStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
 
-  const [solvesRes, lessonsRes, algsRes, achievementsRes, chartData, personalBests, todaySolvesRes] = await Promise.all([
-    supabase.from("solve_times").select("time_ms").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100),
+  const solvesQuery = supabase.from("solve_times").select("time_ms").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100);
+  const todaySolvesQuery = supabase.from("solve_times").select("time_ms").eq("user_id", user.id).gte("created_at", todayUTCStart);
+
+  const [solvesRes, lessonsRes, algsRes, achievementsRes, chartData, personalBests, todaySolvesRes, cubes] = await Promise.all([
+    selectedCubeId ? solvesQuery.eq("cube_id", selectedCubeId) : solvesQuery,
     supabase.from("lesson_completions").select("id", { count: "exact" }).eq("user_id", user.id),
     supabase.from("algorithm_progress").select("id", { count: "exact" }).eq("user_id", user.id).eq("mastered", true),
     supabase.from("user_achievements").select("achievement_id").eq("user_id", user.id),
-    getSolveChartData(user.id),
-    getPersonalBests(user.id),
-    supabase.from("solve_times").select("time_ms").eq("user_id", user.id).gte("created_at", todayUTCStart),
+    getSolveChartData(user.id, selectedCubeId),
+    getPersonalBests(user.id, selectedCubeId),
+    selectedCubeId ? todaySolvesQuery.eq("cube_id", selectedCubeId) : todaySolvesQuery,
+    getCubes(),
   ]);
 
   const solves = solvesRes.data ?? [];
@@ -259,7 +271,10 @@ export default async function Profile() {
 
       <div className="relative z-10 mx-auto max-w-5xl w-full px-6 py-14 flex flex-col gap-6">
 
-        <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PROFILE</span>
+        <div className="flex items-center justify-between gap-4">
+          <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PROFILE</span>
+          <CubeFilter cubes={cubes} selectedId={selectedCubeId ?? null} />
+        </div>
 
         {/* ── Hero identity card ── */}
         {rank.rank === "GRANDMASTER" ? (
@@ -318,6 +333,9 @@ export default async function Profile() {
           </div>
         </div>
 
+        {/* ── My Cubes ── */}
+        <CubeManager initialCubes={cubes} />
+
         {/* ── Streak + member stats ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
@@ -357,7 +375,14 @@ export default async function Profile() {
 
           {/* Performance stats */}
           <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
-            <span className="font-heading text-[9px] text-zinc-600 tracking-widest">STATS</span>
+            <div className="flex items-center gap-3">
+              <span className="font-heading text-[9px] text-zinc-600 tracking-widest">STATS</span>
+              {selectedCubeId && cubes.find((c) => c.id === selectedCubeId) && (
+                <span className="font-heading text-[8px] tracking-widest px-2 py-0.5" style={{ color: "#009B48", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)" }}>
+                  {cubes.find((c) => c.id === selectedCubeId)!.name.toUpperCase()}
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {STATS.map(({ label, value, sub, color, span }) => (
                 <div

@@ -24,6 +24,7 @@ export async function saveSolve(
   localHour?: number,
   xp: number = 5,
   scrambleType: string = "333",
+  cubeId?: string,
 ): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -34,6 +35,7 @@ export async function saveSolve(
     user_id: user.id,
     time_ms,
     scramble,
+    ...(cubeId ? { cube_id: cubeId } : {}),
   });
 
   await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
