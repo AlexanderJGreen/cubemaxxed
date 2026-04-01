@@ -8,6 +8,14 @@ import {
   type PLLCase as FullPLLCase,
 } from "./data";
 import { createClient } from "@/lib/supabase/client";
+import { F2L_CASES, type F2LCase } from "./f2l-data";
+import dynamic from "next/dynamic";
+import type F2LDiagramType from "@/app/components/F2LDiagram";
+
+const F2LDiagram = dynamic<React.ComponentProps<typeof F2LDiagramType>>(
+  () => import("@/app/components/F2LDiagram"),
+  { ssr: false }
+);
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -43,13 +51,14 @@ const FavoritesContext = React.createContext<FavoritesCtx>({
 });
 
 function useFavorites(): FavoritesCtx {
-  const [keys, setKeys] = useState<Set<string>>(() => {
+  const [keys, setKeys] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
     try {
       const stored = localStorage.getItem("cubemaxxed:favorites");
-      if (stored) return new Set(JSON.parse(stored) as string[]);
+      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
     } catch {}
-    return new Set();
-  });
+  }, []);
 
   function toggle(key: string) {
     setKeys((prev) => {
@@ -165,13 +174,7 @@ const ProgressContext = React.createContext<ProgressCtx>({
 });
 
 function useProgress(): ProgressCtx {
-  const [keys, setKeys] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem("cubemaxxed:learned");
-      if (stored) return new Set(JSON.parse(stored) as string[]);
-    } catch {}
-    return new Set();
-  });
+  const [keys, setKeys] = useState<Set<string>>(new Set());
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pendingAchievement, setPendingAchievement] = useState<Achievement | null>(null);
   const earnedIdsRef = useRef<Set<string>>(new Set());
@@ -179,6 +182,11 @@ function useProgress(): ProgressCtx {
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cubemaxxed:learned");
+      if (stored) setKeys(new Set(JSON.parse(stored) as string[]));
+    } catch {}
+
     try {
       const earned = localStorage.getItem("cubemaxxed:achievements");
       if (earned) earnedIdsRef.current = new Set(JSON.parse(earned) as string[]);
@@ -416,7 +424,7 @@ export const CORNER_ORI: OLLCase[] = [
 
 // ── AlgDisplay — inline editable algorithm with localStorage persistence ──────
 
-function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: string }) {
+function AlgDisplay({ defaultAlg, caseKey, align = "center" }: { defaultAlg: string; caseKey: string; align?: "center" | "start" }) {
   const { isFavorited, toggle: toggleFav } = React.useContext(FavoritesContext);
   const { isLearned, toggle: toggleLearned, isAuthenticated } = React.useContext(ProgressContext);
   const storageKey = `cubemaxxed:alg:${caseKey}`;
@@ -487,7 +495,7 @@ function AlgDisplay({ defaultAlg, caseKey }: { defaultAlg: string; caseKey: stri
       >
         {copied ? "COPIED!" : alg}
       </button>
-      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
+      <div className={`flex items-center gap-2 mt-2 ${align === "center" ? "justify-center" : ""}`}>
         {isCustom && (
           <button
             onClick={resetAlg}
@@ -932,7 +940,8 @@ function FavoritesTab() {
   const fav2LPLL  = [...CORNER_PERM, ...EDGE_PERM].filter((c) => isFavorited(`2l-pll-${c.name}`));
   const favFullOLL = OLL_CASES.filter((c) => isFavorited(`full-oll-${c.id}`));
   const favFullPLL = PLL_CASES.filter((c) => isFavorited(`full-pll-${c.id}`));
-  const total = fav2LOLL.length + fav2LPLL.length + favFullOLL.length + favFullPLL.length;
+  const favF2L = F2L_CASES.filter((c) => isFavorited(`f2l-${c.id}`));
+  const total = fav2LOLL.length + fav2LPLL.length + favFullOLL.length + favFullPLL.length + favF2L.length;
 
   if (total === 0) {
     return (
@@ -958,6 +967,17 @@ function FavoritesTab() {
       {fav2LPLL.length  > 0 && <PLLSection     title="2-Look PLL" cases={fav2LPLL}  />}
       {favFullOLL.length > 0 && <FullOLLSection title="Full OLL"   cases={favFullOLL} />}
       {favFullPLL.length > 0 && <FullPLLSection title="Full PLL"   cases={favFullPLL} />}
+      {favF2L.length > 0 && (
+        <div className="flex flex-col gap-5">
+          <div className="flex items-center gap-4">
+            <span className="font-heading text-[10px] text-zinc-300 tracking-widest whitespace-nowrap">F2L</span>
+            <div className="flex-1 h-px bg-white/[0.08]" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {favF2L.map((c) => <F2LCaseCard key={c.id} c={c} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -984,6 +1004,69 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "favorites", label: "Favorites"         },
 ];
 
+// ── F2L ───────────────────────────────────────────────────────────────────────
+
+function F2LCaseCard({ c }: { c: F2LCase }) {
+  return (
+    <div className="flex flex-row items-center gap-4 bg-[#0a0a11] border border-zinc-800 rounded-lg p-3">
+      <div className="shrink-0">
+        <F2LDiagram stickerColors={c.stickerColors} size={80} />
+      </div>
+      <div className="flex flex-col gap-2 min-w-0">
+        <span className="font-heading text-[9px] text-zinc-500 tracking-widest">{c.name.toUpperCase()}</span>
+        <AlgDisplay defaultAlg={c.alg} caseKey={`f2l-${c.id}`} align="start" />
+      </div>
+    </div>
+  );
+}
+
+function F2LTab() {
+  const sections = Array.from(new Map(F2L_CASES.map((c) => [c.section, c.section])).keys());
+  return (
+    <div className="flex flex-col gap-16">
+      {sections.map((section, si) => {
+        const groups = Array.from(new Map(
+          F2L_CASES.filter((c) => c.section === section).map((c) => [c.group, c.group])
+        ).keys());
+        return (
+          <div key={section} className="flex flex-col gap-10">
+            {/* Section header */}
+            <div className="flex items-center gap-4">
+              <span className="font-heading text-[10px] text-zinc-300 tracking-widest whitespace-nowrap">
+                {section.toUpperCase()}
+              </span>
+              <div className="flex-1 h-px bg-white/[0.08]" />
+            </div>
+            {/* Groups within section */}
+            {groups.map((group) => {
+              const cases = F2L_CASES.filter((c) => c.group === group);
+              const showHeader = group !== section;
+              return (
+                <div key={group} className="flex flex-col gap-5">
+                  {showHeader && (
+                    <div className="font-heading text-[9px] text-zinc-500 tracking-widest border-b border-white/[0.05] pb-3">
+                      {group.toUpperCase()}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {cases.map((c) => (
+                      <F2LCaseCard key={c.id} c={c} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            {/* Section divider (not after last section) */}
+            {si < sections.length - 1 && (
+              <div className="h-px bg-white/[0.04] mt-2" />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 const CUBE_COLORS = ["#C41E3A", "#0051A2", "#009B48", "#FF5800", "#FFD500", "#ffffff"];
@@ -997,6 +1080,12 @@ export default function Algorithms() {
   const favorites = useFavorites();
   const progress = useProgress();
   const [tab, setTab] = useState<Tab>("oll-pll");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("cubemaxxed:alg-tab");
+    const valid: Tab[] = ["oll-pll", "full-oll", "full-pll", "f2l", "favorites"];
+    if (saved && (valid as string[]).includes(saved)) setTab(saved as Tab);
+  }, []);
   const [activeColor, setActiveColor] = useState(() => randomCubeColor());
   const [search, setSearch] = useState("");
 
@@ -1022,7 +1111,7 @@ export default function Algorithms() {
         <h1 className="font-heading text-white text-xl leading-snug mt-2">
           ALGORITHMS
         </h1>
-        <p className="text-zinc-400 text-sm mt-2">
+        <p className="text-zinc-400 text-sm mt-2" suppressHydrationWarning>
           {tab === "oll-pll"   && "2-Look OLL + PLL — orient and permute the last layer in four steps."}
           {tab === "full-oll"  && "Full OLL — all 57 orientation cases."}
           {tab === "full-pll"  && "Full PLL — all 21 permutation cases."}
@@ -1044,6 +1133,7 @@ export default function Algorithms() {
               setActiveColor(next);
               setTab(t.id);
               setSearch("");
+              localStorage.setItem("cubemaxxed:alg-tab", t.id);
             }}
             className={`relative px-5 py-2 rounded-md text-sm cursor-pointer transition-all duration-200 ${
               tab === t.id ? "bg-[#13131f] border border-zinc-700 shadow-sm" : "border border-transparent"
@@ -1062,6 +1152,9 @@ export default function Algorithms() {
           </button>
         ))}
       </div>
+
+      {/* Tab content */}
+      <div suppressHydrationWarning>
 
       {/* 2-Look OLL + PLL side by side */}
       {tab === "oll-pll" && (
@@ -1129,8 +1222,13 @@ export default function Algorithms() {
         </div>
       )}
 
+      {/* F2L */}
+      {tab === "f2l" && <F2LTab />}
+
       {/* Favorites */}
       {tab === "favorites" && <FavoritesTab />}
+
+      </div>{/* end tab content */}
     </div>
     </FavoritesContext.Provider>
     </ProgressContext.Provider>
