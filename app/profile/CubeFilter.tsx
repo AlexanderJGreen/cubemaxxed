@@ -59,7 +59,7 @@ export default function CubeFilter({
         >
           <button
             onClick={() => select(null)}
-            className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+            className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
             style={{
               color: !selectedId ? "#FFD500" : "rgba(255,255,255,0.45)",
               backgroundColor: !selectedId ? "rgba(255,213,0,0.05)" : "transparent",
@@ -72,7 +72,7 @@ export default function CubeFilter({
             <button
               key={c.id}
               onClick={() => select(c.id)}
-              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
               style={{
                 color: c.id === selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
                 backgroundColor: c.id === selectedId ? "rgba(0,155,72,0.06)" : "transparent",

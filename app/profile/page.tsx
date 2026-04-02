@@ -5,11 +5,13 @@ import { RankBadge } from "@/app/components/RankBadge";
 import { PixelIcon, type PixelIconName } from "@/app/components/PixelIcon";
 import { getSolveChartData, getPersonalBests } from "@/lib/analytics";
 import { getCubes } from "@/app/cubes/actions";
+import { getGoals } from "@/app/goals/actions";
 import SolveChartClient from "./SolveChartClient";
 import CubeFilter from "./CubeFilter";
 import CubeManager from "./CubeManager";
 import CubeComparison from "./CubeComparison";
 import { GrandmasterGlow } from "./GrandmasterGlow";
+import { GoalsSection } from "@/app/components/GoalsSection";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
@@ -131,7 +133,7 @@ export default async function Profile({
   const solvesQuery = supabase.from("solve_times").select("time_ms").eq("user_id", user.id).order("created_at", { ascending: false }).limit(100);
   const todaySolvesQuery = supabase.from("solve_times").select("time_ms").eq("user_id", user.id).gte("created_at", todayUTCStart);
 
-  const [solvesRes, lessonsRes, algsRes, achievementsRes, chartData, personalBests, todaySolvesRes, cubes] = await Promise.all([
+  const [solvesRes, lessonsRes, algsRes, achievementsRes, chartData, personalBests, todaySolvesRes, cubes, goals] = await Promise.all([
     selectedCubeId ? solvesQuery.eq("cube_id", selectedCubeId) : solvesQuery,
     supabase.from("lesson_completions").select("id", { count: "exact" }).eq("user_id", user.id),
     supabase.from("algorithm_progress").select("id", { count: "exact" }).eq("user_id", user.id).eq("mastered", true),
@@ -140,6 +142,7 @@ export default async function Profile({
     getPersonalBests(user.id, selectedCubeId),
     selectedCubeId ? todaySolvesQuery.eq("cube_id", selectedCubeId) : todaySolvesQuery,
     getCubes(),
+    getGoals(),
   ]);
 
   const solves = solvesRes.data ?? [];
@@ -339,6 +342,9 @@ export default async function Profile({
 
         {/* ── Head-to-head comparison ── */}
         {cubes.length >= 2 && <CubeComparison cubes={cubes} />}
+
+        {/* ── Goals ── */}
+        <GoalsSection goals={goals} cubes={cubes} />
 
         {/* ── Streak + member stats ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

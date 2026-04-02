@@ -168,7 +168,7 @@ function ChallengeCard({
           <input type="hidden" name="xp" value={challenge.xp.toString()} />
           <button
             type="submit"
-            className="w-full font-heading text-[10px] leading-none text-[#0d0d14] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px]"
+            className="w-full font-heading text-[10px] leading-none text-[#0d0d14] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px] cursor-pointer"
             style={{
               backgroundColor: accentColor,
               boxShadow: `3px 3px 0px rgba(0,0,0,0.5)`,
@@ -527,7 +527,7 @@ export default async function Dashboard() {
               <form action={useStreakFreeze}>
                 <button
                   type="submit"
-                  className="font-heading text-[8px] tracking-widest mt-0.5 px-2 py-1 transition-colors"
+                  className="font-heading text-[8px] tracking-widest mt-0.5 px-2 py-1 transition-colors cursor-pointer"
                   style={{
                     color: "#4FC3F7",
                     border: "1px solid rgba(79,195,247,0.3)",

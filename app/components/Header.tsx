@@ -124,7 +124,7 @@ export default function Header({
           {authButton}
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex flex-col justify-center items-center gap-[5px] w-10 h-10 shrink-0"
+            className="flex flex-col justify-center items-center gap-[5px] w-10 h-10 shrink-0 cursor-pointer"
             aria-label="Toggle menu"
           >
             <span

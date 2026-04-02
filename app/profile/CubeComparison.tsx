@@ -58,7 +58,7 @@ function CubeDropdown({
         >
           <button
             onClick={() => { onChange(null); setOpen(false); }}
-            className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+            className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
             style={{ color: !value ? "#FFD500" : "rgba(255,255,255,0.35)" }}
           >
             {placeholder}
@@ -70,7 +70,7 @@ function CubeDropdown({
             <button
               key={c.id}
               onClick={() => { onChange(c.id); setOpen(false); }}
-              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
+              className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
               style={{
                 color: c.id === value ? "#FFD500" : "rgba(255,255,255,0.45)",
                 backgroundColor: c.id === value ? "rgba(255,213,0,0.05)" : "transparent",
