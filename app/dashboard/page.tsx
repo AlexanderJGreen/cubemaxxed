@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
-import { claimChallengeXP } from "./actions";
+import { claimChallengeXP, useStreakFreeze } from "./actions";
+import { FreezeTimer } from "@/app/components/FreezeTimer";
 
 // ─── Challenge System ────────────────────────────────────────────────────────
 
@@ -520,11 +521,29 @@ export default async function Dashboard() {
             <span className="font-heading text-[9px] text-zinc-500 tracking-widest">
               DAY STREAK
             </span>
-            <span className="font-sans text-xs text-zinc-600 mt-0.5">
-              {profile.streak_freeze_available
-                ? "1 freeze available this week"
-                : "no freeze available"}
-            </span>
+            {profile.freeze_used_date === todayUTC ? (
+              <FreezeTimer />
+            ) : profile.streak_freeze_available ? (
+              <form action={useStreakFreeze}>
+                <button
+                  type="submit"
+                  className="font-heading text-[8px] tracking-widest mt-0.5 px-2 py-1 transition-colors"
+                  style={{
+                    color: "#4FC3F7",
+                    border: "1px solid rgba(79,195,247,0.3)",
+                    backgroundColor: "rgba(79,195,247,0.06)",
+                  }}
+                >
+                  USE FREEZE
+                </button>
+              </form>
+            ) : (
+              <span className="font-sans text-xs text-zinc-600 mt-0.5">
+                {profile.streak_freeze_available
+                  ? "1 freeze available"
+                  : "no freeze available"}
+              </span>
+            )}
           </div>
         </div>
 

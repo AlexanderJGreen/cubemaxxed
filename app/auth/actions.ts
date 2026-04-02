@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -48,11 +49,15 @@ export async function signup(formData: FormData) {
   const supabase = await createClient();
   const admin = createAdminClient();
 
+  const headersList = await headers();
+  const origin = headersList.get("origin") ?? "";
+
   const { data, error } = await supabase.auth.signUp({
     email: formData.get("email") as string,
     password,
     options: {
       data: { username },
+      emailRedirectTo: `${origin}/auth/confirm?next=/dashboard`,
     },
   });
 
@@ -64,8 +69,7 @@ export async function signup(formData: FormData) {
     await admin.from("profiles").upsert({ id: data.user.id, username });
   }
 
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/auth/check-email");
 }
 
 export async function signout() {

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { checkAndSetRankupCookie } from "@/lib/rankup";
 
 export async function awardMemoryXP(
   amount: number,
@@ -13,6 +14,7 @@ export async function awardMemoryXP(
 
   if (!user) return { error: "not_logged_in" };
 
+  await checkAndSetRankupCookie(supabase, user.id, amount);
   await supabase.rpc("increment_xp", { user_id: user.id, amount });
 
   await supabase.from("algorithm_progress").upsert(

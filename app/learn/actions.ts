@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "./data";
 import { updateStreak } from "@/lib/streak";
+import { checkAndSetRankupCookie } from "@/lib/rankup";
 
 export async function completeLesson(lessonId: string, stageNum: number, xpReward: number, localDate?: string) {
   const supabase = await createClient();
@@ -24,6 +25,7 @@ export async function completeLesson(lessonId: string, stageNum: number, xpRewar
     // Just navigate forward without re-awarding XP
   } else {
     // Award XP
+    await checkAndSetRankupCookie(supabase, user.id, xpReward);
     await supabase.rpc("increment_xp", { user_id: user.id, amount: xpReward });
     await updateStreak(supabase, user.id, localDate);
 

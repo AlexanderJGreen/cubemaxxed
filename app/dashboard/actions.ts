@@ -3,6 +3,33 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { updateStreak } from "@/lib/streak";
+import { checkAndSetRankupCookie } from "@/lib/rankup";
+
+export async function useStreakFreeze(): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("streak_freeze_available, last_xp_date, current_streak")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.streak_freeze_available) return;
+  if (!profile.current_streak) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  await supabase
+    .from("profiles")
+    .update({ streak_freeze_available: false, last_xp_date: today, freeze_used_date: today })
+    .eq("id", user.id);
+
+  revalidatePath("/dashboard");
+}
 
 export async function claimChallengeXP(formData: FormData): Promise<void> {
   const challengeKey = formData.get("challengeKey") as string;
@@ -24,6 +51,7 @@ export async function claimChallengeXP(formData: FormData): Promise<void> {
 
   if (error) return;
 
+  await checkAndSetRankupCookie(supabase, user.id, xp);
   await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
   await updateStreak(supabase, user.id);
 

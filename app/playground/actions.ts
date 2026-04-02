@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { updateStreak } from "@/lib/streak";
+import { checkAndSetRankupCookie } from "@/lib/rankup";
 
 const ACHIEVEMENT_THRESHOLDS = [
   { id: "sub_120", ms: 120_000 },
@@ -38,6 +39,7 @@ export async function saveSolve(
     ...(cubeId ? { cube_id: cubeId } : {}),
   });
 
+  await checkAndSetRankupCookie(supabase, user.id, xp);
   await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
   await updateStreak(supabase, user.id, localDate);
 
@@ -210,6 +212,7 @@ export async function recordAlgorithmAnswer(
   );
 
   if (mastered) {
+    await checkAndSetRankupCookie(supabase, user.id, 30);
     await supabase.rpc("increment_xp", { user_id: user.id, amount: 30 });
     await updateStreak(supabase, user.id);
 

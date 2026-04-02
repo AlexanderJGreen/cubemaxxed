@@ -3,6 +3,7 @@ import { Press_Start_2P, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import AuthButton from "./components/AuthButton";
+import RankUpModal from "./components/RankUpModal";
 import { Analytics } from "@vercel/analytics/react";
 
 const pressStart2P = Press_Start_2P({
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className={`${pressStart2P.variable} ${inter.variable} antialiased`}>
         <Header authButton={<AuthButton />} />
         <main>{children}</main>
+        <RankUpModal />
         <Analytics />
       </body>
     </html>
