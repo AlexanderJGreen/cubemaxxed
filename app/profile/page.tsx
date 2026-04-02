@@ -8,6 +8,7 @@ import { getCubes } from "@/app/cubes/actions";
 import SolveChartClient from "./SolveChartClient";
 import CubeFilter from "./CubeFilter";
 import CubeManager from "./CubeManager";
+import CubeComparison from "./CubeComparison";
 import { GrandmasterGlow } from "./GrandmasterGlow";
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -335,6 +336,9 @@ export default async function Profile({
 
         {/* ── My Cubes ── */}
         <CubeManager initialCubes={cubes} />
+
+        {/* ── Head-to-head comparison ── */}
+        {cubes.length >= 2 && <CubeComparison cubes={cubes} />}
 
         {/* ── Streak + member stats ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
