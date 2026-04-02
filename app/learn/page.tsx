@@ -242,7 +242,7 @@ export default async function Learn() {
         </div>
 
         {/* Footer stats */}
-        <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#07070f" }}>
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#07070f" }}>
           {[
             { label: "TOTAL LESSONS",      value: "43" },
             { label: "TOTAL XP AVAILABLE", value: "4,700" },

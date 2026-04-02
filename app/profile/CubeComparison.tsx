@@ -12,12 +12,14 @@ function CubeDropdown({
   onChange,
   exclude,
   placeholder,
+  align = "left",
 }: {
   cubes: Cube[];
   value: string | null;
   onChange: (id: string | null) => void;
   exclude: string | null;
   placeholder: string;
+  align?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ function CubeDropdown({
 
       {open && (
         <div
-          className="absolute z-50 w-full"
+          className={`absolute z-50 w-full ${align === "right" ? "right-0" : "left-0"}`}
           style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
         >
           <button
@@ -179,6 +181,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
           onChange={setCubeB}
           exclude={cubeA}
           placeholder="SELECT CUBE B"
+          align="right"
         />
       </div>
 
@@ -192,19 +195,19 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
         <div className="flex flex-col">
           {/* Header row */}
           <div
-            className="grid items-center py-3 px-4 mb-1"
-            style={{ gridTemplateColumns: "1fr auto 1fr", gap: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            className="grid items-center py-3 px-4 mb-1 gap-2 sm:gap-4"
+            style={{ gridTemplateColumns: "1fr auto 1fr", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
           >
             <span
-              className="font-heading text-sm truncate"
+              className="font-heading text-xs sm:text-sm truncate"
               style={{ color: aWins > bWins ? "#FFD500" : "rgba(255,255,255,0.5)" }}
             >
               {cubeAName}
               {aWins > bWins && <span className="ml-2 text-[8px]">★</span>}
             </span>
-            <span className="font-heading text-[8px] text-zinc-700 tracking-widest text-center w-24">STAT</span>
+            <span className="font-heading text-[8px] text-zinc-700 tracking-widest text-center w-14 sm:w-24">STAT</span>
             <span
-              className="font-heading text-sm truncate text-right"
+              className="font-heading text-xs sm:text-sm truncate text-right"
               style={{ color: bWins > aWins ? "#FFD500" : "rgba(255,255,255,0.5)" }}
             >
               {bWins > aWins && <span className="mr-2 text-[8px]">★</span>}
@@ -221,17 +224,16 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
             rows.map((row) => (
               <div
                 key={row.label}
-                className="grid items-center py-3 px-4"
+                className="grid items-center py-3 px-4 gap-2 sm:gap-4"
                 style={{
                   gridTemplateColumns: "1fr auto 1fr",
-                  gap: "1rem",
                   borderBottom: "1px solid rgba(255,255,255,0.03)",
                 }}
               >
                 {/* Cube A value */}
                 <div className="flex items-center gap-2">
                   <span
-                    className="font-heading text-base leading-none"
+                    className="font-heading text-sm sm:text-base leading-none"
                     style={{
                       color: row.winner === "a" ? "#FFD500"
                            : row.winner === "tie" ? "rgba(255,255,255,0.5)"
@@ -246,7 +248,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
                 </div>
 
                 {/* Label */}
-                <span className="font-heading text-[8px] text-zinc-600 tracking-widest text-center w-24">{row.label}</span>
+                <span className="font-heading text-[8px] text-zinc-600 tracking-widest text-center w-14 sm:w-24">{row.label}</span>
 
                 {/* Cube B value */}
                 <div className="flex items-center gap-2 justify-end">
@@ -254,7 +256,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
                     <div style={{ width: 4, height: 4, backgroundColor: "#FFD500", boxShadow: "0 0 6px #FFD500", flexShrink: 0 }} />
                   )}
                   <span
-                    className="font-heading text-base leading-none"
+                    className="font-heading text-sm sm:text-base leading-none"
                     style={{
                       color: row.winner === "b" ? "#FFD500"
                            : row.winner === "tie" ? "rgba(255,255,255,0.5)"

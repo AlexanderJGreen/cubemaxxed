@@ -225,9 +225,9 @@ export default async function Profile({
         {/* Identity info */}
         <div className="flex flex-col gap-4 text-center sm:text-left flex-1 min-w-0">
           <div className="flex flex-col gap-1.5">
-            <h1 className="font-heading text-white leading-none" style={{ fontSize: "clamp(18px, 3vw, 30px)" }}>
+            <span className="font-heading text-white leading-none" style={{ fontSize: "clamp(18px, 3vw, 30px)" }}>
               {displayName}
-            </h1>
+            </span>
             <span className="font-heading leading-none" style={{ fontSize: "clamp(10px, 1.8vw, 13px)", color: rank.color, letterSpacing: "0.12em" }}>
               {rank.rank} {rank.tier}
             </span>
@@ -530,7 +530,7 @@ export default async function Profile({
                     </div>
                     <div className="h-px flex-1" style={{ backgroundColor: `${catColor}25` }} />
                   </div>
-                  <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 gap-2">
                     {catAchievements.map((a) => (
                       <AchievementBadge key={a.id} a={a} unlocked={unlockedIds.has(a.id)} />
                     ))}

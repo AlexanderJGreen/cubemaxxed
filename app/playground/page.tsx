@@ -108,7 +108,7 @@ function ScrambleSelect({
           border: "1px solid rgba(255,255,255,0.1)",
           color: "#FFD500",
           cursor: disabled ? "default" : "pointer",
-          minWidth: 200,
+          minWidth: "min(200px, calc(100vw - 3rem))",
         }}
       >
         <span className="flex-1 text-left">{selected.label.toUpperCase()}</span>
@@ -188,7 +188,7 @@ function CubeSelect({
           border: selectedId ? "1px solid rgba(0,155,72,0.4)" : "1px solid rgba(255,255,255,0.1)",
           color: selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
           cursor: disabled ? "default" : "pointer",
-          minWidth: 200,
+          minWidth: "min(200px, calc(100vw - 3rem))",
         }}
       >
         <span style={{ fontSize: 8, opacity: 0.5 }}>&#9647;</span>

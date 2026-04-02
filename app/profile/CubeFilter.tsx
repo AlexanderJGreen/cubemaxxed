@@ -44,7 +44,7 @@ export default function CubeFilter({
           backgroundColor: "#0d0d14",
           border: selectedId ? "1px solid rgba(0,155,72,0.4)" : "1px solid rgba(255,255,255,0.1)",
           color: selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
-          minWidth: 200,
+          minWidth: "min(200px, calc(100vw - 3rem))",
         }}
       >
         <span style={{ fontSize: 8, opacity: 0.5 }}>&#9647;</span>

@@ -98,7 +98,7 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
           {cubes.map((c) => (
             <div
               key={c.id}
-              className="flex items-center gap-3 px-4 py-3"
+              className="flex flex-wrap items-center gap-3 px-4 py-3"
               style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}
             >
               {renaming === c.id ? (
