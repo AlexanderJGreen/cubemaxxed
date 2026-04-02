@@ -37,7 +37,7 @@ function CubeDropdown({
   const available = cubes.filter((c) => c.id !== exclude);
 
   return (
-    <div ref={ref} className="relative flex-1">
+    <div ref={ref} className="relative flex-1 min-w-0">
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full font-heading text-[10px] tracking-widest px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors"
