@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { updateStreak } from "@/lib/streak";
+import { updateStreak, getStreakMultiplierForUser } from "@/lib/streak";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
 import { getDailyChallenge, getWeeklyChallenge } from "./challenges";
 
@@ -62,8 +62,10 @@ export async function claimChallengeXP(formData: FormData): Promise<void> {
 
   if (error) return;
 
-  await checkAndSetRankupCookie(supabase, user.id, xp);
-  await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
+  const multiplier = await getStreakMultiplierForUser(supabase, user.id);
+  const finalXp = Math.round(xp * multiplier);
+  await checkAndSetRankupCookie(supabase, user.id, finalXp);
+  await supabase.rpc("increment_xp", { user_id: user.id, amount: finalXp });
   await updateStreak(supabase, user.id);
 
   revalidatePath("/dashboard");

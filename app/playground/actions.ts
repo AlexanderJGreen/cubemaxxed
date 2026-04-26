@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { updateStreak } from "@/lib/streak";
+import { updateStreak, getStreakMultiplierForUser } from "@/lib/streak";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
 
 const ACHIEVEMENT_THRESHOLDS = [
@@ -45,8 +45,10 @@ export async function saveSolve(
     ...(cubeId ? { cube_id: cubeId } : {}),
   });
 
-  await checkAndSetRankupCookie(supabase, user.id, safeXp);
-  await supabase.rpc("increment_xp", { user_id: user.id, amount: safeXp });
+  const multiplier = await getStreakMultiplierForUser(supabase, user.id);
+  const finalXp = Math.round(safeXp * multiplier);
+  await checkAndSetRankupCookie(supabase, user.id, finalXp);
+  await supabase.rpc("increment_xp", { user_id: user.id, amount: finalXp });
   await updateStreak(supabase, user.id, localDate);
 
   // Analytics and achievements only count for full WCA 3x3 solves
@@ -218,8 +220,10 @@ export async function recordAlgorithmAnswer(
   );
 
   if (mastered) {
-    await checkAndSetRankupCookie(supabase, user.id, 30);
-    await supabase.rpc("increment_xp", { user_id: user.id, amount: 30 });
+    const multiplier = await getStreakMultiplierForUser(supabase, user.id);
+    const masteryXp = Math.round(30 * multiplier);
+    await checkAndSetRankupCookie(supabase, user.id, masteryXp);
+    await supabase.rpc("increment_xp", { user_id: user.id, amount: masteryXp });
     await updateStreak(supabase, user.id);
 
     const { count } = await supabase

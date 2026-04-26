@@ -34,7 +34,12 @@
       "Bash(python3 -m json.tool)",
       "Bash(node -e \"var cstimer = require\\(''''./node_modules/cstimer_module''''\\); var types = cstimer.getScrambleTypes\\(\\); console.log\\(JSON.stringify\\(types, null, 2\\)\\);\")",
       "Bash(npx next:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(git -C /mnt/c/Users/User/Desktop/projects/cubemaxxed log --oneline --all)",
+      "Bash(git -C /mnt/c/Users/User/Desktop/projects/cubemaxxed log --all --full-history -- \".env*\" \"*.env\")",
+      "Bash(git -C /mnt/c/Users/User/Desktop/projects/cubemaxxed status)",
+      "Bash(git -C /mnt/c/Users/User/Desktop/projects/cubemaxxed diff --stat)",
+      "Bash(git *)"
     ]
   }
 }

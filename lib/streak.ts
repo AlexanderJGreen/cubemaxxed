@@ -1,5 +1,26 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+export function getStreakMultiplier(streak: number): number {
+  if (streak >= 100) return 2.0;
+  if (streak >= 61)  return 1.75;
+  if (streak >= 31)  return 1.5;
+  if (streak >= 15)  return 1.25;
+  if (streak >= 8)   return 1.1;
+  return 1.0;
+}
+
+export async function getStreakMultiplierForUser(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<number> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("current_streak")
+    .eq("id", userId)
+    .single();
+  return getStreakMultiplier(data?.current_streak ?? 0);
+}
+
 /**
  * Call this after awarding XP to a user.
  * Increments streak if today is a new calendar day since last XP,

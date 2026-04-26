@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
+import { getStreakMultiplierForUser } from "@/lib/streak";
 
 const VALID_MEMORY_XP = new Set([3, 8, 10, 15]);
 
@@ -18,8 +19,10 @@ export async function awardMemoryXP(
 
   if (!user) return { error: "not_logged_in" };
 
-  await checkAndSetRankupCookie(supabase, user.id, amount);
-  await supabase.rpc("increment_xp", { user_id: user.id, amount });
+  const multiplier = await getStreakMultiplierForUser(supabase, user.id);
+  const finalAmount = Math.round(amount * multiplier);
+  await checkAndSetRankupCookie(supabase, user.id, finalAmount);
+  await supabase.rpc("increment_xp", { user_id: user.id, amount: finalAmount });
 
   await supabase.from("algorithm_progress").upsert(
     { user_id: user.id, algorithm_id: algorithmId, mastered: true },

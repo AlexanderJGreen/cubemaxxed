@@ -69,7 +69,7 @@ export default async function Learn() {
       ? prevStage.lessons.every((l) => completedLessonIds.has(l.number))
       : true; // Stage 1 always unlocked
 
-    const isCfop = stage.number >= 4;
+    const isCfop = stage.number >= 5;
 
     let status: Status;
     if (isCfop) status = "coming_soon";

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
+import { getStreakMultiplier } from "@/lib/streak";
 import { RankBadge } from "@/app/components/RankBadge";
 import { claimChallengeXP, useStreakFreeze } from "./actions";
 import { FreezeTimer } from "@/app/components/FreezeTimer";
@@ -335,6 +336,7 @@ export default async function Dashboard() {
       ? "resets tomorrow"
       : `resets in ${daysUntilWeekEnd}d`;
 
+  const streakMultiplier = getStreakMultiplier(profile.current_streak ?? 0);
   const rank = getRankInfo(profile.total_xp);
   const xpInTier = profile.total_xp - rank.start;
   const xpNeeded = rank.end - rank.start;
@@ -522,6 +524,33 @@ export default async function Dashboard() {
                   : "no freeze available"}
               </span>
             )}
+          </div>
+
+          {/* Streak multiplier badge */}
+          <div className="ml-auto flex flex-col items-end gap-1.5">
+            <span className="font-heading text-[8px] text-zinc-600 tracking-widest">
+              STREAK BONUS
+            </span>
+            <span
+              className="font-heading leading-none"
+              style={{
+                fontSize: "clamp(20px, 3vw, 28px)",
+                color: streakMultiplier > 1 ? "#FF5800" : "#3f3f46",
+                textShadow: streakMultiplier > 1 ? "0 0 16px rgba(255,88,0,0.5)" : undefined,
+              }}
+            >
+              {streakMultiplier.toFixed(2).replace(/\.?0+$/, "")}×
+            </span>
+            <span
+              className="font-heading text-[8px] leading-none px-2 py-1"
+              style={{
+                color: streakMultiplier > 1 ? "#FF5800" : "#52525b",
+                border: `1px solid ${streakMultiplier > 1 ? "rgba(255,88,0,0.3)" : "rgba(255,255,255,0.06)"}`,
+                backgroundColor: streakMultiplier > 1 ? "rgba(255,88,0,0.06)" : "transparent",
+              }}
+            >
+              {streakMultiplier > 1 ? "ACTIVE" : "NO BONUS YET"}
+            </span>
           </div>
         </div>
 

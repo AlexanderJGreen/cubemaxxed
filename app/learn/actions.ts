@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "./data";
-import { updateStreak } from "@/lib/streak";
+import { updateStreak, getStreakMultiplierForUser } from "@/lib/streak";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
 
 export async function completeLesson(lessonId: string, stageNum: number, xpReward: number, localDate?: string) {
@@ -13,20 +13,22 @@ export async function completeLesson(lessonId: string, stageNum: number, xpRewar
   if (!user) redirect("/auth/login");
 
   // Record lesson completion (ignore if already completed)
+  const multiplier = await getStreakMultiplierForUser(supabase, user.id);
+  const finalXp = Math.round(xpReward * multiplier);
+
   const { error } = await supabase.from("lesson_completions").insert({
     user_id: user.id,
     lesson_id: lessonId,
     stage: stageNum,
-    xp_earned: xpReward,
+    xp_earned: finalXp,
   });
 
   // If already completed (unique constraint), don't award XP again
   if (error) {
     // Just navigate forward without re-awarding XP
   } else {
-    // Award XP
-    await checkAndSetRankupCookie(supabase, user.id, xpReward);
-    await supabase.rpc("increment_xp", { user_id: user.id, amount: xpReward });
+    await checkAndSetRankupCookie(supabase, user.id, finalXp);
+    await supabase.rpc("increment_xp", { user_id: user.id, amount: finalXp });
     await updateStreak(supabase, user.id, localDate);
 
     // Check and unlock achievements
