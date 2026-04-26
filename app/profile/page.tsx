@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
@@ -277,7 +278,20 @@ export default async function Profile({
 
         <div className="flex items-center justify-between gap-4">
           <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PROFILE</span>
-          <CubeFilter cubes={cubes} selectedId={selectedCubeId ?? null} />
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/u/${displayName}`}
+              className="font-heading text-[8px] tracking-widest px-3 py-1.5 transition-colors"
+              style={{
+                color: "#555570",
+                border: "1px solid rgba(255,255,255,0.07)",
+                backgroundColor: "rgba(255,255,255,0.02)",
+              }}
+            >
+              SHARE PROFILE ↗
+            </Link>
+            <CubeFilter cubes={cubes} selectedId={selectedCubeId ?? null} />
+          </div>
         </div>
 
         {/* ── Hero identity card ── */}
