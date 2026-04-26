@@ -20,12 +20,15 @@ export type PersonalBest = {
 
 const MILESTONES = [
   { id: "sub_120", label: "Sub-2:00", threshold: 120000 },
-  { id: "sub_60",  label: "Sub-1:00", threshold: 60000  },
-  { id: "sub_45",  label: "Sub-45",   threshold: 45000  },
-  { id: "sub_30",  label: "Sub-30",   threshold: 30000  },
+  { id: "sub_60", label: "Sub-1:00", threshold: 60000 },
+  { id: "sub_45", label: "Sub-45", threshold: 45000 },
+  { id: "sub_30", label: "Sub-30", threshold: 30000 },
 ];
 
-export async function getSolveChartData(userId: string, cubeId?: string | null): Promise<SolveDataPoint[]> {
+export async function getSolveChartData(
+  userId: string,
+  cubeId?: string | null,
+): Promise<SolveDataPoint[]> {
   const supabase = await createClient();
   let query = supabase
     .from("solve_times")
@@ -43,12 +46,15 @@ export async function getSolveChartData(userId: string, cubeId?: string | null):
     solveNumber: i + 1,
     time_ms: solve.time_ms,
     timeFormatted: formatTime(solve.time_ms),
-    ao5:  i >= 4  ? calcAo(times.slice(i - 4,  i + 1)) : null,
+    ao5: i >= 4 ? calcAo(times.slice(i - 4, i + 1)) : null,
     ao12: i >= 11 ? calcAo(times.slice(i - 11, i + 1)) : null,
   }));
 }
 
-export async function getPersonalBests(userId: string, cubeId?: string | null): Promise<PersonalBest[]> {
+export async function getPersonalBests(
+  userId: string,
+  cubeId?: string | null,
+): Promise<PersonalBest[]> {
   const supabase = await createClient();
   let query = supabase
     .from("solve_times")
