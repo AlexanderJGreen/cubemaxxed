@@ -18,6 +18,9 @@ const PRACTICE_MILESTONES: Record<number, string> = {
   1000:  "thousand_club",
 };
 
+const VALID_SOLVE_XP = new Set([2, 3, 4, 5]);
+const MIN_SOLVE_MS = 3000; // sub-3s is humanly impossible
+
 export async function saveSolve(
   time_ms: number,
   scramble: string,
@@ -27,6 +30,9 @@ export async function saveSolve(
   scrambleType: string = "333",
   cubeId?: string,
 ): Promise<void> {
+  if (time_ms < MIN_SOLVE_MS) return;
+  const safeXp = VALID_SOLVE_XP.has(xp) ? xp : 5;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return; // silently skip if not logged in
@@ -39,8 +45,8 @@ export async function saveSolve(
     ...(cubeId ? { cube_id: cubeId } : {}),
   });
 
-  await checkAndSetRankupCookie(supabase, user.id, xp);
-  await supabase.rpc("increment_xp", { user_id: user.id, amount: xp });
+  await checkAndSetRankupCookie(supabase, user.id, safeXp);
+  await supabase.rpc("increment_xp", { user_id: user.id, amount: safeXp });
   await updateStreak(supabase, user.id, localDate);
 
   // Analytics and achievements only count for full WCA 3x3 solves

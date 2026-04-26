@@ -5,54 +5,12 @@ import { getRankInfo, formatTime, calcAo } from "@/lib/rank";
 import { RankBadge } from "@/app/components/RankBadge";
 import { claimChallengeXP, useStreakFreeze } from "./actions";
 import { FreezeTimer } from "@/app/components/FreezeTimer";
-
-// ─── Challenge System ────────────────────────────────────────────────────────
-
-type ChallengeType =
-  | "solves_today"
-  | "lessons_today"
-  | "solves_week"
-  | "lessons_week"
-  | "streak_days";
-
-interface Challenge {
-  text: string;
-  xp: number;
-  type: ChallengeType;
-  target: number;
-}
-
-const DAILY_CHALLENGES: Challenge[] = [
-  { text: "Log 5 solves in the timer", xp: 30, type: "solves_today", target: 5 },
-  { text: "Complete a lesson", xp: 40, type: "lessons_today", target: 1 },
-  { text: "Log 3 solves in the timer", xp: 20, type: "solves_today", target: 3 },
-  { text: "Log 10 solves in the timer", xp: 50, type: "solves_today", target: 10 },
-  { text: "Complete 2 lessons", xp: 60, type: "lessons_today", target: 2 },
-  { text: "Get in a practice session", xp: 25, type: "solves_today", target: 1 },
-  { text: "Log 7 solves in the timer", xp: 40, type: "solves_today", target: 7 },
-];
-
-const WEEKLY_CHALLENGES: Challenge[] = [
-  { text: "Log 30 solves this week", xp: 150, type: "solves_week", target: 30 },
-  { text: "Complete 3 lessons this week", xp: 200, type: "lessons_week", target: 3 },
-  { text: "Keep your streak going all week", xp: 100, type: "streak_days", target: 7 },
-  { text: "Log 15 solves this week", xp: 100, type: "solves_week", target: 15 },
-  { text: "Complete 5 lessons this week", xp: 300, type: "lessons_week", target: 5 },
-  { text: "Log 50 solves this week", xp: 200, type: "solves_week", target: 50 },
-  { text: "Complete 2 lessons this week", xp: 150, type: "lessons_week", target: 2 },
-];
-
-function getDailyChallenge(dateStr: string): Challenge {
-  const d = new Date(dateStr);
-  const daysSinceEpoch = Math.floor(d.getTime() / (1000 * 60 * 60 * 24));
-  return DAILY_CHALLENGES[daysSinceEpoch % DAILY_CHALLENGES.length];
-}
-
-function getWeeklyChallenge(weekStartStr: string): Challenge {
-  const d = new Date(weekStartStr);
-  const weeksSinceEpoch = Math.floor(d.getTime() / (1000 * 60 * 60 * 24 * 7));
-  return WEEKLY_CHALLENGES[weeksSinceEpoch % WEEKLY_CHALLENGES.length];
-}
+import {
+  type Challenge,
+  type ChallengeType,
+  getDailyChallenge,
+  getWeeklyChallenge,
+} from "./challenges";
 
 function getChallengeProgress(
   challenge: Challenge,
@@ -62,14 +20,19 @@ function getChallengeProgress(
     solvesWeek: number;
     lessonsWeek: number;
     streakDays: number;
-  }
+  },
 ): number {
   switch (challenge.type) {
-    case "solves_today":  return Math.min(challenge.target, counts.solvesToday);
-    case "lessons_today": return Math.min(challenge.target, counts.lessonsToday);
-    case "solves_week":   return Math.min(challenge.target, counts.solvesWeek);
-    case "lessons_week":  return Math.min(challenge.target, counts.lessonsWeek);
-    case "streak_days":   return Math.min(challenge.target, counts.streakDays);
+    case "solves_today":
+      return Math.min(challenge.target, counts.solvesToday);
+    case "lessons_today":
+      return Math.min(challenge.target, counts.lessonsToday);
+    case "solves_week":
+      return Math.min(challenge.target, counts.solvesWeek);
+    case "lessons_week":
+      return Math.min(challenge.target, counts.lessonsWeek);
+    case "streak_days":
+      return Math.min(challenge.target, counts.streakDays);
   }
 }
 
@@ -157,7 +120,9 @@ function ChallengeCard({
               CLAIMED
             </span>
           ) : !done ? (
-            <span className="font-sans text-xs text-zinc-700">{resetLabel}</span>
+            <span className="font-sans text-xs text-zinc-700">
+              {resetLabel}
+            </span>
           ) : null}
         </div>
       </div>
@@ -165,7 +130,6 @@ function ChallengeCard({
       {done && !claimed && (
         <form action={claimAction}>
           <input type="hidden" name="challengeKey" value={challengeKey} />
-          <input type="hidden" name="xp" value={challenge.xp.toString()} />
           <button
             type="submit"
             className="w-full font-heading text-[10px] leading-none text-[#0d0d14] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px] cursor-pointer"
@@ -299,57 +263,65 @@ export default async function Dashboard() {
   weekStartDate.setUTCDate(now.getUTCDate() - daysFromMonday);
   const weekStartUTC = weekStartDate.toISOString().split("T")[0];
 
-  const dailyKey  = `daily_${todayUTC}`;
+  const dailyKey = `daily_${todayUTC}`;
   const weeklyKey = `weekly_${weekStartUTC}`;
 
-  const [challengeSolvesTodayRes, challengeLessonsTodayRes, challengeSolvesWeekRes, challengeLessonsWeekRes, claimedRes] =
-    await Promise.all([
-      supabase
-        .from("solve_times")
-        .select("id", { count: "exact" })
-        .eq("user_id", user.id)
-        .gte("created_at", `${todayUTC}T00:00:00.000Z`),
-      supabase
-        .from("lesson_completions")
-        .select("id", { count: "exact" })
-        .eq("user_id", user.id)
-        .gte("completed_at", `${todayUTC}T00:00:00.000Z`),
-      supabase
-        .from("solve_times")
-        .select("id", { count: "exact" })
-        .eq("user_id", user.id)
-        .gte("created_at", `${weekStartUTC}T00:00:00.000Z`),
-      supabase
-        .from("lesson_completions")
-        .select("id", { count: "exact" })
-        .eq("user_id", user.id)
-        .gte("completed_at", `${weekStartUTC}T00:00:00.000Z`),
-      supabase
-        .from("challenge_completions")
-        .select("challenge_key")
-        .eq("user_id", user.id)
-        .in("challenge_key", [dailyKey, weeklyKey]),
-    ]);
+  const [
+    challengeSolvesTodayRes,
+    challengeLessonsTodayRes,
+    challengeSolvesWeekRes,
+    challengeLessonsWeekRes,
+    claimedRes,
+  ] = await Promise.all([
+    supabase
+      .from("solve_times")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .gte("created_at", `${todayUTC}T00:00:00.000Z`),
+    supabase
+      .from("lesson_completions")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .gte("completed_at", `${todayUTC}T00:00:00.000Z`),
+    supabase
+      .from("solve_times")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .gte("created_at", `${weekStartUTC}T00:00:00.000Z`),
+    supabase
+      .from("lesson_completions")
+      .select("id", { count: "exact" })
+      .eq("user_id", user.id)
+      .gte("completed_at", `${weekStartUTC}T00:00:00.000Z`),
+    supabase
+      .from("challenge_completions")
+      .select("challenge_key")
+      .eq("user_id", user.id)
+      .in("challenge_key", [dailyKey, weeklyKey]),
+  ]);
 
-  const claimedKeys = new Set((claimedRes.data ?? []).map((r) => r.challenge_key));
+  const claimedKeys = new Set(
+    (claimedRes.data ?? []).map((r) => r.challenge_key),
+  );
 
   const challengeCounts = {
-    solvesToday:  challengeSolvesTodayRes.count  ?? 0,
+    solvesToday: challengeSolvesTodayRes.count ?? 0,
     lessonsToday: challengeLessonsTodayRes.count ?? 0,
-    solvesWeek:   challengeSolvesWeekRes.count   ?? 0,
-    lessonsWeek:  challengeLessonsWeekRes.count  ?? 0,
-    streakDays:   profile.current_streak,
+    solvesWeek: challengeSolvesWeekRes.count ?? 0,
+    lessonsWeek: challengeLessonsWeekRes.count ?? 0,
+    streakDays: profile.current_streak,
   };
 
-  const dailyChallenge  = getDailyChallenge(todayUTC);
+  const dailyChallenge = getDailyChallenge(todayUTC);
   const weeklyChallenge = getWeeklyChallenge(weekStartUTC);
-  const dailyProgress   = getChallengeProgress(dailyChallenge,  challengeCounts);
-  const weeklyProgress  = getChallengeProgress(weeklyChallenge, challengeCounts);
-  const dailyClaimed    = claimedKeys.has(dailyKey);
-  const weeklyClaimed   = claimedKeys.has(weeklyKey);
+  const dailyProgress = getChallengeProgress(dailyChallenge, challengeCounts);
+  const weeklyProgress = getChallengeProgress(weeklyChallenge, challengeCounts);
+  const dailyClaimed = claimedKeys.has(dailyKey);
+  const weeklyClaimed = claimedKeys.has(weeklyKey);
 
   // Format reset countdowns
-  const msUntilMidnight = new Date(`${todayUTC}T00:00:00.000Z`).getTime() + 86400000 - now.getTime();
+  const msUntilMidnight =
+    new Date(`${todayUTC}T00:00:00.000Z`).getTime() + 86400000 - now.getTime();
   const hrsUntilMidnight = Math.floor(msUntilMidnight / 3600000);
   const minsUntilMidnight = Math.floor((msUntilMidnight % 3600000) / 60000);
   const dailyResetLabel = `resets in ${hrsUntilMidnight}h ${minsUntilMidnight}m`;
@@ -358,7 +330,10 @@ export default async function Dashboard() {
   nextMonday.setUTCDate(weekStartDate.getUTCDate() + 7);
   const msUntilWeekEnd = nextMonday.getTime() - now.getTime();
   const daysUntilWeekEnd = Math.floor(msUntilWeekEnd / 86400000);
-  const weeklyResetLabel = daysUntilWeekEnd === 0 ? "resets tomorrow" : `resets in ${daysUntilWeekEnd}d`;
+  const weeklyResetLabel =
+    daysUntilWeekEnd === 0
+      ? "resets tomorrow"
+      : `resets in ${daysUntilWeekEnd}d`;
 
   const rank = getRankInfo(profile.total_xp);
   const xpInTier = profile.total_xp - rank.start;
@@ -368,7 +343,8 @@ export default async function Dashboard() {
       ? 100
       : Math.min(100, Math.round((xpInTier / xpNeeded) * 100));
 
-  const displayName = user.user_metadata?.username ?? user.email?.split("@")[0] ?? "Cuber";
+  const displayName =
+    user.user_metadata?.username ?? user.email?.split("@")[0] ?? "Cuber";
 
   const QUICK_STATS = [
     { label: "TOTAL SOLVES", value: totalSolves.toString(), sub: "all time" },
@@ -410,7 +386,6 @@ export default async function Dashboard() {
       />
 
       <div className="relative z-10 mx-auto max-w-4xl w-full px-6 py-14 flex flex-col gap-8">
-
         {/* Page header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
@@ -490,7 +465,8 @@ export default async function Dashboard() {
           </div>
           <div className="flex items-center justify-between">
             <span className="font-sans text-xs text-zinc-500">
-              {xpInTier.toLocaleString()} / {xpNeeded.toLocaleString()} XP to next tier
+              {xpInTier.toLocaleString()} / {xpNeeded.toLocaleString()} XP to
+              next tier
             </span>
             <span className="font-heading text-[9px] text-zinc-600">
               {Math.max(0, xpNeeded - xpInTier).toLocaleString()} XP remaining
@@ -502,12 +478,14 @@ export default async function Dashboard() {
         <div
           className="flex items-center gap-5 p-6 bg-[#0f0f1a]"
           style={{
-            border: profile.current_streak > 0
-              ? "1px solid rgba(255,88,0,0.3)"
-              : "1px solid rgba(255,255,255,0.05)",
-            boxShadow: profile.current_streak > 0
-              ? "0 0 24px rgba(255,88,0,0.08)"
-              : undefined,
+            border:
+              profile.current_streak > 0
+                ? "1px solid rgba(255,88,0,0.3)"
+                : "1px solid rgba(255,255,255,0.05)",
+            boxShadow:
+              profile.current_streak > 0
+                ? "0 0 24px rgba(255,88,0,0.08)"
+                : undefined,
           }}
         >
           <PixelFire />
@@ -555,7 +533,10 @@ export default async function Dashboard() {
               className="flex flex-col gap-3 p-5 bg-[#0f0f1a]"
               style={{ border: "1px solid rgba(255,255,255,0.06)" }}
             >
-              <div className="h-[2px] w-6" style={{ backgroundColor: STAT_COLORS[i] }} />
+              <div
+                className="h-[2px] w-6"
+                style={{ backgroundColor: STAT_COLORS[i] }}
+              />
               <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">
                 {label}
               </span>

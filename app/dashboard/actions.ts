@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { updateStreak } from "@/lib/streak";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
+import { getDailyChallenge, getWeeklyChallenge } from "./challenges";
 
 export async function useStreakFreeze(): Promise<void> {
   const supabase = await createClient();
@@ -33,9 +34,19 @@ export async function useStreakFreeze(): Promise<void> {
 
 export async function claimChallengeXP(formData: FormData): Promise<void> {
   const challengeKey = formData.get("challengeKey") as string;
-  const xp = parseInt(formData.get("xp") as string, 10);
+  if (!challengeKey) return;
 
-  if (!challengeKey || isNaN(xp) || xp <= 0) return;
+  // Derive XP server-side — never trust the client-supplied amount.
+  let xp: number;
+  if (challengeKey.startsWith("daily_")) {
+    const dateStr = challengeKey.slice("daily_".length);
+    xp = getDailyChallenge(dateStr).xp;
+  } else if (challengeKey.startsWith("weekly_")) {
+    const dateStr = challengeKey.slice("weekly_".length);
+    xp = getWeeklyChallenge(dateStr).xp;
+  } else {
+    return;
+  }
 
   const supabase = await createClient();
   const {

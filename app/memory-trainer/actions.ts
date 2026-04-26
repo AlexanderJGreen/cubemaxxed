@@ -3,10 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { checkAndSetRankupCookie } from "@/lib/rankup";
 
+const VALID_MEMORY_XP = new Set([3, 8, 10, 15]);
+
 export async function awardMemoryXP(
   amount: number,
   algorithmId: string,
 ): Promise<{ ok: true } | { error: string }> {
+  if (!VALID_MEMORY_XP.has(amount)) return { error: "invalid_amount" };
+
   const supabase = await createClient();
   const {
     data: { user },
