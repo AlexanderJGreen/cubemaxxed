@@ -13,6 +13,7 @@ import CubeManager from "./CubeManager";
 import CubeComparison from "./CubeComparison";
 import { GrandmasterGlow } from "./GrandmasterGlow";
 import { GoalsSection } from "@/app/components/GoalsSection";
+import AvatarUpload from "./AvatarUpload";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
@@ -201,49 +202,64 @@ export default async function Profile({
 
   const heroCardInner = (
     <>
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-        {/* Badge + tier dots */}
-        <div className="flex-shrink-0 flex flex-col items-center gap-4">
-          <div className="relative flex items-center justify-center" style={{ width: 120, height: 120 }}>
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ background: `radial-gradient(circle, ${rank.glow}35 0%, transparent 65%)` }}
-            />
+      <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6">
+        {/* Avatar with rank badge corner overlay */}
+        <div className="relative flex-shrink-0">
+          <AvatarUpload
+            avatarUrl={(profile as Record<string, unknown>)?.avatar_url as string | null ?? null}
+            username={displayName}
+            rankColor={rank.color}
+          />
+          {/* Rank badge — bottom-right corner */}
+          <div
+            className="absolute -bottom-2 -right-2 flex items-center justify-center"
+            style={{
+              width: 30,
+              height: 30,
+              backgroundColor: "#0d0d14",
+              border: `1.5px solid ${rank.color}`,
+              padding: 4,
+              boxShadow: `0 0 10px ${rank.glow}`,
+            }}
+          >
             <RankBadge name={rank.rank} />
-          </div>
-          <div className="flex gap-2.5">
-            {TIER_ORDER.map((t, i) => (
-              <div
-                key={t}
-                style={{
-                  width: 9, height: 9,
-                  backgroundColor: rank.color,
-                  opacity: i <= tierIndex ? 1 : 0.18,
-                  boxShadow: i <= tierIndex ? `0 0 8px ${rank.color}` : "none",
-                }}
-              />
-            ))}
           </div>
         </div>
 
         {/* Identity info */}
-        <div className="flex flex-col gap-4 text-center sm:text-left flex-1 min-w-0">
+        <div className="flex flex-col gap-3 text-center sm:text-left flex-1 min-w-0">
           <div className="flex flex-col gap-1.5">
-            <span className="font-heading text-white leading-none" style={{ fontSize: "clamp(18px, 3vw, 30px)" }}>
+            <span className="font-heading text-white leading-none" style={{ fontSize: "clamp(18px, 3vw, 28px)" }}>
               {displayName}
             </span>
-            <span className="font-heading leading-none" style={{ fontSize: "clamp(10px, 1.8vw, 13px)", color: rank.color, letterSpacing: "0.12em" }}>
-              {rank.rank} {rank.tier}
-            </span>
-            <span className="font-sans text-xs text-zinc-600 mt-0.5">Member since {memberSince}</span>
+            {/* Rank name + tier dots inline */}
+            <div className="flex items-center gap-2.5 justify-center sm:justify-start">
+              <span className="font-heading leading-none" style={{ fontSize: "clamp(9px, 1.5vw, 11px)", color: rank.color, letterSpacing: "0.12em" }}>
+                {rank.rank} {rank.tier}
+              </span>
+              <div className="flex gap-1.5">
+                {TIER_ORDER.map((t, i) => (
+                  <div
+                    key={t}
+                    style={{
+                      width: 6, height: 6,
+                      backgroundColor: rank.color,
+                      opacity: i <= tierIndex ? 1 : 0.18,
+                      boxShadow: i <= tierIndex ? `0 0 5px ${rank.color}` : "none",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <span className="font-sans text-xs text-zinc-600">Member since {memberSince}</span>
           </div>
-          <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center sm:justify-start">
+          <div className="flex flex-wrap gap-x-5 gap-y-3 justify-center sm:justify-start">
             {[
-              { label: "TOTAL XP",    value: profile.total_xp.toLocaleString(),        color: rank.color },
-              { label: "STREAK",      value: `${profile.current_streak}d`,             color: "#FF5800"  },
-              { label: "LESSONS",     value: `${lessonCount}/43`,                       color: "#0051A2"  },
-              { label: "ALGS",        value: `${algCount}/78`,                          color: "#a855f7"  },
-              { label: "ACHIEVEMENTS",value: `${unlockedCount}/${ACHIEVEMENTS.length}`, color: "#FFD500"  },
+              { label: "TOTAL XP",     value: profile.total_xp.toLocaleString(),        color: rank.color },
+              { label: "STREAK",       value: `${profile.current_streak}d`,             color: "#FF5800"  },
+              { label: "LESSONS",      value: `${lessonCount}/43`,                      color: "#0051A2"  },
+              { label: "ALGS",         value: `${algCount}/78`,                         color: "#a855f7"  },
+              { label: "ACHIEVEMENTS", value: `${unlockedCount}/${ACHIEVEMENTS.length}`,color: "#FFD500"  },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex flex-col gap-1">
                 <span className="font-heading text-[7px] text-zinc-600 tracking-widest leading-none">{label}</span>
