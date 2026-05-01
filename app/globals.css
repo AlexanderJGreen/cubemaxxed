@@ -1,68 +1,261 @@
 @import "tailwindcss";
 
+/* ─── Default theme: Dark Retro ─────────────────────────────────────────── */
 :root {
   --background: #0d0d14;
   --foreground: #ededed;
+
+  /* Surfaces */
+  --bg-base:     #0d0d14;
+  --bg-surface:  #0f0f1a;
+  --bg-elevated: #0a0a12;
+  --bg-inset:    #1a1a26;
+  --bg-deep:     #07070f;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-ring:   #1e1e2e;
+
+  /* Text */
+  --text-primary: #ededed;
+  --text-muted:   #7a7a96;
+  --text-dim:     #555570;
+
+  /* Accents */
+  --accent:         #FFD500;
+  --accent-shadow:  #a38a00;
+  --accent-danger:  #C41E3A;
+  --accent-success: #009B48;
+  --accent-streak:  #FF5800;
+  --accent-ice:     #4FC3F7;
+
+  /* Derived alpha tokens */
+  --accent-border:  color-mix(in srgb, var(--accent) 15%, transparent);
+  --accent-bg:      color-mix(in srgb, var(--accent) 8%, transparent);
+  --success-border: color-mix(in srgb, var(--accent-success) 25%, transparent);
+  --success-bg:     color-mix(in srgb, var(--accent-success) 6%, transparent);
+  --danger-bg:      color-mix(in srgb, var(--accent-danger) 6%, transparent);
+  --streak-border:  color-mix(in srgb, var(--accent-streak) 30%, transparent);
+  --streak-bg:      color-mix(in srgb, var(--accent-streak) 6%, transparent);
+  --ice-border:     color-mix(in srgb, var(--accent-ice) 30%, transparent);
+  --ice-bg:         color-mix(in srgb, var(--accent-ice) 6%, transparent);
+
+  /* Chart */
+  --chart-1: #FFD500;
+  --chart-2: #C41E3A;
+  --chart-3: #0051A2;
 }
 
+/* ─── Midnight ───────────────────────────────────────────────────────────── */
+[data-theme="midnight"] {
+  --background: #080812;
+  --foreground: #e0e0f0;
+
+  --bg-base:     #080812;
+  --bg-surface:  #0c0c1a;
+  --bg-elevated: #060610;
+  --bg-inset:    #131328;
+  --bg-deep:     #050508;
+
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-ring:   #1a1a38;
+
+  --text-primary: #e0e0f0;
+  --text-muted:   #6868a0;
+  --text-dim:     #404070;
+
+  --accent:         #60a5fa;
+  --accent-shadow:  #2563eb;
+  --accent-danger:  #f87171;
+  --accent-success: #34d399;
+  --accent-streak:  #fb923c;
+  --accent-ice:     #67e8f9;
+
+  --chart-1: #60a5fa;
+  --chart-2: #f87171;
+  --chart-3: #34d399;
+}
+
+/* ─── Paper Light ────────────────────────────────────────────────────────── */
+[data-theme="paper-light"] {
+  --background: #f4f1eb;
+  --foreground: #1a1a1a;
+
+  --bg-base:     #f4f1eb;
+  --bg-surface:  #ede9e0;
+  --bg-elevated: #faf8f4;
+  --bg-inset:    #ddd8cc;
+  --bg-deep:     #e8e4da;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-ring:   rgba(0, 0, 0, 0.2);
+
+  --text-primary: #1a1a1a;
+  --text-muted:   #5a5a5a;
+  --text-dim:     #888888;
+
+  --accent:         #C41E3A;
+  --accent-shadow:  #8b1226;
+  --accent-danger:  #991b1b;
+  --accent-success: #166534;
+  --accent-streak:  #c2410c;
+  --accent-ice:     #0369a1;
+
+  --chart-1: #C41E3A;
+  --chart-2: #2563eb;
+  --chart-3: #166534;
+}
+
+/* ─── Vaporwave (Pro) ────────────────────────────────────────────────────── */
+[data-theme="vaporwave"] {
+  --background: #1a0a2e;
+  --foreground: #f0d0ff;
+
+  --bg-base:     #1a0a2e;
+  --bg-surface:  #22103a;
+  --bg-elevated: #130820;
+  --bg-inset:    #2d1550;
+  --bg-deep:     #0e0618;
+
+  --border-subtle: rgba(255, 110, 199, 0.08);
+  --border-ring:   rgba(255, 110, 199, 0.25);
+
+  --text-primary: #f0d0ff;
+  --text-muted:   #a070b0;
+  --text-dim:     #604870;
+
+  --accent:         #ff6ec7;
+  --accent-shadow:  #c036a0;
+  --accent-danger:  #ff3864;
+  --accent-success: #36f1cd;
+  --accent-streak:  #ff9f43;
+  --accent-ice:     #72efdd;
+
+  --chart-1: #ff6ec7;
+  --chart-2: #ff3864;
+  --chart-3: #36f1cd;
+}
+
+/* ─── GAN (Pro) ──────────────────────────────────────────────────────────── */
+[data-theme="gan"] {
+  --background: #0a0a0a;
+  --foreground: #f0f0f0;
+
+  --bg-base:     #0a0a0a;
+  --bg-surface:  #111111;
+  --bg-elevated: #080808;
+  --bg-inset:    #1c1c1c;
+  --bg-deep:     #060606;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-ring:   rgba(255, 255, 255, 0.15);
+
+  --text-primary: #f0f0f0;
+  --text-muted:   #888888;
+  --text-dim:     #555555;
+
+  --accent:         #e0e0e0;
+  --accent-shadow:  #aaaaaa;
+  --accent-danger:  #ff4444;
+  --accent-success: #44cc88;
+  --accent-streak:  #ff8833;
+  --accent-ice:     #44aadd;
+
+  --chart-1: #e0e0e0;
+  --chart-2: #ff4444;
+  --chart-3: #44aadd;
+}
+
+/* ─── Tailwind theme exposure ────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-heading: var(--font-press-start);
-  --font-sans: var(--font-inter);
+  --color-background:     var(--background);
+  --color-foreground:     var(--foreground);
+  --font-heading:         var(--font-press-start);
+  --font-sans:            var(--font-inter);
+
+  --color-bg-base:        var(--bg-base);
+  --color-bg-surface:     var(--bg-surface);
+  --color-bg-elevated:    var(--bg-elevated);
+  --color-bg-inset:       var(--bg-inset);
+  --color-accent:         var(--accent);
+  --color-accent-danger:  var(--accent-danger);
+  --color-accent-success: var(--accent-success);
+  --color-accent-streak:  var(--accent-streak);
+  --color-accent-ice:     var(--accent-ice);
+  --color-text-primary:   var(--text-primary);
+  --color-text-muted:     var(--text-muted);
+  --color-text-dim:       var(--text-dim);
 }
 
+/* ─── Global base styles ─────────────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading), monospace;
 }
 
+/* ─── Paper Light: fix white-on-light readability ────────────────────────── */
+
+/* White-opacity borders become invisible on cream bg — flip to dark */
+[data-theme="paper-light"] [class*="border-white"] {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+/* White-opacity backgrounds (hover overlays, cards) */
+[data-theme="paper-light"] [class*="bg-white"] {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Zinc text: dark enough on cream, but light variants need darkening */
+[data-theme="paper-light"] .text-white   { color: var(--text-primary); }
+[data-theme="paper-light"] .text-zinc-100 { color: #111; }
+[data-theme="paper-light"] .text-zinc-200 { color: #222; }
+[data-theme="paper-light"] .text-zinc-300 { color: #333; }
+[data-theme="paper-light"] .text-zinc-400 { color: #4a4a4a; }
+[data-theme="paper-light"] .text-zinc-500 { color: #606060; }
+[data-theme="paper-light"] .text-zinc-600 { color: #6a6a6a; }
+[data-theme="paper-light"] .text-zinc-700 { color: #777; }
+
+/* bg-zinc-* chips/backgrounds */
+[data-theme="paper-light"] [class*="bg-zinc"] {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Dim dot-grid background patterns: invisible on light — hide them */
+[data-theme="paper-light"] [style*="rgba(255,255,255,0.02"],
+[data-theme="paper-light"] [style*="rgba(255,255,255,0.03"] {
+  background-image: none !important;
+}
+
+/* bg-[#0a0a12]/bg-elevated in paper-light context still dark —
+   already handled by --bg-elevated token, but inline rgba white overlays need fixing */
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
 @keyframes floatUp {
-  0% {
-    transform: translateY(0px);
-    opacity: 0.55;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(-100vh);
-    opacity: 0;
-  }
+  0%   { transform: translateY(0px); opacity: 0.55; }
+  80%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh); opacity: 0; }
 }
 
 @keyframes cubeGlow {
-  0%,
-  100% {
+  0%, 100% {
     box-shadow:
-      0 0 0 2px #1e1e2e,
-      0 0 32px rgba(255, 213, 0, 0.08);
+      0 0 0 2px var(--border-ring),
+      0 0 32px color-mix(in srgb, var(--accent) 8%, transparent);
   }
   50% {
     box-shadow:
-      0 0 0 2px #1e1e2e,
-      0 0 56px rgba(255, 213, 0, 0.22);
+      0 0 0 2px var(--border-ring),
+      0 0 56px color-mix(in srgb, var(--accent) 22%, transparent);
   }
 }
 
 @keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 
 @keyframes btnShine {
@@ -92,8 +285,7 @@ h6 {
 }
 
 @keyframes nodeGlow {
-  0%,
-  100% {
+  0%, 100% {
     box-shadow:
       0 0 0 0 var(--node-color),
       0 0 10px var(--node-color);

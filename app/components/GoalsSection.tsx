@@ -34,20 +34,20 @@ function Dropdown<T extends string>({
         onClick={() => setOpen((o) => !o)}
         className="w-full font-heading text-[10px] tracking-widest px-3 py-2 flex items-center justify-between gap-2 cursor-pointer"
         style={{
-          backgroundColor: "#0d0d14",
-          border: "1px solid rgba(255,255,255,0.1)",
-          color: "rgba(255,255,255,0.8)",
+          backgroundColor: "var(--bg-base)",
+          border: "1px solid var(--border-ring)",
+          color: "var(--text-primary)",
         }}
       >
         <span>{selected?.label ?? "—"}</span>
-        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 8, position: "relative", top: 1 }}>
+        <span style={{ color: "var(--text-dim)", fontSize: 8, position: "relative", top: 1 }}>
           {open ? "▲" : "▼"}
         </span>
       </button>
       {open && (
         <div
           className="absolute z-50 w-full"
-          style={{ backgroundColor: "#0d0d14", border: "1px solid rgba(255,255,255,0.1)", borderTop: "none" }}
+          style={{ backgroundColor: "var(--bg-base)", border: "1px solid rgba(128,128,128,0.2)", borderTop: "none" }}
         >
           {options.map((o) => (
             <button
@@ -56,8 +56,8 @@ function Dropdown<T extends string>({
               onClick={() => { onChange(o.value); setOpen(false); }}
               className="w-full text-left font-heading text-[10px] tracking-widest px-3 py-2 transition-colors cursor-pointer"
               style={{
-                color: o.value === value ? "#FFD500" : "rgba(255,255,255,0.5)",
-                backgroundColor: o.value === value ? "rgba(255,213,0,0.05)" : "transparent",
+                color: o.value === value ? "var(--accent)" : "rgba(128,128,128,0.8)",
+                backgroundColor: o.value === value ? "var(--accent-bg)" : "transparent",
               }}
             >
               {o.label}
@@ -76,9 +76,9 @@ const GOAL_TYPE_LABELS: Record<GoalType, string> = {
 };
 
 const GOAL_TYPE_COLORS: Record<GoalType, string> = {
-  single: "#C41E3A",
-  ao5:    "#4FC3F7",
-  ao12:   "#FFD500",
+  single: "var(--accent-danger)",
+  ao5:    "var(--accent-ice)",
+  ao12:   "var(--accent)",
 };
 
 function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => void }) {
@@ -91,10 +91,10 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
     <div
       className="flex flex-col gap-3 p-4"
       style={{
-        backgroundColor: goal.achieved ? "rgba(0,155,72,0.06)" : "#0a0a12",
+        backgroundColor: goal.achieved ? "var(--success-bg)" : "var(--bg-elevated)",
         border: goal.achieved
-          ? "1px solid rgba(0,155,72,0.25)"
-          : "1px solid rgba(255,255,255,0.05)",
+          ? "1px solid var(--success-border)"
+          : "1px solid var(--border-subtle)",
       }}
     >
       <div className="flex items-start justify-between gap-2">
@@ -125,7 +125,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
           {goal.achieved && (
             <span
               className="font-heading text-[7px] tracking-widest px-1.5 py-0.5"
-              style={{ color: "#009B48", border: "1px solid rgba(0,155,72,0.35)", backgroundColor: "rgba(0,155,72,0.08)" }}
+              style={{ color: "var(--accent-success)", border: "1px solid var(--success-border)", backgroundColor: "var(--success-bg)" }}
             >
               ACHIEVED
             </span>
@@ -148,7 +148,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
         </div>
         <div className="flex flex-col gap-0.5 text-right">
           <span className="font-heading text-[7px] text-zinc-600 tracking-widest">CURRENT</span>
-          <span className="font-heading text-xl leading-none text-white">
+          <span className="font-heading text-xl leading-none text-[var(--text-primary)]">
             {goal.current_ms !== null ? formatTime(goal.current_ms) : "—"}
           </span>
         </div>
@@ -156,12 +156,12 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
 
       {/* Progress bar */}
       <div className="flex flex-col gap-1">
-        <div className="relative h-2 w-full bg-[#1a1a26]" style={{ border: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="relative h-2 w-full bg-[var(--bg-inset)]" style={{ border: "1px solid var(--border-subtle)" }}>
           <div
             className="absolute inset-y-0 left-0 transition-all"
             style={{
               width: `${progress}%`,
-              backgroundColor: goal.achieved ? "#009B48" : color,
+              backgroundColor: goal.achieved ? "var(--accent-success)" : color,
               boxShadow: goal.achieved ? "0 0 8px rgba(0,155,72,0.5)" : `0 0 8px ${color}60`,
             }}
           />
@@ -207,7 +207,7 @@ function AddGoalForm({ cubes, onClose }: { cubes: Cube[]; onClose: () => void })
     <form
       onSubmit={handleSubmit}
       className="flex flex-col gap-4 p-4"
-      style={{ border: "1px solid rgba(255,213,0,0.15)", backgroundColor: "rgba(255,213,0,0.03)" }}
+      style={{ border: "1px solid var(--accent-border)", backgroundColor: "color-mix(in srgb, var(--accent) 3%, transparent)" }}
     >
       <span className="font-heading text-[8px] text-zinc-500 tracking-widest">NEW GOAL</span>
 
@@ -232,8 +232,8 @@ function AddGoalForm({ cubes, onClose }: { cubes: Cube[]; onClose: () => void })
             type="text"
             required
             placeholder="e.g. 30 or 1:23.4"
-            className="font-heading text-[10px] tracking-widest text-zinc-200 bg-[#0d0d14] px-3 py-2 outline-none"
-            style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+            className="font-heading text-[10px] tracking-widest text-[var(--text-primary)] bg-[var(--bg-base)] px-3 py-2 outline-none"
+            style={{ border: "1px solid var(--border-ring)" }}
           />
         </div>
       </div>
@@ -243,7 +243,7 @@ function AddGoalForm({ cubes, onClose }: { cubes: Cube[]; onClose: () => void })
           type="submit"
           disabled={isPending}
           className="font-heading text-[8px] tracking-widest px-4 py-2 transition-all disabled:opacity-40 cursor-pointer"
-          style={{ backgroundColor: "#FFD500", color: "#0d0d14", boxShadow: "2px 2px 0 #a38a00" }}
+          style={{ backgroundColor: "var(--accent)", color: "var(--bg-base)", boxShadow: "2px 2px 0 var(--accent-shadow)" }}
         >
           {isPending ? "SAVING..." : "SAVE GOAL"}
         </button>
@@ -272,7 +272,7 @@ export function GoalsSection({ goals, cubes }: { goals: Goal[]; cubes: Cube[] })
   return (
     <div
       className="flex flex-col gap-5 p-6"
-      style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}
+      style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}
     >
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
@@ -288,9 +288,9 @@ export function GoalsSection({ goals, cubes }: { goals: Goal[]; cubes: Cube[] })
             onClick={() => setAdding(true)}
             className="font-heading text-[8px] tracking-widest px-3 py-1.5 transition-colors cursor-pointer"
             style={{
-              color: "#FFD500",
-              border: "1px solid rgba(255,213,0,0.25)",
-              backgroundColor: "rgba(255,213,0,0.05)",
+              color: "var(--accent)",
+              border: "1px solid var(--accent-border)",
+              backgroundColor: "var(--accent-bg)",
             }}
           >
             + ADD GOAL

@@ -28,15 +28,15 @@ export default function Playground() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="flex" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className="font-heading text-[9px] tracking-widest px-6 py-3 cursor-pointer transition-colors"
             style={{
-              color: activeTab === tab.id ? "#FFD500" : "rgba(255,255,255,0.25)",
-              borderBottom: activeTab === tab.id ? "2px solid #FFD500" : "2px solid transparent",
+              color: activeTab === tab.id ? "var(--accent)" : "rgba(128,128,128,0.5)",
+              borderBottom: activeTab === tab.id ? "2px solid var(--accent)" : "2px solid transparent",
               marginBottom: -1,
             }}
           >
@@ -104,21 +104,21 @@ function ScrambleSelect({
         onClick={() => { if (!disabled) setOpen((o) => !o); }}
         className="font-heading text-[10px] tracking-widest px-4 py-2 flex items-center gap-3 transition-colors"
         style={{
-          backgroundColor: "#0d0d14",
-          border: "1px solid rgba(255,255,255,0.1)",
-          color: "#FFD500",
+          backgroundColor: "var(--bg-base)",
+          border: "1px solid var(--border-ring)",
+          color: "var(--accent)",
           cursor: disabled ? "default" : "pointer",
           minWidth: "min(200px, calc(100vw - 3rem))",
         }}
       >
         <span className="flex-1 text-left">{selected.label.toUpperCase()}</span>
-        <span style={{ color: "rgba(255,213,0,0.5)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ color: "var(--text-dim)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div
           className="absolute z-50 w-full"
-          style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
+          style={{ border: "1px solid var(--border-ring)", borderTop: "none", backgroundColor: "var(--bg-base)" }}
         >
           {SCRAMBLE_TYPES.map((t) => (
             <button
@@ -126,7 +126,7 @@ function ScrambleSelect({
               onClick={() => { onChange(t.id); setOpen(false); }}
               className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
               style={{
-                color: t.id === value ? "#FFD500" : "rgba(255,255,255,0.45)",
+                color: t.id === value ? "var(--accent)" : "rgba(128,128,128,0.6)",
                 backgroundColor: t.id === value ? "rgba(255,213,0,0.05)" : "transparent",
               }}
             >
@@ -184,29 +184,29 @@ function CubeSelect({
         onClick={() => { if (!disabled) setOpen((o) => !o); }}
         className="font-heading text-[10px] tracking-widest px-4 py-2 flex items-center gap-3 transition-colors"
         style={{
-          backgroundColor: "#0d0d14",
-          border: selectedId ? "1px solid rgba(0,155,72,0.4)" : "1px solid rgba(255,255,255,0.1)",
-          color: selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
+          backgroundColor: "var(--bg-base)",
+          border: selectedId ? "1px solid rgba(0,155,72,0.4)" : "1px solid var(--border-ring)",
+          color: selectedId ? "var(--accent-success)" : "var(--text-muted)",
           cursor: disabled ? "default" : "pointer",
           minWidth: "min(200px, calc(100vw - 3rem))",
         }}
       >
         <span style={{ fontSize: 8, opacity: 0.5 }}>&#9647;</span>
         <span className="flex-1 text-left truncate">{label.toUpperCase()}</span>
-        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ color: "var(--text-dim)", fontSize: 8, lineHeight: 1, display: "flex", alignItems: "center", position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div
           className="absolute z-50 w-full"
-          style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
+          style={{ border: "1px solid var(--border-ring)", borderTop: "none", backgroundColor: "var(--bg-base)" }}
         >
           {/* All cubes option */}
           <button
             onClick={() => { onChange(null); setOpen(false); }}
             className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
             style={{
-              color: !selectedId ? "#FFD500" : "rgba(255,255,255,0.45)",
+              color: !selectedId ? "var(--accent)" : "rgba(128,128,128,0.6)",
               backgroundColor: !selectedId ? "rgba(255,213,0,0.05)" : "transparent",
             }}
           >
@@ -215,7 +215,7 @@ function CubeSelect({
 
           {/* Divider if cubes exist */}
           {cubes.length > 0 && (
-            <div style={{ height: 1, backgroundColor: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+            <div style={{ height: 1, backgroundColor: "var(--border-subtle)", margin: "2px 0" }} />
           )}
 
           {/* User's cubes */}
@@ -225,7 +225,7 @@ function CubeSelect({
               onClick={() => { onChange(c.id); setOpen(false); }}
               className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
               style={{
-                color: c.id === selectedId ? "#009B48" : "rgba(255,255,255,0.45)",
+                color: c.id === selectedId ? "var(--accent-success)" : "rgba(128,128,128,0.6)",
                 backgroundColor: c.id === selectedId ? "rgba(0,155,72,0.06)" : "transparent",
               }}
             >
@@ -234,7 +234,7 @@ function CubeSelect({
           ))}
 
           {/* Add cube section */}
-          <div style={{ height: 1, backgroundColor: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+          <div style={{ height: 1, backgroundColor: "var(--border-subtle)", margin: "2px 0" }} />
           {addingCube ? (
             <div className="px-3 py-2 flex gap-2">
               <input
@@ -247,12 +247,12 @@ function CubeSelect({
                 }}
                 placeholder="e.g. GAN 16"
                 className="flex-1 font-heading text-[10px] tracking-widest px-2 py-1 bg-transparent outline-none"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#fff", minWidth: 0 }}
+                style={{ border: "1px solid var(--border-ring)", color: "var(--text-primary)", minWidth: 0 }}
               />
               <button
                 onClick={onAddCube}
                 className="font-heading text-[9px] tracking-widest px-2 py-1 shrink-0"
-                style={{ backgroundColor: "#009B48", color: "#000" }}
+                style={{ backgroundColor: "var(--accent-success)", color: "#000" }}
               >
                 ADD
               </button>
@@ -261,7 +261,7 @@ function CubeSelect({
             <button
               onClick={() => setAddingCube(true)}
               className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors"
-              style={{ color: "rgba(255,255,255,0.25)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               + ADD CUBE...
             </button>
@@ -482,9 +482,9 @@ function Timer() {
   return (
     <div className="flex flex-col gap-4">
       {/* Timer card */}
-      <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)" }}>
         {/* Scramble type selector + cube selector + scramble display */}
-        <div className="px-8 py-5 flex flex-col gap-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="px-8 py-5 flex flex-col gap-4" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <ScrambleSelect
               value={scrambleType}
@@ -524,7 +524,7 @@ function Timer() {
             style={{
               fontSize: "clamp(48px, 10vw, 96px)",
               fontWeight: 700,
-              color: running ? "#FFD500" : elapsed > 0 ? "#ffffff" : "rgba(255,255,255,0.15)",
+              color: running ? "var(--accent)" : elapsed > 0 ? "var(--text-primary)" : "var(--text-dim)",
               textShadow: "none",
             }}
           >
@@ -539,18 +539,18 @@ function Timer() {
 
         {/* Confirm / Discard */}
         {pending && (
-          <div className="px-8 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="px-8 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
             <button
               onClick={confirm}
               className="flex-1 sm:flex-none px-8 py-3 font-heading text-[10px] tracking-widest text-black transition-all hover:brightness-110 active:scale-95 cursor-pointer"
-              style={{ backgroundColor: "#FFD500" }}
+              style={{ backgroundColor: "var(--accent)" }}
             >
               CONFIRM SOLVE
             </button>
             <button
               onClick={discard}
               className="flex-1 sm:flex-none px-8 py-3 font-heading text-[10px] tracking-widest text-zinc-400 transition-all hover:text-zinc-200 active:scale-95 cursor-pointer"
-              style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+              style={{ border: "1px solid var(--border-ring)" }}
             >
               DISCARD
             </button>
@@ -562,19 +562,19 @@ function Timer() {
       {confirmedSolves.length > 0 && (
         <div className="grid grid-cols-4 gap-3">
           {[
-            { label: "SOLVES",     value: String(confirmedSolves.length),                                           color: "#009B48" },
-            { label: "AO5",        value: ao5,                                                                      color: "#C41E3A" },
-            { label: "AO12",       value: ao12,                                                                     color: "#4FC3F7" },
-            { label: "SESSION XP", value: `+${confirmedSolves.reduce((sum, s) => sum + s.xp, 0)}`,                  color: "#FFD500" },
+            { label: "SOLVES",     value: String(confirmedSolves.length),                                           color: "var(--accent-success)" },
+            { label: "AO5",        value: ao5,                                                                      color: "var(--accent-danger)" },
+            { label: "AO12",       value: ao12,                                                                     color: "var(--accent-ice)" },
+            { label: "SESSION XP", value: `+${confirmedSolves.reduce((sum, s) => sum + s.xp, 0)}`,                  color: "var(--accent)" },
           ].map(({ label, value, color }) => (
             <div
               key={label}
               className="flex flex-col gap-2.5 p-4"
-              style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}
+              style={{ backgroundColor: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
             >
               <div className="h-[2px] w-5" style={{ backgroundColor: color }} />
               <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">{label}</span>
-              <span className="font-heading text-lg leading-none" style={{ color: value === "—" ? "rgba(255,255,255,0.15)" : color }}>
+              <span className="font-heading text-lg leading-none" style={{ color: value === "—" ? "var(--text-dim)" : color }}>
                 {value}
               </span>
             </div>
@@ -584,8 +584,8 @@ function Timer() {
 
       {/* Solve history */}
       {history.length > 0 && (
-        <div style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="px-6 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+        <div style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)" }}>
+          <div className="px-6 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
             <span className="font-heading text-[8px] text-zinc-600 tracking-widest">SESSION HISTORY</span>
             <button
               onClick={() => { setHistory([]); localStorage.removeItem("cubemaxxed_session_history"); }}
@@ -600,7 +600,7 @@ function Timer() {
                 key={solve.id}
                 className="px-6 py-3 flex items-center gap-4"
                 style={{
-                  borderBottom: "1px solid rgba(255,255,255,0.03)",
+                  borderBottom: "1px solid var(--border-subtle)",
                   opacity: solve.confirmed ? 1 : 0.35,
                 }}
               >
@@ -608,7 +608,7 @@ function Timer() {
                 <span
                   className="font-mono text-sm w-20 shrink-0"
                   style={{
-                    color: solve.confirmed ? "#ffffff" : "rgba(255,255,255,0.45)",
+                    color: solve.confirmed ? "var(--text-primary)" : "var(--text-dim)",
                     textDecoration: solve.confirmed ? "none" : "line-through",
                   }}
                 >
@@ -618,13 +618,13 @@ function Timer() {
                 {solve.confirmed && solve.cubeName && (
                   <span
                     className="font-heading text-[7px] tracking-widest shrink-0 px-1.5 py-0.5 hidden sm:inline"
-                    style={{ color: "#009B48", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                    style={{ color: "var(--accent-success)", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                   >
                     {solve.cubeName}
                   </span>
                 )}
                 {solve.confirmed ? (
-                  <span className="font-heading text-[10px] tracking-widest shrink-0" style={{ color: solve.xp === 5 ? "#009B48" : "#C41E3A" }}>
+                  <span className="font-heading text-[10px] tracking-widest shrink-0" style={{ color: solve.xp === 5 ? "var(--accent-success)" : "var(--accent-danger)" }}>
                     +{solve.xp} XP
                   </span>
                 ) : (
@@ -787,7 +787,7 @@ function pickNextCase(
 function StreakDots({ streak, mastered }: { streak: number; mastered: boolean }) {
   if (mastered) {
     return (
-      <span className="font-heading text-[8px] leading-none shrink-0" style={{ color: "#FFD500" }}>
+      <span className="font-heading text-[8px] leading-none shrink-0" style={{ color: "var(--accent)" }}>
         MASTERED
       </span>
     );
@@ -801,7 +801,7 @@ function StreakDots({ streak, mastered }: { streak: number; mastered: boolean })
             width: 6,
             height: 6,
             backgroundColor: i <= streak ? "#009B48" : "#1a1a26",
-            border: `1px solid ${i <= streak ? "#009B48" : "rgba(255,255,255,0.08)"}`,
+            border: `1px solid ${i <= streak ? "#009B48" : "var(--border-ring)"}`,
             boxShadow: i <= streak ? "0 0 4px rgba(0,155,72,0.6)" : undefined,
             transition: "background-color 0.2s, box-shadow 0.2s",
           }}
@@ -910,16 +910,16 @@ function AlgorithmTrainer() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
 
         {/* OLL / PLL sub-tabs */}
-        <div className="flex" style={{ border: "1px solid rgba(255,255,255,0.06)", backgroundColor: "#0a0a12" }}>
+        <div className="flex" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-elevated)" }}>
           {TRAINER_TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => handleTabChange(t.id)}
               className="px-5 py-2.5 font-heading text-[8px] tracking-widest cursor-pointer transition-colors"
               style={{
-                color: tab === t.id ? activeColor : "rgba(255,255,255,0.25)",
-                backgroundColor: tab === t.id ? "rgba(255,255,255,0.04)" : "transparent",
-                borderRight: t.id === "2look-pll" ? "1px solid rgba(255,255,255,0.06)" : "none",
+                color: tab === t.id ? activeColor : "var(--text-muted)",
+                backgroundColor: tab === t.id ? "var(--bg-inset)" : "transparent",
+                borderRight: t.id === "2look-pll" ? "1px solid var(--border-subtle)" : "none",
               }}
             >
               {t.label}
@@ -931,7 +931,7 @@ function AlgorithmTrainer() {
         <div className="relative">
           <div
             className="flex items-center gap-2 px-5 py-2.5"
-            style={{ border: "1px solid rgba(255,255,255,0.06)", backgroundColor: "#0a0a12" }}
+            style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-elevated)" }}
           >
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-zinc-600 shrink-0">
               <circle cx="6.5" cy="6.5" r="5" /><path d="M11 11l3 3" strokeLinecap="round" />
@@ -942,13 +942,13 @@ function AlgorithmTrainer() {
               onBlur={() => { if (!search) setSearchOpen(false); }}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Jump to..."
-              className="bg-transparent font-heading text-[8px] tracking-widest text-white placeholder-zinc-700 outline-none w-24"
+              className="bg-transparent font-heading text-[8px] tracking-widest text-[var(--text-primary)] placeholder-zinc-500 outline-none w-24"
             />
           </div>
           {searchOpen && filtered.length > 0 && (
             <div
               className="absolute top-full mt-1 left-0 min-w-[180px] z-10"
-              style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)" }}
             >
               {filtered.map((a) => {
                 const p = progress[algKey(tab, a.id)];
@@ -956,12 +956,12 @@ function AlgorithmTrainer() {
                   <button
                     key={a.name}
                     onMouseDown={() => jumpTo(a)}
-                    className="w-full text-left px-4 py-2.5 font-sans text-sm text-zinc-400 hover:text-white transition-colors cursor-pointer flex items-center justify-between gap-3"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                    className="w-full text-left px-4 py-2.5 font-sans text-sm text-zinc-400 hover:text-[var(--text-primary)] transition-colors cursor-pointer flex items-center justify-between gap-3"
+                    style={{ borderBottom: "1px solid var(--border-subtle)" }}
                   >
                     <span>{a.name}</span>
                     {p?.mastered ? (
-                      <span className="font-heading text-[7px] shrink-0" style={{ color: "#FFD500" }}>MASTERED</span>
+                      <span className="font-heading text-[7px] shrink-0" style={{ color: "var(--accent)" }}>MASTERED</span>
                     ) : p && p.times_seen > 0 ? (
                       <span className="font-heading text-[7px] text-zinc-700 shrink-0 tabular-nums">
                         {Math.round((p.times_correct / p.times_seen) * 100)}%
@@ -975,7 +975,7 @@ function AlgorithmTrainer() {
           {searchOpen && search && filtered.length === 0 && (
             <div
               className="absolute top-full mt-1 left-0 w-full px-4 py-2.5 z-10"
-              style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)" }}
             >
               <span className="font-heading text-[8px] text-zinc-700">NO RESULTS</span>
             </div>
@@ -986,14 +986,14 @@ function AlgorithmTrainer() {
         <div className="flex items-center gap-5 sm:ml-auto">
           <div className="flex flex-col gap-1">
             <span className="font-heading text-[7px] text-zinc-700 tracking-widest">MASTERED</span>
-            <span className="font-heading text-xs" style={{ color: "#FFD500" }}>
+            <span className="font-heading text-xs" style={{ color: "var(--accent)" }}>
               {categoryMastered}/{categoryTotal}
             </span>
           </div>
           {sessionTotal > 0 && (
             <div className="flex flex-col gap-1">
               <span className="font-heading text-[7px] text-zinc-700 tracking-widest">SESSION</span>
-              <span className="font-heading text-xs text-white">
+              <span className="font-heading text-xs text-[var(--text-primary)]">
                 {sessionCorrect}/{sessionTotal}
               </span>
             </div>
@@ -1005,14 +1005,14 @@ function AlgorithmTrainer() {
       {!progressLoaded || !currentCase ? (
         <div
           className="flex items-center justify-center py-24"
-          style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,255,255,0.05)" }}
+          style={{ backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-subtle)" }}
         >
           <span className="font-heading text-[8px] text-zinc-700 tracking-widest">LOADING...</span>
         </div>
 
       ) : phase === "celebrating" ? (
         <div
-          style={{ backgroundColor: "#0f0f1a", border: "1px solid rgba(255,213,0,0.2)", boxShadow: "0 0 32px rgba(255,213,0,0.06)" }}
+          style={{ backgroundColor: "var(--bg-surface)", border: "1px solid rgba(255,213,0,0.2)", boxShadow: "0 0 32px rgba(255,213,0,0.06)" }}
         >
           <div className="flex flex-col items-center justify-center gap-6 py-24 px-8 text-center">
             <div className="flex gap-[5px]">
@@ -1021,12 +1021,12 @@ function AlgorithmTrainer() {
               ))}
             </div>
             <div className="flex flex-col gap-2">
-              <span className="font-heading text-[9px] tracking-widest" style={{ color: "#FFD500" }}>
+              <span className="font-heading text-[9px] tracking-widest" style={{ color: "var(--accent)" }}>
                 ALGORITHM MASTERED
               </span>
-              <span className="font-heading text-sm text-white">{currentCase.name}</span>
+              <span className="font-heading text-sm text-[var(--text-primary)]">{currentCase.name}</span>
             </div>
-            <span className="font-heading text-xs" style={{ color: "#009B48" }}>+30 XP</span>
+            <span className="font-heading text-xs" style={{ color: "var(--accent-success)" }}>+30 XP</span>
           </div>
         </div>
 
@@ -1034,24 +1034,24 @@ function AlgorithmTrainer() {
         <div
           className="transition-colors duration-300"
           style={{
-            backgroundColor: "#0f0f1a",
+            backgroundColor: "var(--bg-surface)",
             border: `1px solid ${
               lastResult === "correct"   ? "rgba(0,155,72,0.35)"  :
               lastResult === "incorrect" ? "rgba(196,30,58,0.35)" :
-              "rgba(255,255,255,0.06)"
+              "var(--border-subtle)"
             }`,
           }}
         >
           {/* Header */}
           <div
             className="px-8 py-4 flex items-center justify-between gap-4"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             <div className="flex flex-col gap-1.5 min-w-0">
               <span className="font-heading text-[8px] text-zinc-600 tracking-widest">
                 {TRAINER_TABS.find((t) => t.id === tab)!.label.toUpperCase()}
               </span>
-              <h2 className="font-heading text-xs text-white truncate">{currentCase.name}</h2>
+              <h2 className="font-heading text-xs text-[var(--text-primary)] truncate">{currentCase.name}</h2>
             </div>
             <StreakDots streak={currentProgress.correct_streak} mastered={currentProgress.mastered} />
           </div>
@@ -1060,7 +1060,7 @@ function AlgorithmTrainer() {
           <div className="flex flex-col items-center gap-6 py-12 px-8">
             <div
               className="flex items-center justify-center p-4"
-              style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ backgroundColor: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
             >
               {isOLL ? (
                 <OLLDiagramView
@@ -1086,14 +1086,14 @@ function AlgorithmTrainer() {
               {phase === "question" ? (
                 <button
                   onClick={() => setPhase("revealed")}
-                  className="px-6 py-2.5 font-heading text-[9px] tracking-widest text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                  style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                  className="px-6 py-2.5 font-heading text-[9px] tracking-widest text-zinc-400 hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                  style={{ border: "1px solid var(--border-ring)" }}
                 >
                   SHOW SOLUTION
                 </button>
               ) : (
                 <>
-                  <p className="font-mono text-[#FFD500] text-lg tracking-wide text-center">
+                  <p className="font-mono text-[var(--accent)] text-lg tracking-wide text-center">
                     {currentCase.alg}
                   </p>
                   <p className="font-heading text-[8px] text-zinc-600 tracking-widest">DID YOU KNOW THIS ONE?</p>
@@ -1106,7 +1106,7 @@ function AlgorithmTrainer() {
           {phase === "revealed" && (
             <div
               className="px-8 py-4 flex gap-3"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ borderTop: "1px solid var(--border-subtle)" }}
             >
               <button
                 onClick={() => handleAnswer(true)}
@@ -1125,7 +1125,7 @@ function AlgorithmTrainer() {
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = "rgba(196,30,58,0.25)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.3)";
+                  e.currentTarget.style.color = "var(--text-muted)";
                 }}
               >
                 MISSED IT
@@ -1137,7 +1137,7 @@ function AlgorithmTrainer() {
           {currentProgress.times_seen > 0 && phase === "question" && (
             <div
               className="px-8 py-2.5 flex items-center justify-between"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.03)" }}
+              style={{ borderTop: "1px solid var(--border-subtle)" }}
             >
               <span className="font-heading text-[7px] text-zinc-800 tracking-widest">
                 {currentProgress.times_correct} / {currentProgress.times_seen} CORRECT

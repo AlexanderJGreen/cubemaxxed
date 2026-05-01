@@ -37,7 +37,7 @@ export default function AvatarUpload({
           width: 88,
           height: 88,
           border: `2px solid ${rankColor}`,
-          backgroundColor: "#0a0a12",
+          backgroundColor: "var(--bg-elevated)",
           opacity: isPending ? 0.5 : 1,
           transition: "opacity 0.2s",
         }}
@@ -67,7 +67,7 @@ export default function AvatarUpload({
           className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
           style={{ backgroundColor: "rgba(0,0,0,0.72)" }}
         >
-          <span className="font-heading text-[8px] tracking-widest text-white leading-none">
+          <span className="font-heading text-[8px] tracking-widest leading-none" style={{ color: "#ffffff" }}>
             {isPending ? "UPLOADING" : "CHANGE"}
           </span>
         </button>

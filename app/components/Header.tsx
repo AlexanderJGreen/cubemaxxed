@@ -76,19 +76,19 @@ export default function Header({
   const isLoggedIn = !!username;
 
   return (
-    <header className="relative bg-[#0d0d14] border-b border-white/[0.04]">
+    <header className="relative bg-[var(--bg-base)] border-b border-white/[0.04]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         {/* Site name */}
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-heading text-base leading-none tracking-tight text-[#FFD500] transition-opacity hover:opacity-80 shrink-0"
+          className="flex items-center gap-2.5 font-heading text-base leading-none tracking-tight text-[var(--accent)] transition-opacity hover:opacity-80 shrink-0"
           style={{
             textShadow:
-              "1px 1px 0 #C41E3A, 2px 2px 0 #C41E3A, 3px 3px 0 #C41E3A",
+              "1px 1px 0 var(--accent-danger), 2px 2px 0 var(--accent-danger), 3px 3px 0 var(--accent-danger)",
           }}
         >
           {/* Pixel cube icon */}
-          <div className="grid grid-cols-3 gap-[2px] p-[2px] bg-[#1a1a26] shrink-0">
+          <div className="grid grid-cols-3 gap-[2px] p-[2px] bg-[var(--bg-inset)] shrink-0">
             {[
               "#C41E3A",
               "#FFD500",
@@ -192,7 +192,7 @@ export default function Header({
               </Link>
               <Link
                 href="/auth/signup"
-                className="font-heading bg-[#FFD500] px-3 py-1.5 text-[10px] text-black transition hover:brightness-110"
+                className="font-heading bg-[var(--accent)] px-3 py-1.5 text-[10px] text-[var(--bg-base)] transition hover:brightness-110"
               >
                 SIGN UP
               </Link>
@@ -240,7 +240,7 @@ export default function Header({
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-white/5 bg-[#0d0d14] px-6 py-4 flex flex-col gap-1">
+        <div className="md:hidden border-t border-white/5 bg-[var(--bg-base)] px-6 py-4 flex flex-col gap-1">
           {navLinks.map(({ href, label }) => {
             const isActive = pathname === href;
             return (
@@ -274,7 +274,7 @@ export default function Header({
               <form action={signout} className="pt-1">
                 <button
                   type="submit"
-                  className="font-sans text-sm text-zinc-600 hover:text-[#C41E3A] transition-colors py-2 cursor-pointer"
+                  className="font-sans text-sm text-zinc-600 hover:text-[var(--accent-danger)] transition-colors py-2 cursor-pointer"
                 >
                   Sign out
                 </button>
@@ -290,7 +290,7 @@ export default function Header({
               </Link>
               <Link
                 href="/auth/signup"
-                className="font-heading bg-[#FFD500] px-3 py-1.5 text-[10px] text-black transition hover:brightness-110"
+                className="font-heading bg-[var(--accent)] px-3 py-1.5 text-[10px] text-[var(--bg-base)] transition hover:brightness-110"
               >
                 SIGN UP
               </Link>
@@ -301,7 +301,7 @@ export default function Header({
 
       {/* XP progress bar / accent bar */}
       {rank ? (
-        <div className="h-[2px] w-full bg-[#0a0a12] relative overflow-hidden">
+        <div className="h-[2px] w-full bg-[var(--bg-elevated)] relative overflow-hidden">
           <div
             className="absolute inset-y-0 left-0 transition-all duration-700"
             style={{

@@ -28,13 +28,13 @@ export default function CheckEmailPage() {
       <div
         className="relative z-10 w-full max-w-md p-8 sm:p-10 text-center"
         style={{
-          backgroundColor: "#0f0f1a",
+          backgroundColor: "var(--bg-surface)",
           border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         {/* Pixel envelope icon */}
         <div className="flex justify-center mb-6">
-          <div className="grid gap-[2px] p-[3px] bg-[#1a1a26]" style={{ display: "inline-grid", gridTemplateColumns: "repeat(7, 8px)" }}>
+          <div className="grid gap-[2px] p-[3px] bg-[var(--bg-inset)]" style={{ display: "inline-grid", gridTemplateColumns: "repeat(7, 8px)" }}>
             {[
               "#FFD500","#FFD500","#FFD500","#FFD500","#FFD500","#FFD500","#FFD500",
               "#FFD500","#a38a00","#FFD500","#FFD500","#FFD500","#a38a00","#FFD500",
@@ -48,8 +48,8 @@ export default function CheckEmailPage() {
         </div>
 
         <h1
-          className="font-heading mb-2 text-xl text-[#FFD500]"
-          style={{ textShadow: "2px 2px 0 #C41E3A" }}
+          className="font-heading mb-2 text-xl text-[var(--accent)]"
+          style={{ textShadow: "2px 2px 0 var(--accent-danger)" }}
         >
           CHECK YOUR EMAIL
         </h1>
@@ -59,11 +59,11 @@ export default function CheckEmailPage() {
 
         <p className="font-sans text-xs text-zinc-600">
           Wrong email?{" "}
-          <Link href="/auth/signup" className="text-[#FFD500] hover:underline">
+          <Link href="/auth/signup" className="text-[var(--accent)] hover:underline">
             Sign up again
           </Link>
           {" "}·{" "}
-          <Link href="/auth/login" className="text-[#FFD500] hover:underline">
+          <Link href="/auth/login" className="text-[var(--accent)] hover:underline">
             Sign in
           </Link>
         </p>

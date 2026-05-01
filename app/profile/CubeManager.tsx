@@ -39,7 +39,7 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
   }
 
   return (
-    <div className="flex flex-col gap-3 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+    <div className="flex flex-col gap-3 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -51,9 +51,9 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
             <button
               onClick={() => setAddingCube(true)}
               className="font-heading text-[8px] tracking-widest transition-colors cursor-pointer"
-              style={{ color: "rgba(255,255,255,0.25)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
+              style={{ color: "var(--text-muted)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
             >
               + ADD
             </button>
@@ -61,9 +61,9 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
           <button
             onClick={() => setOpen((o) => !o)}
             className="font-heading text-[8px] tracking-widest transition-colors cursor-pointer"
-            style={{ color: "rgba(255,255,255,0.25)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
+            style={{ color: "var(--text-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
           >
             {open ? "COLLAPSE" : "MANAGE"}
           </button>
@@ -77,7 +77,7 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
             <span
               key={c.id}
               className="font-heading text-[8px] tracking-widest px-2 py-1"
-              style={{ color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.07)", backgroundColor: "#0a0a12" }}
+              style={{ color: "var(--text-muted)", border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-elevated)" }}
             >
               {c.name}
             </span>
@@ -99,7 +99,7 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
             <div
               key={c.id}
               className="flex flex-wrap items-center gap-3 px-4 py-3"
-              style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.04)" }}
+              style={{ backgroundColor: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
             >
               {renaming === c.id ? (
                 <>
@@ -112,32 +112,32 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
                       if (e.key === "Escape") { setRenaming(null); setRenameValue(""); }
                     }}
                     className="flex-1 font-heading text-[10px] tracking-widest px-2 py-1 bg-transparent outline-none"
-                    style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#fff", minWidth: 0 }}
+                    style={{ border: "1px solid var(--border-ring)", color: "var(--text-primary)", minWidth: 0 }}
                   />
                   <button
                     onClick={() => handleRename(c.id)}
                     className="font-heading text-[8px] tracking-widest px-2 py-1 shrink-0 cursor-pointer"
-                    style={{ backgroundColor: "#FFD500", color: "#000" }}
+                    style={{ backgroundColor: "var(--accent)", color: "#000" }}
                   >
                     SAVE
                   </button>
                   <button
                     onClick={() => { setRenaming(null); setRenameValue(""); }}
                     className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer"
-                    style={{ color: "rgba(255,255,255,0.3)" }}
+                    style={{ color: "var(--text-dim)" }}
                   >
                     CANCEL
                   </button>
                 </>
               ) : (
                 <>
-                  <span className="font-heading text-[10px] tracking-widest flex-1 text-white">{c.name}</span>
+                  <span className="font-heading text-[10px] tracking-widest flex-1 text-[var(--text-primary)]">{c.name}</span>
                   <button
                     onClick={() => { setRenaming(c.id); setRenameValue(c.name); setConfirming(null); }}
                     className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer transition-colors"
-                    style={{ color: "rgba(255,255,255,0.25)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#FFD500")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.25)")}
+                    style={{ color: "var(--text-muted)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
                   >
                     RENAME
                   </button>
@@ -146,14 +146,14 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
                       <button
                         onClick={() => handleDelete(c.id)}
                         className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer"
-                        style={{ color: "#C41E3A" }}
+                        style={{ color: "var(--accent-danger)" }}
                       >
                         CONFIRM DELETE
                       </button>
                       <button
                         onClick={() => setConfirming(null)}
                         className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer transition-colors"
-                        style={{ color: "rgba(255,255,255,0.25)" }}
+                        style={{ color: "var(--text-muted)" }}
                       >
                         CANCEL
                       </button>
@@ -162,9 +162,9 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
                     <button
                       onClick={() => { setConfirming(c.id); setRenaming(null); }}
                       className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer transition-colors"
-                      style={{ color: "rgba(255,255,255,0.2)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "#C41E3A")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.2)")}
+                      style={{ color: "var(--text-dim)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent-danger)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-dim)")}
                     >
                       DELETE
                     </button>
@@ -176,7 +176,7 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
 
           {/* Add cube inline */}
           {addingCube && (
-            <div className="flex items-center gap-2 px-4 py-3" style={{ backgroundColor: "#0a0a12", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex items-center gap-2 px-4 py-3" style={{ backgroundColor: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}>
               <input
                 autoFocus
                 value={newCubeName}
@@ -187,19 +187,19 @@ export default function CubeManager({ initialCubes }: { initialCubes: Cube[] }) 
                 }}
                 placeholder="e.g. GAN 16"
                 className="flex-1 font-heading text-[10px] tracking-widest px-2 py-1 bg-transparent outline-none"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "#fff", minWidth: 0 }}
+                style={{ border: "1px solid var(--border-ring)", color: "var(--text-primary)", minWidth: 0 }}
               />
               <button
                 onClick={handleAdd}
                 className="font-heading text-[8px] tracking-widest px-2 py-1 shrink-0 cursor-pointer"
-                style={{ backgroundColor: "#009B48", color: "#000" }}
+                style={{ backgroundColor: "var(--accent-success)", color: "#000" }}
               >
                 ADD
               </button>
               <button
                 onClick={() => { setAddingCube(false); setNewCubeName(""); }}
                 className="font-heading text-[8px] tracking-widest shrink-0 cursor-pointer"
-                style={{ color: "rgba(255,255,255,0.3)" }}
+                style={{ color: "var(--text-dim)" }}
               >
                 CANCEL
               </button>

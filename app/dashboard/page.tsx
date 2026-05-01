@@ -8,7 +8,6 @@ import { claimChallengeXP, useStreakFreeze } from "./actions";
 import { FreezeTimer } from "@/app/components/FreezeTimer";
 import {
   type Challenge,
-  type ChallengeType,
   getDailyChallenge,
   getWeeklyChallenge,
 } from "./challenges";
@@ -63,14 +62,14 @@ function ChallengeCard({
 
   return (
     <div
-      className="flex flex-col gap-4 p-6 bg-[#0f0f1a]"
+      className="flex flex-col gap-4 p-6 bg-[var(--bg-surface)]"
       style={{
         border: `1px solid ${
           claimed
-            ? "rgba(255,255,255,0.05)"
+            ? "var(--border-subtle)"
             : done
               ? accentColor + "50"
-              : "rgba(255,255,255,0.05)"
+              : "var(--border-subtle)"
         }`,
       }}
     >
@@ -88,15 +87,15 @@ function ChallengeCard({
 
       <span
         className="font-sans text-sm leading-relaxed"
-        style={{ color: claimed ? "#52525b" : "#d4d4d8" }}
+        style={{ color: claimed ? "var(--text-dim)" : "var(--text-primary)" }}
       >
         {challenge.text}
       </span>
 
       <div className="flex flex-col gap-2 mt-auto">
         <div
-          className="relative h-3 w-full bg-[#1a1a26]"
-          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          className="relative h-3 w-full bg-[var(--bg-inset)]"
+          style={{ border: "1px solid var(--border-subtle)" }}
         >
           <div
             className="absolute inset-y-0 left-0 transition-all duration-500"
@@ -133,7 +132,7 @@ function ChallengeCard({
           <input type="hidden" name="challengeKey" value={challengeKey} />
           <button
             type="submit"
-            className="w-full font-heading text-[10px] leading-none text-[#0d0d14] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px] cursor-pointer"
+            className="w-full font-heading text-[10px] leading-none text-[var(--bg-base)] py-3 transition-all duration-75 hover:brightness-110 active:translate-y-[2px] cursor-pointer"
             style={{
               backgroundColor: accentColor,
               boxShadow: `3px 3px 0px rgba(0,0,0,0.5)`,
@@ -159,9 +158,9 @@ const FIRE_GRID = [
   [0, 0, 0, 3, 0, 0, 0],
 ];
 const FIRE_COLORS: Record<number, string> = {
-  1: "#FFD500",
-  2: "#FF5800",
-  3: "#C41E3A",
+  1: "var(--accent)",
+  2: "var(--accent-streak)",
+  3: "var(--accent-danger)",
 };
 
 function PixelFire() {
@@ -178,11 +177,11 @@ function PixelFire() {
                 backgroundColor: cell ? FIRE_COLORS[cell] : "transparent",
                 boxShadow:
                   cell === 1
-                    ? "0 0 3px #FFD500"
+                    ? "0 0 3px var(--accent)"
                     : cell === 2
-                      ? "0 0 3px #FF5800"
+                      ? "0 0 3px var(--accent-streak)"
                       : cell === 3
-                        ? "0 0 3px #C41E3A"
+                        ? "0 0 3px var(--accent-danger)"
                         : undefined,
               }}
             />
@@ -367,7 +366,7 @@ export default async function Dashboard() {
     },
   ];
 
-  const STAT_COLORS = ["#009B48", "#FFD500", "#4FC3F7", "#a855f7"];
+  const STAT_COLORS = ["var(--accent-success)", "var(--accent)", "var(--accent-ice)", "#a855f7"];
 
   return (
     <div className="relative min-h-screen">
@@ -399,7 +398,7 @@ export default async function Dashboard() {
             </span>
             <span
               className="font-heading leading-none"
-              style={{ fontSize: "clamp(16px, 3vw, 24px)", color: "#ffffff" }}
+              style={{ fontSize: "clamp(16px, 3vw, 24px)", color: "var(--text-primary)" }}
             >
               {displayName}
             </span>
@@ -432,7 +431,7 @@ export default async function Dashboard() {
 
         {/* XP progress bar */}
         <div
-          className="flex flex-col gap-4 p-6 bg-[#0f0f1a]"
+          className="flex flex-col gap-4 p-6 bg-[var(--bg-surface)]"
           style={{ border: `1px solid ${rank.color}28` }}
         >
           <div className="flex items-center justify-between">
@@ -447,8 +446,8 @@ export default async function Dashboard() {
             </span>
           </div>
           <div
-            className="relative h-4 w-full bg-[#1a1a26]"
-            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+            className="relative h-4 w-full bg-[var(--bg-inset)]"
+            style={{ border: "1px solid var(--border-subtle)" }}
           >
             <div
               className="absolute inset-y-0 left-0 transition-all"
@@ -478,12 +477,12 @@ export default async function Dashboard() {
 
         {/* Streak card */}
         <div
-          className="flex items-center gap-5 p-6 bg-[#0f0f1a]"
+          className="flex items-center gap-5 p-6 bg-[var(--bg-surface)]"
           style={{
             border:
               profile.current_streak > 0
                 ? "1px solid rgba(255,88,0,0.3)"
-                : "1px solid rgba(255,255,255,0.05)",
+                : "1px solid var(--border-subtle)",
             boxShadow:
               profile.current_streak > 0
                 ? "0 0 24px rgba(255,88,0,0.08)"
@@ -494,7 +493,7 @@ export default async function Dashboard() {
           <div className="flex flex-col gap-1.5">
             <span
               className="font-heading leading-none"
-              style={{ fontSize: "clamp(22px, 4vw, 36px)", color: "#FF5800" }}
+              style={{ fontSize: "clamp(22px, 4vw, 36px)", color: "var(--accent-streak)" }}
             >
               {profile.current_streak}
             </span>
@@ -509,7 +508,7 @@ export default async function Dashboard() {
                   type="submit"
                   className="font-heading text-[8px] tracking-widest mt-0.5 px-2 py-1 transition-colors cursor-pointer"
                   style={{
-                    color: "#4FC3F7",
+                    color: "var(--accent-ice)",
                     border: "1px solid rgba(79,195,247,0.3)",
                     backgroundColor: "rgba(79,195,247,0.06)",
                   }}
@@ -535,8 +534,11 @@ export default async function Dashboard() {
               className="font-heading leading-none"
               style={{
                 fontSize: "clamp(20px, 3vw, 28px)",
-                color: streakMultiplier > 1 ? "#FF5800" : "#3f3f46",
-                textShadow: streakMultiplier > 1 ? "0 0 16px rgba(255,88,0,0.5)" : undefined,
+                color: streakMultiplier > 1 ? "var(--accent-streak)" : "#3f3f46",
+                textShadow:
+                  streakMultiplier > 1
+                    ? "0 0 16px rgba(255,88,0,0.5)"
+                    : undefined,
               }}
             >
               {streakMultiplier.toFixed(2).replace(/\.?0+$/, "")}×
@@ -544,9 +546,10 @@ export default async function Dashboard() {
             <span
               className="font-heading text-[8px] leading-none px-2 py-1"
               style={{
-                color: streakMultiplier > 1 ? "#FF5800" : "#52525b",
-                border: `1px solid ${streakMultiplier > 1 ? "rgba(255,88,0,0.3)" : "rgba(255,255,255,0.06)"}`,
-                backgroundColor: streakMultiplier > 1 ? "rgba(255,88,0,0.06)" : "transparent",
+                color: streakMultiplier > 1 ? "var(--accent-streak)" : "#52525b",
+                border: `1px solid ${streakMultiplier > 1 ? "rgba(255,88,0,0.3)" : "var(--border-subtle)"}`,
+                backgroundColor:
+                  streakMultiplier > 1 ? "rgba(255,88,0,0.06)" : "transparent",
               }}
             >
               {streakMultiplier > 1 ? "ACTIVE" : "NO BONUS YET"}
@@ -559,8 +562,8 @@ export default async function Dashboard() {
           {QUICK_STATS.map(({ label, value, sub }, i) => (
             <div
               key={label}
-              className="flex flex-col gap-3 p-5 bg-[#0f0f1a]"
-              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+              className="flex flex-col gap-3 p-5 bg-[var(--bg-surface)]"
+              style={{ border: "1px solid var(--border-subtle)" }}
             >
               <div
                 className="h-[2px] w-6"
@@ -590,8 +593,8 @@ export default async function Dashboard() {
               label="DAILY CHALLENGE"
               challenge={dailyChallenge}
               progress={dailyProgress}
-              accentColor="#FFD500"
-              accentGlow="rgba(255,213,0,0.5)"
+              accentColor="var(--accent)"
+              accentGlow="color-mix(in srgb, var(--accent) 50%, transparent)"
               resetLabel={dailyResetLabel}
               challengeKey={dailyKey}
               claimed={dailyClaimed}
@@ -601,8 +604,8 @@ export default async function Dashboard() {
               label="WEEKLY CHALLENGE"
               challenge={weeklyChallenge}
               progress={weeklyProgress}
-              accentColor="#4FC3F7"
-              accentGlow="rgba(79,195,247,0.5)"
+              accentColor="var(--accent-ice)"
+              accentGlow="color-mix(in srgb, var(--accent-ice) 50%, transparent)"
               resetLabel={weeklyResetLabel}
               challengeKey={weeklyKey}
               claimed={weeklyClaimed}
@@ -613,7 +616,7 @@ export default async function Dashboard() {
 
         {/* Continue Learning */}
         <div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-[#0f0f1a]"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-[var(--bg-surface)]"
           style={{ border: "1px solid rgba(255,213,0,0.15)" }}
         >
           <div className="flex flex-col gap-2">
@@ -636,9 +639,9 @@ export default async function Dashboard() {
 
           <Link
             href="/learn"
-            className="flex-shrink-0 font-heading text-[11px] leading-none text-[#0d0d14] bg-[#FFD500] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px] whitespace-nowrap"
+            className="flex-shrink-0 font-heading text-[11px] leading-none text-[var(--bg-base)] bg-[var(--accent)] px-6 py-4 transition-all duration-75 hover:brightness-110 active:translate-x-[3px] active:translate-y-[3px] whitespace-nowrap"
             style={{
-              boxShadow: "4px 4px 0px #a38a00, 7px 7px 0px rgba(163,138,0,0.2)",
+              boxShadow: "4px 4px 0px var(--accent-shadow), 7px 7px 0px color-mix(in srgb, var(--accent-shadow) 25%, transparent)",
             }}
           >
             {lastLesson ? "CONTINUE LEARNING" : "START LEARNING"}

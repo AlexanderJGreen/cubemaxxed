@@ -12,7 +12,7 @@ function LockPixels() {
   return (
     <div style={{ display: "inline-grid", gridTemplateColumns: "repeat(5, 3px)", gap: "1px" }}>
       {rows.flat().map((on, i) => (
-        <div key={i} style={{ width: 3, height: 3, backgroundColor: on ? "rgba(255,255,255,0.14)" : "transparent" }} />
+        <div key={i} style={{ width: 3, height: 3, backgroundColor: on ? "var(--text-muted)" : "transparent" }} />
       ))}
     </div>
   );
@@ -27,7 +27,7 @@ function LessonPips({ total, done, color }: { total: number; done: number; color
           style={{
             width: 7, height: 7,
             backgroundColor: i < done ? color : "transparent",
-            border: `1px solid ${i < done ? color : "rgba(255,255,255,0.1)"}`,
+            border: `1px solid ${i < done ? color : "var(--border-ring)"}`,
             boxShadow: i < done ? `0 0 5px ${color}80` : "none",
           }}
         />
@@ -40,7 +40,7 @@ function StageConnector({ color, lit }: { color: string; lit: boolean }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", paddingLeft: 22, paddingTop: 6, paddingBottom: 6, gap: 5 }}>
       {[0,1,2,3,4].map((i) => (
-        <div key={i} style={{ width: 3, height: 3, backgroundColor: lit ? color : "rgba(255,255,255,0.07)", opacity: lit ? 1 - i * 0.14 : 1, boxShadow: lit ? `0 0 5px ${color}70` : "none" }} />
+        <div key={i} style={{ width: 3, height: 3, backgroundColor: lit ? color : "var(--border-ring)", opacity: lit ? 1 - i * 0.14 : 1, boxShadow: lit ? `0 0 5px ${color}70` : "none" }} />
       ))}
     </div>
   );
@@ -102,23 +102,23 @@ export default async function Learn() {
 
         {/* Page header */}
         <div style={{ marginBottom: 52 }}>
-          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#555570", letterSpacing: "0.35em", marginBottom: 14 }}>
+          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "var(--text-dim)", letterSpacing: "0.35em", marginBottom: 14 }}>
             CURRICULUM MAP
           </div>
-          <h1 style={{ fontFamily: "var(--font-heading), monospace", fontSize: "clamp(13px, 2.2vw, 20px)", color: "#ededed", marginBottom: 16, lineHeight: 1.4 }}>
+          <h1 style={{ fontFamily: "var(--font-heading), monospace", fontSize: "clamp(13px, 2.2vw, 20px)", color: "var(--text-primary)", marginBottom: 16, lineHeight: 1.4 }}>
             CHOOSE YOUR STAGE
           </h1>
-          <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 13, color: "#7a7a96", lineHeight: 1.75, maxWidth: 480, marginBottom: 32 }}>
+          <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 13, color: "var(--text-muted)", lineHeight: 1.75, maxWidth: 480, marginBottom: 32 }}>
             43 lessons across 7 stages. Complete each stage to unlock the next.
           </p>
 
           {/* Overall progress meter */}
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", letterSpacing: "0.2em" }}>OVERALL PROGRESS</span>
-              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#888899" }}>{completedLessons} / {totalLessons} · {overallPct}%</span>
+              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "var(--text-dim)", letterSpacing: "0.2em" }}>OVERALL PROGRESS</span>
+              <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "var(--text-muted)" }}>{completedLessons} / {totalLessons} · {overallPct}%</span>
             </div>
-            <div style={{ height: 4, backgroundColor: "#0c0c16", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
+            <div style={{ height: 4, backgroundColor: "var(--bg-deep)", border: "1px solid var(--border-subtle)", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: "0 auto 0 0", width: `${overallPct}%`, background: "linear-gradient(90deg, #009B48 0%, #FFD500 100%)", boxShadow: "0 0 10px rgba(0,155,72,0.5)" }} />
             </div>
           </div>
@@ -160,9 +160,9 @@ export default async function Learn() {
                     className={`learn-card ${active ? "stage-active-card" : ""} ${dimmed ? "locked-card" : ""}`}
                     style={{
                       position: "relative", overflow: "hidden",
-                      backgroundColor: active ? `${cardColor}08` : completed ? `${cardColor}04` : "#080810",
-                      border: `1px solid ${dimmed ? "rgba(255,255,255,0.04)" : completed ? `${cardColor}22` : `${cardColor}55`}`,
-                      borderLeft: `6px solid ${dimmed ? "rgba(255,255,255,0.07)" : cardColor}`,
+                      backgroundColor: active ? `${cardColor}08` : completed ? `${cardColor}04` : "var(--bg-elevated)",
+                      border: `1px solid ${dimmed ? "var(--border-subtle)" : completed ? `${cardColor}22` : `${cardColor}55`}`,
+                      borderLeft: `6px solid ${dimmed ? "var(--border-ring)" : cardColor}`,
                       opacity: comingSoon ? 0.65 : locked ? 0.44 : 1,
                       padding: "22px 26px 22px 20px",
                       transition: "filter 0.2s",
@@ -170,7 +170,7 @@ export default async function Learn() {
                     }}
                   >
                     {dimmed && (
-                      <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(45deg, transparent, transparent 9px, rgba(255,255,255,0.013) 9px, rgba(255,255,255,0.013) 10px)", pointerEvents: "none" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(45deg, transparent, transparent 9px, color-mix(in srgb, currentColor 1.3%, transparent) 9px, color-mix(in srgb, currentColor 1.3%, transparent) 10px)", pointerEvents: "none" }} />
                     )}
                     {comingSoon && (
                       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
@@ -181,11 +181,11 @@ export default async function Learn() {
                     <div style={{ position: "relative", zIndex: 1 }}>
                       {/* Row 1: Stage label + status */}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10, gap: 12 }}>
-                        <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 9, color: dimmed ? "#1e1e2a" : cardColor, letterSpacing: "0.2em" }}>
+                        <span style={{ fontFamily: "var(--font-heading), monospace", fontSize: 9, color: dimmed ? "var(--bg-inset)" : cardColor, letterSpacing: "0.2em" }}>
                           STAGE {String(stage.number).padStart(2, "0")}
                         </span>
                         {completed && (
-                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#009B48", border: "1px solid rgba(0,155,72,0.35)", backgroundColor: "rgba(0,155,72,0.08)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "var(--accent-success)", border: "1px solid rgba(0,155,72,0.35)", backgroundColor: "rgba(0,155,72,0.08)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
                             COMPLETED
                           </div>
                         )}
@@ -196,30 +196,30 @@ export default async function Learn() {
                         )}
                         {locked && <LockPixels />}
                         {comingSoon && (
-                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#aaaabc", border: "1px solid rgba(255,255,255,0.25)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "var(--text-muted)", border: "1px solid var(--border-ring)", padding: "3px 8px", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>
                             COMING SOON
                           </div>
                         )}
                       </div>
 
                       {/* Row 2: Title */}
-                      <h2 style={{ fontFamily: "var(--font-heading), monospace", fontSize: 13, color: dimmed ? "#1a1a26" : active ? "#f2f2f2" : "#909099", margin: "0 0 10px 0", lineHeight: 1.55, display: "flex", alignItems: "center", gap: 8 }}>
+                      <h2 style={{ fontFamily: "var(--font-heading), monospace", fontSize: 13, color: dimmed ? "var(--bg-inset)" : active ? "var(--text-primary)" : "var(--text-muted)", margin: "0 0 10px 0", lineHeight: 1.55, display: "flex", alignItems: "center", gap: 8 }}>
                         {stage.title}
                         {active && <span className="blink-cursor" style={{ color: cardColor }}>_</span>}
                       </h2>
 
                       {/* Row 3: Goal */}
-                      <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 14, color: dimmed ? "#161620" : "#424258", lineHeight: 1.75, margin: "0 0 16px 0", maxWidth: "82%" }}>
+                      <p style={{ fontFamily: "var(--font-sans), Arial, sans-serif", fontSize: 14, color: dimmed ? "var(--bg-inset)" : "var(--text-dim)", lineHeight: 1.75, margin: "0 0 16px 0", maxWidth: "82%" }}>
                         {stage.goal}
                       </p>
 
                       {/* Progress bar for active stage */}
                       {active && stage.doneLessons > 0 && (
                         <div style={{ marginBottom: 16 }}>
-                          <div style={{ height: 3, backgroundColor: "#0d0d1a", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
+                          <div style={{ height: 3, backgroundColor: "var(--bg-base)", border: "1px solid var(--border-subtle)", position: "relative", overflow: "hidden" }}>
                             <div style={{ position: "absolute", inset: "0 auto 0 0", width: `${Math.round((stage.doneLessons / stage.totalLessons) * 100)}%`, backgroundColor: cardColor, boxShadow: `0 0 8px ${cardColor}` }} />
                           </div>
-                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "#555570", marginTop: 7, letterSpacing: "0.1em" }}>
+                          <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: "var(--text-dim)", marginTop: 7, letterSpacing: "0.1em" }}>
                             {stage.doneLessons} / {stage.totalLessons} LESSONS COMPLETE
                           </div>
                         </div>
@@ -228,8 +228,8 @@ export default async function Learn() {
                       {/* Row 4: Pips + XP */}
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                         <LessonPips total={stage.totalLessons} done={stage.doneLessons} color={cardColor} />
-                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: dimmed ? "#161620" : "#555570", flexShrink: 0 }}>
-                          <span style={{ color: dimmed ? "#161620" : `${cardColor}cc` }}>+{totalXP.toLocaleString()}</span> XP
+                        <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 8, color: dimmed ? "var(--bg-inset)" : "var(--text-dim)", flexShrink: 0 }}>
+                          <span style={{ color: dimmed ? "var(--bg-inset)" : `${cardColor}cc` }}>+{totalXP.toLocaleString()}</span> XP
                         </div>
                       </div>
                     </div>
@@ -242,20 +242,20 @@ export default async function Learn() {
         </div>
 
         {/* Footer stats */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#07070f" }}>
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-deep)" }}>
           {[
             { label: "TOTAL LESSONS",      value: "43" },
             { label: "TOTAL XP AVAILABLE", value: "4,700" },
           ].map((stat, i) => (
-            <div key={i} style={{ padding: "18px 22px", borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", marginBottom: 10, letterSpacing: "0.18em" }}>{stat.label}</div>
-              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#c0c0d4" }}>{stat.value}</div>
+            <div key={i} style={{ padding: "18px 22px", borderRight: "1px solid var(--border-subtle)" }}>
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "var(--text-dim)", marginBottom: 10, letterSpacing: "0.18em" }}>{stat.label}</div>
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "var(--text-primary)" }}>{stat.value}</div>
             </div>
           ))}
           <div style={{ padding: "18px 22px" }}>
-            <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "#555570", marginBottom: 10, letterSpacing: "0.18em" }}>YOUR PROGRESS</div>
+            <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 7, color: "var(--text-dim)", marginBottom: 10, letterSpacing: "0.18em" }}>YOUR PROGRESS</div>
             {user ? (
-              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "#c0c0d4" }}>{completedLessons} / {totalLessons}</div>
+              <div style={{ fontFamily: "var(--font-heading), monospace", fontSize: 14, color: "var(--text-primary)" }}>{completedLessons} / {totalLessons}</div>
             ) : (
               <Link
                 href="/auth/login"
@@ -263,7 +263,7 @@ export default async function Learn() {
                   display: "inline-block",
                   fontFamily: "var(--font-heading), monospace",
                   fontSize: 8,
-                  color: "#FFD500",
+                  color: "var(--accent)",
                   border: "1px solid rgba(255,213,0,0.35)",
                   backgroundColor: "rgba(255,213,0,0.07)",
                   padding: "5px 10px",

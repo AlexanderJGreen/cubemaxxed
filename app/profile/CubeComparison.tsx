@@ -42,29 +42,29 @@ function CubeDropdown({
         onClick={() => setOpen((o) => !o)}
         className="w-full font-heading text-[10px] tracking-widest px-4 py-2.5 flex items-center gap-3 cursor-pointer transition-colors"
         style={{
-          backgroundColor: "#0d0d14",
-          border: value ? "1px solid rgba(255,213,0,0.35)" : "1px solid rgba(255,255,255,0.1)",
-          color: value ? "#FFD500" : "rgba(255,255,255,0.3)",
+          backgroundColor: "var(--bg-base)",
+          border: value ? "1px solid var(--accent-border)" : "1px solid var(--border-subtle)",
+          color: value ? "var(--accent)" : "var(--text-dim)",
         }}
       >
         <span className="flex-1 text-left truncate">{selected ? selected.name.toUpperCase() : placeholder}</span>
-        <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 8, lineHeight: 1, position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ color: "var(--text-muted)", fontSize: 8, lineHeight: 1, position: "relative", top: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div
           className={`absolute z-50 w-full ${align === "right" ? "right-0" : "left-0"}`}
-          style={{ border: "1px solid rgba(255,255,255,0.1)", borderTop: "none", backgroundColor: "#0d0d14" }}
+          style={{ border: "1px solid var(--border-ring)", borderTop: "none", backgroundColor: "var(--bg-base)" }}
         >
           <button
             onClick={() => { onChange(null); setOpen(false); }}
             className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
-            style={{ color: !value ? "#FFD500" : "rgba(255,255,255,0.35)" }}
+            style={{ color: !value ? "var(--accent)" : "var(--text-muted)" }}
           >
             {placeholder}
           </button>
           {available.length > 0 && (
-            <div style={{ height: 1, backgroundColor: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+            <div style={{ height: 1, backgroundColor: "var(--border-subtle)", margin: "2px 0" }} />
           )}
           {available.map((c) => (
             <button
@@ -72,7 +72,7 @@ function CubeDropdown({
               onClick={() => { onChange(c.id); setOpen(false); }}
               className="w-full text-left font-heading text-[10px] tracking-widest px-4 py-2 transition-colors cursor-pointer"
               style={{
-                color: c.id === value ? "#FFD500" : "rgba(255,255,255,0.45)",
+                color: c.id === value ? "var(--accent)" : "var(--text-muted)",
                 backgroundColor: c.id === value ? "rgba(255,213,0,0.05)" : "transparent",
               }}
             >
@@ -162,7 +162,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
   const bWins = rows.filter((r) => r.winner === "b").length;
 
   return (
-    <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+    <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
       <span className="font-heading text-[9px] text-zinc-600 tracking-widest">HEAD-TO-HEAD</span>
 
       {/* Cube selectors */}
@@ -196,11 +196,11 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
           {/* Header row */}
           <div
             className="grid items-center py-3 px-4 mb-1 gap-2 sm:gap-4"
-            style={{ gridTemplateColumns: "1fr auto 1fr", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ gridTemplateColumns: "1fr auto 1fr", borderBottom: "1px solid var(--border-subtle)" }}
           >
             <span
               className="font-heading text-xs sm:text-sm truncate"
-              style={{ color: aWins > bWins ? "#FFD500" : "rgba(255,255,255,0.5)" }}
+              style={{ color: aWins > bWins ? "var(--accent)" : "var(--text-muted)" }}
             >
               {cubeAName}
               {aWins > bWins && <span className="ml-2 text-[8px]">★</span>}
@@ -208,7 +208,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
             <span className="font-heading text-[8px] text-zinc-700 tracking-widest text-center w-14 sm:w-24">STAT</span>
             <span
               className="font-heading text-xs sm:text-sm truncate text-right"
-              style={{ color: bWins > aWins ? "#FFD500" : "rgba(255,255,255,0.5)" }}
+              style={{ color: bWins > aWins ? "var(--accent)" : "var(--text-muted)" }}
             >
               {bWins > aWins && <span className="mr-2 text-[8px]">★</span>}
               {cubeBName}
@@ -227,7 +227,7 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
                 className="grid items-center py-3 px-4 gap-2 sm:gap-4"
                 style={{
                   gridTemplateColumns: "1fr auto 1fr",
-                  borderBottom: "1px solid rgba(255,255,255,0.03)",
+                  borderBottom: "1px solid var(--border-subtle)",
                 }}
               >
                 {/* Cube A value */}
@@ -235,15 +235,15 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
                   <span
                     className="font-heading text-sm sm:text-base leading-none"
                     style={{
-                      color: row.winner === "a" ? "#FFD500"
-                           : row.winner === "tie" ? "rgba(255,255,255,0.5)"
-                           : "rgba(255,255,255,0.25)",
+                      color: row.winner === "a" ? "var(--accent)"
+                           : row.winner === "tie" ? "var(--text-muted)"
+                           : "var(--text-dim)",
                     }}
                   >
                     {row.aVal}
                   </span>
                   {row.winner === "a" && (
-                    <div style={{ width: 4, height: 4, backgroundColor: "#FFD500", boxShadow: "0 0 6px #FFD500", flexShrink: 0 }} />
+                    <div style={{ width: 4, height: 4, backgroundColor: "var(--accent)", boxShadow: "0 0 6px var(--accent)", flexShrink: 0 }} />
                   )}
                 </div>
 
@@ -253,14 +253,14 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
                 {/* Cube B value */}
                 <div className="flex items-center gap-2 justify-end">
                   {row.winner === "b" && (
-                    <div style={{ width: 4, height: 4, backgroundColor: "#FFD500", boxShadow: "0 0 6px #FFD500", flexShrink: 0 }} />
+                    <div style={{ width: 4, height: 4, backgroundColor: "var(--accent)", boxShadow: "0 0 6px var(--accent)", flexShrink: 0 }} />
                   )}
                   <span
                     className="font-heading text-sm sm:text-base leading-none"
                     style={{
-                      color: row.winner === "b" ? "#FFD500"
-                           : row.winner === "tie" ? "rgba(255,255,255,0.5)"
-                           : "rgba(255,255,255,0.25)",
+                      color: row.winner === "b" ? "var(--accent)"
+                           : row.winner === "tie" ? "var(--text-muted)"
+                           : "var(--text-dim)",
                     }}
                   >
                     {row.bVal}
@@ -274,15 +274,15 @@ export default function CubeComparison({ cubes }: { cubes: Cube[] }) {
           {!loading && bothSelected && (aWins > 0 || bWins > 0) && (
             <div
               className="flex items-center justify-between px-4 pt-4 mt-1"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+              style={{ borderTop: "1px solid var(--border-subtle)" }}
             >
-              <span className="font-heading text-[9px] tracking-widest" style={{ color: aWins >= bWins ? "#FFD500" : "rgba(255,255,255,0.2)" }}>
+              <span className="font-heading text-[9px] tracking-widest" style={{ color: aWins >= bWins ? "var(--accent)" : "var(--text-dim)" }}>
                 {aWins} WIN{aWins !== 1 ? "S" : ""}
               </span>
               <span className="font-heading text-[8px] text-zinc-700 tracking-widest">
                 {aWins === bWins ? "TIED" : aWins > bWins ? `${cubeAName.toUpperCase()} LEADS` : `${cubeBName.toUpperCase()} LEADS`}
               </span>
-              <span className="font-heading text-[9px] tracking-widest" style={{ color: bWins >= aWins ? "#FFD500" : "rgba(255,255,255,0.2)" }}>
+              <span className="font-heading text-[9px] tracking-widest" style={{ color: bWins >= aWins ? "var(--accent)" : "var(--text-dim)" }}>
                 {bWins} WIN{bWins !== 1 ? "S" : ""}
               </span>
             </div>

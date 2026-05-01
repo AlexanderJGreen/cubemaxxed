@@ -37,7 +37,7 @@ export default function AvatarDropdown({
           width: 32,
           height: 32,
           border: `1.5px solid ${rankColor}`,
-          backgroundColor: "#0a0a12",
+          backgroundColor: "var(--bg-elevated)",
           boxShadow: open ? `0 0 12px ${rankColor}55` : undefined,
         }}
         aria-label="Open user menu"
@@ -68,15 +68,15 @@ export default function AvatarDropdown({
           className="absolute right-0 z-50 mt-2"
           style={{
             width: 180,
-            backgroundColor: "#0f0f1a",
-            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: "var(--bg-surface)",
+            border: "1px solid var(--border-ring)",
             boxShadow: "4px 4px 0 rgba(0,0,0,0.6)",
           }}
         >
           {/* Username */}
           <div
             className="px-4 py-3 flex items-center gap-2.5"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            style={{ borderBottom: "1px solid var(--border-subtle)" }}
           >
             {/* Mini avatar */}
             <div
@@ -85,7 +85,7 @@ export default function AvatarDropdown({
                 width: 22,
                 height: 22,
                 border: `1px solid ${rankColor}`,
-                backgroundColor: "#0a0a12",
+                backgroundColor: "var(--bg-elevated)",
               }}
             >
               {avatarUrl ? (
@@ -106,7 +106,7 @@ export default function AvatarDropdown({
                 </span>
               )}
             </div>
-            <span className="font-heading text-[9px] leading-none text-white truncate">
+            <span className="font-heading text-[9px] leading-none text-[var(--text-primary)] truncate">
               {username}
             </span>
           </div>
@@ -121,7 +121,7 @@ export default function AvatarDropdown({
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="block px-4 py-2.5 font-sans text-sm text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-colors"
+                className="block px-4 py-2.5 font-sans text-sm text-zinc-400 hover:text-[var(--text-primary)] hover:bg-[var(--bg-inset)] transition-colors"
               >
                 {label}
               </Link>
@@ -129,11 +129,11 @@ export default function AvatarDropdown({
           </div>
 
           {/* Sign out */}
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ borderTop: "1px solid var(--border-subtle)" }}>
             <form action={signout}>
               <button
                 type="submit"
-                className="w-full text-left px-4 py-2.5 font-sans text-sm text-zinc-500 hover:text-[#C41E3A] hover:bg-[#C41E3A]/[0.06] transition-colors cursor-pointer"
+                className="w-full text-left px-4 py-2.5 font-sans text-sm text-zinc-500 hover:text-[var(--accent-danger)] hover:bg-[var(--accent-danger)]/[0.06] transition-colors cursor-pointer"
               >
                 Sign out
               </button>

@@ -13,13 +13,14 @@ import CubeManager from "./CubeManager";
 import CubeComparison from "./CubeComparison";
 import { GrandmasterGlow } from "./GrandmasterGlow";
 import { GoalsSection } from "@/app/components/GoalsSection";
+import { ThemeSwitcher } from "@/app/components/ThemeSwitcher";
 import AvatarUpload from "./AvatarUpload";
 
 const CATEGORY_COLORS: Record<string, string> = {
   LEARNING: "#0051A2",
-  SPEED:    "#C41E3A",
-  PRACTICE: "#009B48",
-  STREAK:   "#FF5800",
+  SPEED:    "var(--accent-danger)",
+  PRACTICE: "var(--accent-success)",
+  STREAK:   "var(--accent-streak)",
   HIDDEN:   "#55556a",
 };
 
@@ -71,8 +72,8 @@ function AchievementBadge({ a, unlocked }: { a: Achievement; unlocked: boolean }
     <div
       className="flex flex-col items-center gap-2.5 p-3"
       style={{
-        backgroundColor: show ? `${color}0a` : "#0a0a12",
-        border: show ? `1px solid ${color}35` : "1px solid rgba(255,255,255,0.04)",
+        backgroundColor: show ? `${color}0a` : "var(--bg-elevated)",
+        border: show ? `1px solid ${color}35` : "1px solid var(--border-subtle)",
         boxShadow: show ? `inset 0 1px 0 ${color}20` : "none",
       }}
       title={show ? a.desc : undefined}
@@ -82,8 +83,8 @@ function AchievementBadge({ a, unlocked }: { a: Achievement; unlocked: boolean }
         style={{
           width: 48, height: 48,
           backgroundColor: show ? `${color}18` : "#13131e",
-          border: `2px solid ${show ? color : "rgba(255,255,255,0.06)"}`,
-          color: show ? color : "rgba(255,255,255,0.1)",
+          border: `2px solid ${show ? color : "var(--border-ring)"}`,
+          color: show ? color : "var(--text-dim)",
           boxShadow: show ? `0 0 18px ${color}50, inset 0 0 8px ${color}15` : "none",
         }}
       >
@@ -94,13 +95,13 @@ function AchievementBadge({ a, unlocked }: { a: Achievement; unlocked: boolean }
       </div>
       <span
         className="font-heading text-center leading-relaxed"
-        style={{ fontSize: "7px", color: show ? "#ededed" : "rgba(255,255,255,0.15)", maxWidth: 80 }}
+        style={{ fontSize: "7px", color: show ? "var(--text-primary)" : "var(--text-dim)", maxWidth: 80 }}
       >
         {a.hidden ? "???" : a.name}
       </span>
       <span
         className="font-heading leading-none tracking-widest"
-        style={{ fontSize: "6px", color: show ? color : "rgba(255,255,255,0.08)" }}
+        style={{ fontSize: "6px", color: show ? color : "var(--text-dim)" }}
       >
         {a.hidden ? "HIDDEN" : a.category}
       </span>
@@ -189,11 +190,11 @@ export default async function Profile({
   const unlockedCount = ACHIEVEMENTS.filter((a) => unlockedIds.has(a.id)).length;
 
   const STATS = [
-    { label: "TOTAL SOLVES",        value: totalSolves.toString(),                    sub: "all time",       color: "#009B48" },
-    { label: "BEST SINGLE",         value: bestSingle ? formatTime(bestSingle) : "—", sub: "personal best",  color: "#C41E3A" },
-    { label: "BEST AVERAGE OF 5",   value: ao5 ? formatTime(ao5) : "—",               sub: "ao5",            color: "#4FC3F7" },
-    { label: "BEST AVERAGE OF 12",  value: ao12 ? formatTime(ao12) : "—",             sub: "ao12",           color: "#FFD500" },
-    { label: "TOTAL XP EARNED",     value: profile.total_xp.toLocaleString(),         sub: "across all time",color: "#FF5800" },
+    { label: "TOTAL SOLVES",        value: totalSolves.toString(),                    sub: "all time",       color: "var(--accent-success)" },
+    { label: "BEST SINGLE",         value: bestSingle ? formatTime(bestSingle) : "—", sub: "personal best",  color: "var(--accent-danger)" },
+    { label: "BEST AVERAGE OF 5",   value: ao5 ? formatTime(ao5) : "—",               sub: "ao5",            color: "var(--accent-ice)" },
+    { label: "BEST AVERAGE OF 12",  value: ao12 ? formatTime(ao12) : "—",             sub: "ao12",           color: "var(--accent)" },
+    { label: "TOTAL XP EARNED",     value: profile.total_xp.toLocaleString(),         sub: "across all time",color: "var(--accent-streak)" },
     { label: "LESSONS COMPLETED",   value: lessonCount.toString(),                    sub: "of 43 total",    color: "#0051A2" },
     { label: "ALGORITHMS MASTERED", value: algCount.toString(),                       sub: "of 78 total",    color: "#a855f7", span: true },
   ];
@@ -216,7 +217,7 @@ export default async function Profile({
             style={{
               width: 30,
               height: 30,
-              backgroundColor: "#0d0d14",
+              backgroundColor: "var(--bg-base)",
               border: `1.5px solid ${rank.color}`,
               padding: 4,
               boxShadow: `0 0 10px ${rank.glow}`,
@@ -229,7 +230,7 @@ export default async function Profile({
         {/* Identity info */}
         <div className="flex flex-col gap-3 text-center sm:text-left flex-1 min-w-0">
           <div className="flex flex-col gap-1.5">
-            <span className="font-heading text-white leading-none" style={{ fontSize: "clamp(18px, 3vw, 28px)" }}>
+            <span className="font-heading text-[var(--text-primary)] leading-none" style={{ fontSize: "clamp(18px, 3vw, 28px)" }}>
               {displayName}
             </span>
             {/* Rank name + tier dots inline */}
@@ -256,10 +257,10 @@ export default async function Profile({
           <div className="flex flex-wrap gap-x-5 gap-y-3 justify-center sm:justify-start">
             {[
               { label: "TOTAL XP",     value: profile.total_xp.toLocaleString(),        color: rank.color },
-              { label: "STREAK",       value: `${profile.current_streak}d`,             color: "#FF5800"  },
+              { label: "STREAK",       value: `${profile.current_streak}d`,             color: "var(--accent-streak)"  },
               { label: "LESSONS",      value: `${lessonCount}/43`,                      color: "#0051A2"  },
               { label: "ALGS",         value: `${algCount}/78`,                         color: "#a855f7"  },
-              { label: "ACHIEVEMENTS", value: `${unlockedCount}/${ACHIEVEMENTS.length}`,color: "#FFD500"  },
+              { label: "ACHIEVEMENTS", value: `${unlockedCount}/${ACHIEVEMENTS.length}`,color: "var(--accent)"  },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex flex-col gap-1">
                 <span className="font-heading text-[7px] text-zinc-600 tracking-widest leading-none">{label}</span>
@@ -299,9 +300,9 @@ export default async function Profile({
               href={`/u/${displayName}`}
               className="font-heading text-[8px] tracking-widest px-3 py-1.5 transition-colors"
               style={{
-                color: "#555570",
-                border: "1px solid rgba(255,255,255,0.07)",
-                backgroundColor: "rgba(255,255,255,0.02)",
+                color: "var(--text-dim)",
+                border: "1px solid var(--border-subtle)",
+                backgroundColor: "var(--bg-elevated)",
               }}
             >
               SHARE PROFILE ↗
@@ -318,7 +319,7 @@ export default async function Profile({
             className="relative overflow-hidden p-8 sm:p-10"
             style={{
               border: `1px solid ${rank.color}20`,
-              backgroundColor: "#0f0f1a",
+              backgroundColor: "var(--bg-surface)",
               boxShadow: `0 0 32px ${rank.color}80`,
             }}
           >
@@ -329,7 +330,7 @@ export default async function Profile({
         {/* ── XP progress ── */}
         <div
           className="flex flex-col gap-4 p-6"
-          style={{ border: `1px solid ${rank.color}22`, backgroundColor: "#0f0f1a" }}
+          style={{ border: `1px solid ${rank.color}22`, backgroundColor: "var(--bg-surface)" }}
         >
           <div className="flex items-center justify-between">
             <span className="font-heading text-[9px] text-zinc-600 tracking-widest">RANK PROGRESS</span>
@@ -337,7 +338,7 @@ export default async function Profile({
               {rank.rank} {rank.tier} → {rank.nextLabel}
             </span>
           </div>
-          <div className="relative h-5 w-full bg-[#1a1a26]" style={{ border: `1px solid ${rank.color}18` }}>
+          <div className="relative h-5 w-full bg-[var(--bg-inset)]" style={{ border: `1px solid ${rank.color}18` }}>
             <div
               className="absolute inset-y-0 left-0 transition-all"
               style={{ width: `${xpProgress}%`, backgroundColor: rank.color, boxShadow: `0 0 16px ${rank.glow}` }}
@@ -378,17 +379,17 @@ export default async function Profile({
 
         {/* ── Streak + member stats ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
             <div className="h-[2px] w-5" style={{ backgroundColor: rank.color }} />
             <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">MEMBER SINCE</span>
-            <span className="font-heading text-xs text-white leading-snug">{memberSince}</span>
+            <span className="font-heading text-xs text-[var(--text-primary)] leading-snug">{memberSince}</span>
             <span className="font-sans text-xs text-zinc-700">joined cubemaxxed</span>
           </div>
-          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,88,0,0.2)", backgroundColor: "#0f0f1a", boxShadow: profile.current_streak > 0 ? "0 0 20px rgba(255,88,0,0.06)" : "none" }}>
-            <div className="h-[2px] w-5" style={{ backgroundColor: "#FF5800" }} />
+          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,88,0,0.2)", backgroundColor: "var(--bg-surface)", boxShadow: profile.current_streak > 0 ? "0 0 20px rgba(255,88,0,0.06)" : "none" }}>
+            <div className="h-[2px] w-5" style={{ backgroundColor: "var(--accent-streak)" }} />
             <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">CURRENT STREAK</span>
             <div className="flex items-baseline gap-2">
-              <span className="font-heading leading-none" style={{ fontSize: "clamp(22px, 3vw, 30px)", color: "#FF5800" }}>
+              <span className="font-heading leading-none" style={{ fontSize: "clamp(22px, 3vw, 30px)", color: "var(--accent-streak)" }}>
                 {profile.current_streak}
               </span>
               <span className="font-heading text-[8px] text-zinc-500">DAYS</span>
@@ -397,11 +398,11 @@ export default async function Profile({
               {profile.streak_freeze_available ? "1 freeze available" : "no freeze available"}
             </span>
           </div>
-          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,213,0,0.15)", backgroundColor: "#0f0f1a" }}>
-            <div className="h-[2px] w-5" style={{ backgroundColor: "#FFD500" }} />
+          <div className="flex flex-col gap-3 p-5" style={{ border: "1px solid rgba(255,213,0,0.15)", backgroundColor: "var(--bg-surface)" }}>
+            <div className="h-[2px] w-5" style={{ backgroundColor: "var(--accent)" }} />
             <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">BEST STREAK</span>
             <div className="flex items-baseline gap-2">
-              <span className="font-heading leading-none" style={{ fontSize: "clamp(22px, 3vw, 30px)", color: "#FFD500" }}>
+              <span className="font-heading leading-none" style={{ fontSize: "clamp(22px, 3vw, 30px)", color: "var(--accent)" }}>
                 {profile.longest_streak}
               </span>
               <span className="font-heading text-[8px] text-zinc-500">DAYS</span>
@@ -414,11 +415,11 @@ export default async function Profile({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Performance stats */}
-          <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+          <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
             <div className="flex items-center gap-3">
               <span className="font-heading text-[9px] text-zinc-600 tracking-widest">STATS</span>
               {selectedCubeId && cubes.find((c) => c.id === selectedCubeId) && (
-                <span className="font-heading text-[8px] tracking-widest px-2 py-0.5" style={{ color: "#009B48", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)" }}>
+                <span className="font-heading text-[8px] tracking-widest px-2 py-0.5" style={{ color: "var(--accent-success)", border: "1px solid rgba(0,155,72,0.3)", backgroundColor: "rgba(0,155,72,0.06)" }}>
                   {cubes.find((c) => c.id === selectedCubeId)!.name.toUpperCase()}
                 </span>
               )}
@@ -429,8 +430,8 @@ export default async function Profile({
                   key={label}
                   className="flex flex-col gap-2.5 p-4"
                   style={{
-                    backgroundColor: "#0a0a12",
-                    border: "1px solid rgba(255,255,255,0.04)",
+                    backgroundColor: "var(--bg-elevated)",
+                    border: "1px solid var(--border-subtle)",
                     gridColumn: span ? "1 / -1" : undefined,
                   }}
                 >
@@ -444,7 +445,7 @@ export default async function Profile({
           </div>
 
           {/* Personal bests */}
-          <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+          <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
             <span className="font-heading text-[9px] text-zinc-600 tracking-widest">PERSONAL BESTS</span>
             <div className="grid grid-cols-2 gap-3">
               {personalBests.map((pb) => {
@@ -457,24 +458,24 @@ export default async function Profile({
                     key={pb.milestone}
                     className="flex flex-col gap-2.5 p-4"
                     style={{
-                      backgroundColor: achieved ? "#0d1a10" : "#0a0a12",
-                      border: achieved ? "1px solid rgba(0,155,72,0.25)" : "1px solid rgba(255,255,255,0.04)",
+                      backgroundColor: achieved ? "var(--success-bg)" : "var(--bg-elevated)",
+                      border: achieved ? "1px solid rgba(0,155,72,0.25)" : "1px solid var(--border-subtle)",
                       boxShadow: achieved ? "inset 0 1px 0 rgba(0,155,72,0.1)" : "none",
                     }}
                   >
-                    {achieved && <div className="h-[2px] w-5" style={{ backgroundColor: "#009B48" }} />}
+                    {achieved && <div className="h-[2px] w-5" style={{ backgroundColor: "var(--accent-success)" }} />}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-heading text-[8px] tracking-widest leading-relaxed" style={{ color: achieved ? "#009B48" : "rgba(255,255,255,0.15)" }}>
+                      <span className="font-heading text-[8px] tracking-widest leading-relaxed" style={{ color: achieved ? "var(--accent-success)" : "rgba(128,128,128,0.3)" }}>
                         {pb.label}
                       </span>
                       {!achieved && (
-                        <span className="font-heading text-[7px]" style={{ color: "rgba(255,255,255,0.1)" }}>LOCKED</span>
+                        <span className="font-heading text-[7px]" style={{ color: "var(--text-dim)" }}>LOCKED</span>
                       )}
                     </div>
-                    <span className="font-heading text-lg leading-none" style={{ color: achieved ? "#ffffff" : "rgba(255,255,255,0.12)" }}>
+                    <span className="font-heading text-lg leading-none" style={{ color: achieved ? "var(--text-primary)" : "var(--text-dim)" }}>
                       {achieved ? pb.timeFormatted : "—"}
                     </span>
-                    <span className="font-sans text-xs" style={{ color: achieved ? "#55556a" : "rgba(255,255,255,0.08)" }}>
+                    <span className="font-sans text-xs" style={{ color: achieved ? "var(--text-muted)" : "var(--text-dim)" }}>
                       {date ?? "not yet achieved"}
                     </span>
                   </div>
@@ -485,7 +486,7 @@ export default async function Profile({
         </div>
 
         {/* ── Solve progress graph ── */}
-        <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <div className="flex flex-col gap-5 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
           <div className="flex flex-col gap-1">
             <span className="font-heading text-[9px] text-zinc-600 tracking-widest">SOLVE PROGRESS</span>
             <span className="font-sans text-xs text-zinc-600">single · ao5 · ao12 over time</span>
@@ -494,28 +495,28 @@ export default async function Profile({
         </div>
 
         {/* ── Session breakdown ── */}
-        <div className="flex flex-col gap-4 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <div className="flex flex-col gap-4 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
           <span className="font-heading text-[9px] text-zinc-600 tracking-widest">TODAY&apos;S SESSION</span>
           {todaySolveCount === 0 ? (
             <span className="font-sans text-sm text-zinc-600">No solves logged today yet.</span>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "SOLVES",  value: todaySolveCount.toString(),                    sub: "today",                                                                    color: "#009B48" },
-                { label: "BEST",    value: todayBest ? formatTime(todayBest) : "—",        sub: "today's single",                                                           color: "#C41E3A" },
-                { label: "AO5",     value: todayAo5 ? formatTime(todayAo5) : "—",          sub: todaySolveCount < 5 ? `need ${5 - todaySolveCount} more` : "today",         color: "#4FC3F7" },
+                { label: "SOLVES",  value: todaySolveCount.toString(),                    sub: "today",                                                                    color: "var(--accent-success)" },
+                { label: "BEST",    value: todayBest ? formatTime(todayBest) : "—",        sub: "today's single",                                                           color: "var(--accent-danger)" },
+                { label: "AO5",     value: todayAo5 ? formatTime(todayAo5) : "—",          sub: todaySolveCount < 5 ? `need ${5 - todaySolveCount} more` : "today",         color: "var(--accent-ice)" },
                 {
                   label: "VS AVG",
                   value: sessionVsAvg === "better" ? "BETTER" : sessionVsAvg === "worse" ? "WORSE" : "ON PAR",
                   sub: "vs all-time avg",
-                  color: sessionVsAvg === "better" ? "#009B48" : sessionVsAvg === "worse" ? "#C41E3A" : "#ffffff",
+                  color: sessionVsAvg === "better" ? "var(--accent-success)" : sessionVsAvg === "worse" ? "var(--accent-danger)" : "var(--text-primary)",
                   border: sessionVsAvg === "better" ? "1px solid rgba(0,155,72,0.2)" : sessionVsAvg === "worse" ? "1px solid rgba(196,30,58,0.2)" : undefined,
                 },
               ].map(({ label, value, sub, color, border }) => (
                 <div
                   key={label}
                   className="flex flex-col gap-2.5 p-4"
-                  style={{ backgroundColor: "#0a0a12", border: border ?? "1px solid rgba(255,255,255,0.04)" }}
+                  style={{ backgroundColor: "var(--bg-elevated)", border: border ?? "1px solid var(--border-subtle)" }}
                 >
                   <div className="h-[2px] w-5" style={{ backgroundColor: color }} />
                   <span className="font-heading text-[8px] text-zinc-600 tracking-widest leading-relaxed">{label}</span>
@@ -527,8 +528,16 @@ export default async function Profile({
           )}
         </div>
 
+        {/* ── Theme ── */}
+        <div
+          className="flex flex-col gap-5 p-6"
+          style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}
+        >
+          <ThemeSwitcher />
+        </div>
+
         {/* ── Achievements ── */}
-        <div className="flex flex-col gap-6 p-6" style={{ border: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#0f0f1a" }}>
+        <div className="flex flex-col gap-6 p-6" style={{ border: "1px solid var(--border-subtle)", backgroundColor: "var(--bg-surface)" }}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-2">
               <span className="font-heading text-[9px] text-zinc-600 tracking-widest">ACHIEVEMENTS</span>
@@ -541,7 +550,7 @@ export default async function Profile({
                   key={i}
                   style={{
                     width: 6, height: 6,
-                    backgroundColor: unlockedIds.has(a.id) ? CATEGORY_COLORS[a.category] : "rgba(255,255,255,0.06)",
+                    backgroundColor: unlockedIds.has(a.id) ? CATEGORY_COLORS[a.category] : "var(--bg-inset)",
                     boxShadow: unlockedIds.has(a.id) ? `0 0 4px ${CATEGORY_COLORS[a.category]}90` : "none",
                   }}
                 />

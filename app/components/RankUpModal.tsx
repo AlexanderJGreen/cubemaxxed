@@ -135,7 +135,7 @@ export default function RankUpModal() {
         <div
           className="rup-card relative flex flex-col items-center gap-5 px-10 py-9 mx-6"
           style={{
-            backgroundColor: "#0a0a12",
+            backgroundColor: "var(--bg-elevated)",
             border: `2px solid ${info.color}`,
             maxWidth: 360,
             width: "100%",
@@ -195,7 +195,7 @@ export default function RankUpModal() {
           </span>
 
           {/* Countdown bar */}
-          <div className="w-full h-px bg-[#1a1a26]">
+          <div className="w-full h-px bg-[var(--bg-inset)]">
             <div
               className="h-full"
               style={{

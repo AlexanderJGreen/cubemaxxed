@@ -52,8 +52,8 @@ function CustomTooltip({
     <div
       className="flex flex-col gap-2 p-3"
       style={{
-        backgroundColor: "#0f0f1a",
-        border: "1px solid rgba(255,255,255,0.08)",
+        backgroundColor: "var(--bg-surface)",
+        border: "1px solid var(--border-subtle)",
         minWidth: 140,
       }}
     >
@@ -62,20 +62,20 @@ function CustomTooltip({
       </span>
       {solve && (
         <div className="flex items-center justify-between gap-4">
-          <span className="font-heading text-[8px]" style={{ color: "#FFD500" }}>TIME</span>
-          <span className="font-sans text-xs text-white">{formatTime(solve.value * 1000)}</span>
+          <span className="font-heading text-[8px]" style={{ color: "var(--chart-1)" }}>TIME</span>
+          <span className="font-sans text-xs" style={{ color: "var(--text-primary)" }}>{formatTime(solve.value * 1000)}</span>
         </div>
       )}
       {ao5 && (
         <div className="flex items-center justify-between gap-4">
-          <span className="font-heading text-[8px]" style={{ color: "#C41E3A" }}>AO5</span>
-          <span className="font-sans text-xs text-white">{formatTime(ao5.value * 1000)}</span>
+          <span className="font-heading text-[8px]" style={{ color: "var(--chart-2)" }}>AO5</span>
+          <span className="font-sans text-xs" style={{ color: "var(--text-primary)" }}>{formatTime(ao5.value * 1000)}</span>
         </div>
       )}
       {ao12 && (
         <div className="flex items-center justify-between gap-4">
-          <span className="font-heading text-[8px]" style={{ color: "#0051A2" }}>AO12</span>
-          <span className="font-sans text-xs text-white">{formatTime(ao12.value * 1000)}</span>
+          <span className="font-heading text-[8px]" style={{ color: "var(--chart-3)" }}>AO12</span>
+          <span className="font-sans text-xs" style={{ color: "var(--text-primary)" }}>{formatTime(ao12.value * 1000)}</span>
         </div>
       )}
     </div>
@@ -107,33 +107,33 @@ export default function SolveChart({ data }: { data: SolveDataPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
         <XAxis
           dataKey="solveNumber"
-          tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9, fontFamily: "var(--font-heading)" }}
+          tick={{ fill: "var(--text-muted)", fontSize: 9, fontFamily: "var(--font-heading)" }}
           tickLine={false}
           axisLine={false}
           label={{
             value: "SOLVE #",
             position: "insideBottomRight",
             offset: -4,
-            fill: "rgba(255,255,255,0.15)",
+            fill: "var(--text-dim)",
             fontSize: 8,
             fontFamily: "var(--font-heading)",
           }}
         />
         <YAxis
           tickFormatter={formatYAxis}
-          tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9, fontFamily: "var(--font-heading)" }}
+          tick={{ fill: "var(--text-muted)", fontSize: 9, fontFamily: "var(--font-heading)" }}
           tickLine={false}
           axisLine={false}
           width={44}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(255,255,255,0.08)" }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "var(--border-ring)" }} />
         <Legend
           wrapperStyle={{ paddingTop: 12 }}
           formatter={(value) => (
-            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 8, fontFamily: "var(--font-heading)" }}>
+            <span style={{ color: "var(--text-muted)", fontSize: 8, fontFamily: "var(--font-heading)" }}>
               {value === "time_seconds" ? "SINGLE" : value === "ao5_seconds" ? "AO5" : "AO12"}
             </span>
           )}
@@ -141,28 +141,28 @@ export default function SolveChart({ data }: { data: SolveDataPoint[] }) {
         <Line
           type="monotone"
           dataKey="time_seconds"
-          stroke="#FFD500"
+          stroke="var(--chart-1)"
           strokeWidth={1.5}
           dot={false}
-          activeDot={{ r: 3, fill: "#FFD500", strokeWidth: 0 }}
+          activeDot={{ r: 3, fill: "var(--chart-1)", strokeWidth: 0 }}
           connectNulls={false}
         />
         <Line
           type="monotone"
           dataKey="ao5_seconds"
-          stroke="#C41E3A"
+          stroke="var(--chart-2)"
           strokeWidth={2}
           dot={false}
-          activeDot={{ r: 3, fill: "#C41E3A", strokeWidth: 0 }}
+          activeDot={{ r: 3, fill: "var(--chart-2)", strokeWidth: 0 }}
           connectNulls={false}
         />
         <Line
           type="monotone"
           dataKey="ao12_seconds"
-          stroke="#0051A2"
+          stroke="var(--chart-3)"
           strokeWidth={2}
           dot={false}
-          activeDot={{ r: 3, fill: "#0051A2", strokeWidth: 0 }}
+          activeDot={{ r: 3, fill: "var(--chart-3)", strokeWidth: 0 }}
           connectNulls={false}
         />
       </LineChart>

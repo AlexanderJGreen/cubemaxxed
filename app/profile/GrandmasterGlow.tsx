@@ -16,7 +16,7 @@ export function GrandmasterGlow({ children }: { children: React.ReactNode }) {
       `}</style>
       <div
         className="gm-glow relative overflow-hidden p-8 sm:p-10"
-        style={{ border: "1px solid transparent", backgroundColor: "#0f0f1a" }}
+        style={{ border: "1px solid transparent", backgroundColor: "var(--bg-surface)" }}
       >
         {children}
       </div>

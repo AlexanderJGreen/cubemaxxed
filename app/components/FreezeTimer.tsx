@@ -34,7 +34,7 @@ export function FreezeTimer() {
   return (
     <span
       className="font-heading text-[8px] tracking-widest mt-0.5"
-      style={{ color: "#4FC3F7" }}
+      style={{ color: "var(--accent-ice)" }}
     >
       FREEZE ACTIVE — {formatCountdown(ms)}
     </span>
