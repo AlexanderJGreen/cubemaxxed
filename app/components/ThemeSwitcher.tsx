@@ -3,9 +3,11 @@
 import { THEMES } from "@/lib/themes";
 import type { ThemeId } from "@/lib/themes";
 import { useTheme } from "./ThemeProvider";
+import { useIsPro } from "./ProProvider";
 
 export function ThemeSwitcher() {
-  const { theme: current, setTheme, isPro } = useTheme();
+  const { theme: current, setTheme } = useTheme();
+  const isPro = useIsPro();
 
   return (
     <div className="flex flex-col gap-4">

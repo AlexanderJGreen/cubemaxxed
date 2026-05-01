@@ -8,13 +8,11 @@ import { saveTheme } from "@/app/profile/theme-actions";
 type ThemeContextValue = {
   theme: ThemeId;
   setTheme: (id: ThemeId) => void;
-  isPro: boolean;
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: DEFAULT_THEME,
   setTheme: () => {},
-  isPro: false,
 });
 
 export function useTheme() {
@@ -24,12 +22,10 @@ export function useTheme() {
 export function ThemeProvider({
   children,
   initialTheme,
-  initialIsPro,
   isLoggedIn,
 }: {
   children: React.ReactNode;
   initialTheme: ThemeId;
-  initialIsPro: boolean;
   isLoggedIn: boolean;
 }) {
   const [theme, setThemeState] = useState<ThemeId>(initialTheme);
@@ -49,7 +45,7 @@ export function ThemeProvider({
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isPro: initialIsPro }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

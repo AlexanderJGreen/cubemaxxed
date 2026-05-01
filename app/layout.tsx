@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import RankUpModal from "./components/RankUpModal";
 import { ThemeProvider, ThemeScript } from "./components/ThemeProvider";
+import { ProProvider } from "./components/ProProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_THEME, isValidTheme } from "@/lib/themes";
@@ -71,16 +72,17 @@ export default async function RootLayout({
         }} />
       </head>
       <body className={`${pressStart2P.variable} ${inter.variable} antialiased`}>
-        <ThemeProvider
-          initialTheme={initialTheme}
-          initialIsPro={initialIsPro}
-          isLoggedIn={!!user}
-        >
-          <Header xp={xp} avatarUrl={avatarUrl} username={username} />
-          <main>{children}</main>
-          <RankUpModal />
-          <Analytics />
-        </ThemeProvider>
+        <ProProvider isPro={initialIsPro}>
+          <ThemeProvider
+            initialTheme={initialTheme}
+            isLoggedIn={!!user}
+          >
+            <Header xp={xp} avatarUrl={avatarUrl} username={username} />
+            <main>{children}</main>
+            <RankUpModal />
+            <Analytics />
+          </ThemeProvider>
+        </ProProvider>
       </body>
     </html>
   );
