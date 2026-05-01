@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { PixelIcon } from "@/app/components/PixelIcon";
+import { PixelCheck, PixelX } from "@/app/components/PixelCheck";
 import {
   CaseDiagram,
   PLLCaseDiagram,
@@ -209,14 +210,13 @@ function OptionCard({
       )}
       {(state === "correct" || state === "wrong" || state === "missed") && (
         <span
-          className="font-heading text-[9px] leading-none tracking-widest"
+          className="font-heading text-[9px] leading-none tracking-widest flex items-center gap-1"
           style={{ color: labelColor }}
         >
-          {state === "correct"
-            ? `✓ ${c.name}`
-            : state === "missed"
-              ? `✓ ${c.name}`
-              : `✗ ${c.name}`}
+          {state === "wrong"
+            ? <PixelX color={labelColor} px={2} />
+            : <PixelCheck color={labelColor} px={2} />}
+          {c.name}
         </span>
       )}
     </button>
@@ -510,9 +510,8 @@ export default function MemoryTrainer() {
   // ── Shared state ──────────────────────────────────────────────────────────
   const [mode, setMode] = useState<Mode>("flash");
   const [filter, setFilter] = useState<Filter>("both");
-  const [activeFilterColor, setActiveFilterColor] = useState(() =>
-    randomCubeColor(),
-  );
+  const [activeFilterColor, setActiveFilterColor] = useState(CUBE_COLORS[0]);
+  useEffect(() => { setActiveFilterColor(randomCubeColor()); }, []);
 
   // ── Flash & Recall state ──────────────────────────────────────────────────
   const [phase, setPhase] = useState<Phase>("idle");
@@ -1262,11 +1261,10 @@ export default function MemoryTrainer() {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className="font-heading text-xl leading-none"
-                    style={{ color: isCorrect ? "#009B48" : "#C41E3A" }}
-                  >
-                    {isCorrect ? "✓" : "✗"}
+                  <span className="flex items-center">
+                    {isCorrect
+                      ? <PixelCheck color="#009B48" px={4} />
+                      : <PixelX color="#C41E3A" px={4} />}
                   </span>
                   <span
                     className="font-heading text-[12px] tracking-widest leading-none"
@@ -1577,11 +1575,10 @@ export default function MemoryTrainer() {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className="font-heading text-xl leading-none"
-                    style={{ color: sbIsCorrect ? "#009B48" : "#C41E3A" }}
-                  >
-                    {sbIsCorrect ? "✓" : "✗"}
+                  <span className="flex items-center">
+                    {sbIsCorrect
+                      ? <PixelCheck color="#009B48" px={4} />
+                      : <PixelX color="#C41E3A" px={4} />}
                   </span>
                   <span
                     className="font-heading text-[12px] tracking-widest leading-none"
@@ -1847,11 +1844,10 @@ export default function MemoryTrainer() {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className="font-heading text-xl leading-none"
-                    style={{ color: crIsCorrect ? "#009B48" : "#C41E3A" }}
-                  >
-                    {crIsCorrect ? "✓" : "✗"}
+                  <span className="flex items-center">
+                    {crIsCorrect
+                      ? <PixelCheck color="#009B48" px={4} />
+                      : <PixelX color="#C41E3A" px={4} />}
                   </span>
                   <span
                     className="font-heading text-[12px] tracking-widest leading-none"
@@ -2125,11 +2121,10 @@ export default function MemoryTrainer() {
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className="font-heading text-xl leading-none"
-                    style={{ color: srIsCorrect ? "#009B48" : "#C41E3A" }}
-                  >
-                    {srIsCorrect ? "✓" : "✗"}
+                  <span className="flex items-center">
+                    {srIsCorrect
+                      ? <PixelCheck color="#009B48" px={4} />
+                      : <PixelX color="#C41E3A" px={4} />}
                   </span>
                   <span
                     className="font-heading text-[12px] tracking-widest leading-none"

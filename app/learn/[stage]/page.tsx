@@ -2,36 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "../data";
+import { PixelCheck } from "@/app/components/PixelCheck";
 
 type LessonStatus = "completed" | "available" | "locked";
-
-// Pixel art checkmark — 7×5 grid, opacity values for a faded-tip artsy feel
-const CHECK_PIXELS = [
-  [0,   0,   0,   0,   0,   0.75, 1  ],
-  [0,   0,   0,   0,   0.85, 1,   0  ],
-  [0.8, 0,   0,   0.9, 1,   0,    0  ],
-  [0,   0.9, 1,   1,   0,   0,    0  ],
-  [0,   0,   0.8, 0,   0,   0,    0  ],
-];
-
-function PixelCheck() {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 2px)", gap: "1px" }}>
-      {CHECK_PIXELS.flat().map((opacity, i) => (
-        <div
-          key={i}
-          style={{
-            width: 2,
-            height: 2,
-            backgroundColor: opacity > 0 ? "#0d0d14" : "transparent",
-            opacity: opacity > 0 ? opacity : 1,
-            borderRadius: 1,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 export default async function StagePage({
   params,
@@ -194,7 +167,7 @@ export default async function StagePage({
                         className="font-heading text-[8px] leading-none px-2 py-1"
                         style={{ color: GREEN, border: `1px solid rgba(0,155,72,0.4)` }}
                       >
-                        DONE ✓
+                        <span className="flex items-center gap-1.5">DONE <PixelCheck color={GREEN} px={2} /></span>
                       </Link>
                     )}
                     {isAvailable && (

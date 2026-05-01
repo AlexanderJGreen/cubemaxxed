@@ -6,6 +6,7 @@ import { STAGES } from "../../data";
 import { LESSON_CONTENT, type Block } from "../../content";
 import { completeLesson } from "../../actions";
 import F2LDiagram from "@/app/components/F2LDiagram";
+import { PixelCheck } from "@/app/components/PixelCheck";
 
 function renderBlock(block: Block, stageColor: string) {
   switch (block.type) {
@@ -432,9 +433,12 @@ export default async function LessonPage({
                     }
               }
             >
-              {alreadyCompleted
-                ? "✓ LESSON COMPLETED"
-                : `COMPLETE LESSON — +${stage.xpPerLesson} XP`}
+              {alreadyCompleted ? (
+                <span className="flex items-center justify-center gap-2">
+                  <PixelCheck color="#0d0d14" px={3} />
+                  LESSON COMPLETED
+                </span>
+              ) : `COMPLETE LESSON — +${stage.xpPerLesson} XP`}
             </button>
           </form>
         ) : (
